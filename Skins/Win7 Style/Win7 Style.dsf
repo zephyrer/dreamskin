@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dreamskin version="1.0">
+	<dialog region="1" transparent="0x00FF00FF">
+		<background type="0">
+			<normal>
+				<color start="0x00F7F3F7"/>
+			</normal>
+		</background>
+		<border type="0">
+			<left width="8" type="1">
+				<normal>
+					<image source="Images/dialog.bmp" x="0" y="30" width="8" height="374" />
+				</normal>
+				<disable>
+					<image source="Images/dialog.bmp" x="474" y="30" width="8" height="374" />
+				</disable>
+			</left>
+			<right width="8" type="1">
+				<normal>
+					<image source="Images/dialog.bmp" x="466" y="30" width="8" height="374" />
+				</normal>
+				<disable>
+					<image source="Images/dialog.bmp" x="940" y="30" width="8" height="374" />
+				</disable>
+			</right>
+			<top width="8" type="1">
+				<normal>
+					<image source="Images/dialog.bmp" x="0" y="0" width="474" height="8" />
+				</normal>
+				<disable>
+					<image source="Images/dialog.bmp" x="474" y="0" width="474" height="8" />
+				</disable>
+			</top>
+			<bottom width="8" start="8" end="8" type="1">
+				<normal>
+					<image source="Images/dialog.bmp" x="0" y="404" width="474" height="8" />
+				</normal>
+				<disable>
+					<image source="Images/dialog.bmp" x="474" y="404" width="474" height="8" />
+				</disable>
+			</bottom>
+			<title width="30" start="8" end="8" incborder="1">
+				<background type="1">
+					<normal>
+						<image source="Images/dialog.bmp" x="0" y="0" width="474" height="30" />
+					</normal>
+					<disable>
+						<image source="Images/dialog.bmp" x="474" y="0" width="474" height="30" />
+					</disable>
+				</background>
+				<close type="1" width="31" height="17" right-margin="10" top-margin="10">
+					<normal>
+						<image source="Images/sysbutton.bmp" x="0" y="0" width="31" height="17" />
+					</normal>
+					<hover>
+						<image source="Images/sysbutton.bmp" x="31" y="0" width="31" height="17" />
+					</hover>
+					<press>
+						<image source="Images/sysbutton.bmp" x="62" y="0" width="31" height="17" />
+					</press>
+					<disable>
+						<image source="Images/sysbutton.bmp" x="93" y="0" width="31" height="17" />
+					</disable>
+				</close>
+				<maximize type="1" width="31" height="17" right-margin="2" top-margin="10">
+					<normal>
+						<image source="Images/sysbutton.bmp" x="0" y="17" width="31" height="17" />
+					</normal>
+					<hover>
+						<image source="Images/sysbutton.bmp" x="31" y="17" width="31" height="17" />
+					</hover>
+					<press>
+						<image source="Images/sysbutton.bmp" x="62" y="17" width="31" height="17" />
+					</press>
+					<disable>
+						<image source="Images/sysbutton.bmp" x="93" y="17" width="31" height="17" />
+					</disable>
+				</maximize>
+				<restore type="1" width="31" height="17" right-margin="2" top-margin="10">
+					<normal>
+						<image source="Images/sysbutton.bmp" x="0" y="34" width="31" height="17" />
+					</normal>
+					<hover>
+						<image source="Images/sysbutton.bmp" x="31" y="34" width="31" height="17" />
+					</hover>
+					<press>
+						<image source="Images/sysbutton.bmp" x="62" y="34" width="31" height="17" />
+					</press>
+					<disable>
+						<image source="Images/sysbutton.bmp" x="93" y="34" width="31" height="17" />
+					</disable>
+				</restore>
+				<minimize type="1" width="31" height="17" right-margin="2" top-margin="10">
+					<normal>
+						<image source="Images/sysbutton.bmp" x="0" y="51" width="31" height="17" />
+					</normal>
+					<hover>
+						<image source="Images/sysbutton.bmp" x="31" y="51" width="31" height="17" />
+					</hover>
+					<press>
+						<image source="Images/sysbutton.bmp" x="62" y="51" width="31" height="17" />
+					</press>
+					<disable>
+						<image source="Images/sysbutton.bmp" x="93" y="51" width="31" height="17" />
+					</disable>
+				</minimize>
+			</title>
+		</border>
+	</dialog>
+	<button>
+		<background type="1">
+			<normal>
+				<image source="Images/button.bmp" x="2" y="3" width="69" height="15" />
+			</normal>
+			<disable>
+				<image source="Images/button.bmp" x="2" y="24" width="69" height="15" />
+			</disable>
+			<hover>
+				<image source="Images/button.bmp" x="2" y="45" width="69" height="15" />
+			</hover>
+			<press>
+				<image source="Images/button.bmp" x="2" y="66" width="69" height="15" />
+			</press>
+		</background>
+		<border type="1">
+			<left width="2" type="1">
+				<normal>
+					<image source="Images/button.bmp" x="0" y="3" width="2" height="15" />
+				</normal>
+				<disable>
+					<image source="Images/button.bmp" x="0" y="24" width="2" height="15" />
+				</disable>
+				<hover>
+					<image source="Images/button.bmp" x="0" y="45" width="2" height="15" />
+				</hover>
+				<press>
+					<image source="Images/button.bmp" x="0" y="66" width="2" height="15" />
+				</press>
+				<default>
+					<image source="Images/button.bmp" x="0" y="87" width="2" height="15" />
+				</default>
+			</left>
+			<right width="2" type="1">
+				<normal>
+					<image source="Images/button.bmp" x="71" y="3" width="2" height="15" />
+				</normal>
+				<disable>
+					<image source="Images/button.bmp" x="71" y="24" width="2" height="15" />
+				</disable>
+				<hover>
+					<image source="Images/button.bmp" x="71" y="45" width="2" height="15" />
+				</hover>
+				<press>
+					<image source="Images/button.bmp" x="71" y="66" width="2" height="15" />
+				</press>
+				<default>
+					<image source="Images/button.bmp" x="71" y="87" width="2" height="15" />
+				</default>
+			</right>
+			<top width="3" start="3" end="3" type="1">
+				<normal>
+					<image source="Images/button.bmp" x="0" y="0" width="73" height="3" />
+				</normal>
+				<disable>
+					<image source="Images/button.bmp" x="0" y="21" width="73" height="3" />
+				</disable>
+				<hover>
+					<image source="Images/button.bmp" x="0" y="42" width="73" height="3" />
+				</hover>
+				<press>
+					<image source="Images/button.bmp" x="0" y="63" width="73" height="3" />
+				</press>
+				<default>
+					<image source="Images/button.bmp" x="0" y="84" width="73" height="3" />
+				</default>
+			</top>
+			<bottom width="3" start="3" end="3" type="1">
+				<normal>
+					<image source="Images/button.bmp" x="0" y="18" width="73" height="3" />
+				</normal>
+				<disable>
+					<image source="Images/button.bmp" x="0" y="39" width="73" height="3" />
+				</disable>
+				<hover>
+					<image source="Images/button.bmp" x="0" y="60" width="73" height="3" />
+				</hover>
+				<press>
+					<image source="Images/button.bmp" x="0" y="81" width="73" height="3" />
+				</press>
+				<default>
+					<image source="Images/button.bmp" x="0" y="102" width="73" height="3" />
+				</default>
+			</bottom>
+		</border>
+		<text>
+			<normal>
+				<color start="0x00000000" />
+			</normal>
+			<disable>
+				<color start="0x00848284" />
+			</disable>
+			<hover>
+				<color start="0x00000000" />
+			</hover>
+			<press>
+				<color start="0x00000000" />
+			</press>
+		</text>
+	</button>
+</dreamskin>

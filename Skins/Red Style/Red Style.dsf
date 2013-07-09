@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dreamskin version="1.0">
+	<dialog>
+		<background type="0">
+			<normal>
+				<color start="0x00FCE4E4"/>
+			</normal>
+		</background>
+		<border type="0">
+			<left width="2">
+				<normal>
+					<color start="0x00B15354"/>
+				</normal>
+			</left>
+			<right width="2">
+				<normal>
+					<color start="0x00B15354"/>
+				</normal>
+			</right>
+			<top width="2">
+				<normal>
+					<color start="0x00B15354"/>
+				</normal>
+			</top>
+			<bottom width="2">
+				<normal>
+					<color start="0x00B15354"/>
+				</normal>
+			</bottom>
+			<title>
+				<background type="0">
+					<normal>
+						<color start="0x00BF4D4D"/>
+					</normal>
+				</background>
+			</title>
+		</border>
+	</dialog>
+	<button>
+		<background type="0">
+			<normal>
+				<color start="0x00F8E6E6"/>
+			</normal>
+			<hover>
+				<color start="0x00993838"/>
+			</hover>
+		</background>
+		<border type="0">
+			<left width="1">
+				<normal>
+					<color start="0x00D89F9F"/>
+				</normal>
+				<hover>
+					<color start="0x00993838"/>
+				</hover>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</left>
+			<right width="1">
+				<normal>
+					<color start="0x00D89F9F"/>
+				</normal>
+				<hover>
+					<color start="0x00993838"/>
+				</hover>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</right>
+			<top width="1">
+				<normal>
+					<color start="0x00D89F9F"/>
+				</normal>
+				<hover>
+					<color start="0x00993838"/>
+				</hover>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</top>
+			<bottom width="1">
+				<normal>
+					<color start="0x00D89F9F"/>
+				</normal>
+				<hover>
+					<color start="0x00993838"/>
+				</hover>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</bottom>
+		</border>
+		<text>
+			<normal>
+				<color start="0x00C14848" />
+			</normal>
+			<disable>
+				<color start="0x00ACA899" />
+			</disable>
+			<hover>
+				<color start="0x00FFFFFF" />
+			</hover>
+			<press>
+				<color start="0x00C14848" />
+			</press>
+			<default>
+				<font bold="1" />
+				<color start="0x00C14848" />
+			</default>
+		</text>
+	</button>
+</dreamskin>

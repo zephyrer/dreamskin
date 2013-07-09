@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DreamSkinDemoDialog", "DreamSkinDemoDialog\DreamSkinDemoDialog.vcproj", "{0C07E355-2DED-49C4-8B9C-ADD8E9708E8E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{836F0945-3158-4B62-BED3-CF01518F793A} = {836F0945-3158-4B62-BED3-CF01518F793A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DreamSkin", "DreamSkin\DreamSkin.vcproj", "{836F0945-3158-4B62-BED3-CF01518F793A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C07E355-2DED-49C4-8B9C-ADD8E9708E8E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0C07E355-2DED-49C4-8B9C-ADD8E9708E8E}.Debug|Win32.Build.0 = Debug|Win32
+		{0C07E355-2DED-49C4-8B9C-ADD8E9708E8E}.Release|Win32.ActiveCfg = Release|Win32
+		{0C07E355-2DED-49C4-8B9C-ADD8E9708E8E}.Release|Win32.Build.0 = Release|Win32
+		{836F0945-3158-4B62-BED3-CF01518F793A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{836F0945-3158-4B62-BED3-CF01518F793A}.Debug|Win32.Build.0 = Debug|Win32
+		{836F0945-3158-4B62-BED3-CF01518F793A}.Release|Win32.ActiveCfg = Release|Win32
+		{836F0945-3158-4B62-BED3-CF01518F793A}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
