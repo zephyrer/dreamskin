@@ -197,6 +197,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DreamSkinStatic.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DreamSkinWindow.cpp"
 				>
 			</File>
@@ -244,6 +248,10 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinMain.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DreamSkinStatic.h"
 				>
 			</File>
 			<File

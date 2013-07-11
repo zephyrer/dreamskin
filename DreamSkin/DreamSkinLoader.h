@@ -153,7 +153,7 @@ typedef struct _tag_SKINDIALOG
 //skin settings for button
 typedef struct _tag_SKINBUTTON
 {
-	int              nRgnType;                        //Dialog region type
+	int              nRgnType;                        //Button region type
 	COLORREF         clrTansparent;                   //Transparent color for creating windows region
 
 	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
@@ -194,6 +194,12 @@ typedef struct _tag_SKINBUTTON
 	SKINBORDER       skinBBorderDefault;              //Bottom border in default status
 }SKINBUTTON;
 
+typedef struct _tag_SKINSTATIC
+{
+	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
+	SKINTEXT         skinTxtNormal;                   //Text in normal status
+}SKINSTATIC;
+
 class CDreamSkinLoader
 {
 public:
@@ -203,6 +209,7 @@ public:
 protected:
 	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameButton[];
+	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameBackground[];
 	static WCHAR wstrSkinFileNodeNameBorder[];
 	static WCHAR wstrSkinFileNodeNameColor[];
@@ -249,10 +256,12 @@ public:
 
 	void GetSkinButton(SKINBUTTON *pSkinButton) const;
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
+	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
 
 protected:
 	BOOL LoadSkinDialog(void *parser);
 	BOOL LoadSkinButton(void *parser);
+	BOOL LoadSkinStatic(void *parser);
 	BOOL LoadColor(void *color, DRAWCOLOR *pDrawColor);
 	BOOL LoadColorItem(void *color, WCHAR* wstrColorItemName, COLORREF *pColor);
 	BOOL LoadFont(void *font, SKINTEXTFONT *pSkinFont);
@@ -268,6 +277,7 @@ protected:
 protected:
 	SKINDIALOG m_SkinDialog;
 	SKINBUTTON m_SkinButton;
+	SKINSTATIC m_SkinStatic;
 	CImageHandleList *m_pImageHandleList;
 };
 

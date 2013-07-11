@@ -18,6 +18,7 @@ using namespace xercesc;
 #include "DreamSkinWindow.h"
 #include "DreamSkinDialog.h"
 #include "DreamSkinButton.h"
+#include "DreamSkinStatic.h"
 
 #include "HexBin.h"
 
@@ -57,6 +58,7 @@ DOMNode * GetNamedChild(DOMNode* pParentNode, const WCHAR *wstrNodeName)
 
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameButton[] = L"button";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameStatic[] = L"static";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBackground[] = L"background";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBorder[] = L"border";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameColor[] = L"color";
@@ -148,6 +150,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinButton::GetDefaultSkin(&m_SkinButton);
 		LoadSkinButton(parser);
 
+		//Load Skin Status
+		CDreamSkinStatic::GetDefaultSkin(&m_SkinStatic);
+		LoadSkinStatic(parser);
+
 		parser->setErrorHandler(NULL);
 	}
 	catch (const XMLException& ) 
@@ -189,6 +195,14 @@ void CDreamSkinLoader::GetSkinDialog(SKINDIALOG *pSkinDialog) const
 	if (pSkinDialog)
 	{
 		memcpy(pSkinDialog, &m_SkinDialog, sizeof(SKINDIALOG));
+	}
+}
+
+void CDreamSkinLoader::GetSkinStatic(SKINSTATIC *pSkinStatic) const
+{
+	if (pSkinStatic)
+	{
+		memcpy(pSkinStatic, &m_SkinStatic, sizeof(SKINSTATIC));
 	}
 }
 
@@ -446,6 +460,63 @@ BOOL CDreamSkinLoader::LoadSkinDialog(void *parser)
 			pParentNode = pParentNode->getNextSibling();
 		}//loop to load all settings
 	}//dialog settings
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadSkinStatic(void *parser)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pStaticNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameStatic);
+	const WCHAR *wstrNodeName;
+	SKINTEXT *pSkinTextList[DRAWSTATUS_NORMAL + 1];
+
+	if (pStaticNode)
+	{
+		//loop to load all settings
+		pParentNode = pStaticNode->getFirstChild();
+		while (pParentNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+			{//background
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//background draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinStatic.skinBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadBackground(pChildNode, &(m_SkinStatic.skinBkNormal));
+					}//normal
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+			}//background
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+			{//text
+				pSkinTextList[DRAWSTATUS_NORMAL] = &m_SkinStatic.skinTxtNormal;
+				LoadText(pParentNode, pSkinTextList, DRAWSTATUS_NORMAL + 1);
+			}//text
+
+			pParentNode = pParentNode->getNextSibling();
+		}
+	}//static settings
 
 	return bResult;
 }

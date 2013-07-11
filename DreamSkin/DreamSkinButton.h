@@ -30,7 +30,7 @@ public:
 	static BOOL InitialClass();
 	//Destroy the static member of the class
 	static void DestroyClass();
-	//Get the default skin for dialog
+	//Get the default skin for button
 	static BOOL GetDefaultSkin(SKINBUTTON *pSkinButton);
 
 public:

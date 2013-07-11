@@ -207,4 +207,16 @@
 			</press>
 		</text>
 	</button>
+	<static>
+		<background type="0">
+			<normal>
+				<color start="0x00F7F3F7"/>
+			</normal>
+		</background>
+		<text>
+			<normal>
+				<color start="0x00000000" />
+			</normal>
+		</text>
+	</static>
 </dreamskin>

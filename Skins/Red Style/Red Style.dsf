@@ -110,4 +110,16 @@
 			</default>
 		</text>
 	</button>
+	<static>
+		<background type="0">
+			<normal>
+				<color start="0x00F8E6E6"/>
+			</normal>
+		</background>
+		<text>
+			<normal>
+				<color start="0x00BF4D4D" />
+			</normal>
+		</text>
+	</static>
 </dreamskin>

@@ -8,6 +8,7 @@
 #include "DreamSkinWindow.h"
 #include "DreamSkinDialog.h"
 #include "DreamSkinButton.h"
+#include "DreamSkinStatic.h"
 
 CDreamSkinMain theSkinMain;
 
@@ -112,6 +113,16 @@ BOOL CDreamSkinMain::InitDefaultHookWindowClassList()
 		m_pDefaultHookWindowClasses->Add(DEFAULT_BUTTON_CLASSNAME_W, CDreamSkinButton::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinButton::CreateInstance);
 	}
 
+	bReturn = CDreamSkinStatic::InitialClass();
+	if(!bReturn)
+	{   //Init for dialog failed
+		//TODO: Add error handle code
+	}
+	else
+	{
+		m_pDefaultHookWindowClasses->Add(DEFAULT_STATIC_CLASSNAME_W, CDreamSkinStatic::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinStatic::CreateInstance);
+	}
+
 	return TRUE;
 }
 
@@ -168,6 +179,7 @@ BOOL CDreamSkinMain::LoadSkin(const WCHAR *wstrSkinFilePath)
 	{
 		CDreamSkinDialog::ApplySkin(&theLoader);
 		CDreamSkinButton::ApplySkin(&theLoader);
+		CDreamSkinStatic::ApplySkin(&theLoader);
 
 		if (m_pImageHandleList)
 		{
