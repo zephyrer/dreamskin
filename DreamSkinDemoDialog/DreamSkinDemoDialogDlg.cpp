@@ -53,9 +53,14 @@ LRESULT WINAPI DefWindowProcBtnDemo(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	return ((CDreamSkinDemoDialogDlg*)(AfxGetApp()->GetMainWnd()))->DefWindowProcBtnDemo(hWnd, message, wParam, lParam);
 }
 
+LRESULT WINAPI DefWindowProcChkDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return ((CDreamSkinDemoDialogDlg*)(AfxGetApp()->GetMainWnd()))->DefWindowProcChkDemo(hWnd, message, wParam, lParam);
+}
+
 LRESULT CDreamSkinDemoDialogDlg::DefWindowProcBtnDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if (::IsWindow(m_hWnd))
+	if (::IsWindow(m_hWnd) && ::IsWindow(hWnd))
 	{
 		switch(message)
 		{
@@ -97,6 +102,91 @@ LRESULT CDreamSkinDemoDialogDlg::DefWindowProcBtnDemo(HWND hWnd, UINT message, W
 	return m_SkinProcBtnDemo(hWnd, message, wParam, lParam);
 }
 
+LRESULT CDreamSkinDemoDialogDlg::DefWindowProcChkDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	TCHAR tstrText[64];
+	int *pChkDemoStatus;
+	int nStatus;
+	WNDPROC SkinProcChkDemo;
+	if (::IsWindow(m_hWnd) && ::IsWindow(hWnd))
+	{
+		if (hWnd == ::GetDlgItem(m_hWnd, IDC_CHK_DEMO_NORMAL))
+		{
+			pChkDemoStatus = &m_nChk2StateDemoStatus;
+			_tcscpy_s(tstrText, 64, _T("2-States Checkbox - "));
+			SkinProcChkDemo = m_SkinProcChk2StateDemo;
+		}
+		else
+		{
+			pChkDemoStatus = &m_nChk3StateDemoStatus;
+			_tcscpy_s(tstrText, 64, _T("3-States Checkbox - "));
+			SkinProcChkDemo = m_SkinProcChk3StateDemo;
+		}
+
+		switch(::SendMessage(hWnd, BM_GETCHECK, 0, 0))
+		{
+		case BST_CHECKED:
+			nStatus = 1;
+			_tcscat_s(tstrText, 64, _T("Checked "));
+			break;
+		case BST_INDETERMINATE:
+			nStatus = 2;
+			_tcscat_s(tstrText, 64, _T("Partially-Checked "));
+			break;
+		default:
+			nStatus = 0;
+			_tcscat_s(tstrText, 64, _T("Unchecked "));
+			break;
+		}
+
+		switch(message)
+		{
+		case WM_MOUSEMOVE:
+			if (::GetCapture() == hWnd)
+			{
+				nStatus = nStatus * 10 + 2;
+				if (*pChkDemoStatus != nStatus)
+				{
+					*pChkDemoStatus = nStatus;
+					_tcscat_s(tstrText, 64, _T("Press"));
+					::SetWindowText(hWnd, tstrText);
+				}
+			}
+			else
+			{
+				nStatus = nStatus * 10 + 1;
+				if (*pChkDemoStatus != nStatus)
+				{
+					*pChkDemoStatus = nStatus;
+					_tcscat_s(tstrText, 64, _T("Hover"));
+					::SetWindowText(hWnd, tstrText);
+				}
+			}
+			break;
+		case WM_MOUSELEAVE:
+			nStatus = nStatus * 10 + 0;
+			if (*pChkDemoStatus != nStatus)
+			{
+				*pChkDemoStatus = nStatus;
+				_tcscat_s(tstrText, 64, _T("Normal"));
+				::SetWindowText(hWnd, tstrText);
+			}
+			break;
+		case WM_LBUTTONDOWN:
+			nStatus = nStatus * 10 + 2;
+			if (m_nBtnDemoStatus != nStatus)
+			{
+				m_nBtnDemoStatus = nStatus;
+				_tcscat_s(tstrText, 64, _T("Press"));
+				::SetWindowText(hWnd, tstrText);
+			}
+			break;
+		}
+	}
+
+	return SkinProcChkDemo(hWnd, message, wParam, lParam);
+}
+
 CDreamSkinDemoDialogDlg::CDreamSkinDemoDialogDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CDreamSkinDemoDialogDlg::IDD, pParent)
 	, m_bSysMenuInclude(TRUE)
@@ -112,6 +202,8 @@ CDreamSkinDemoDialogDlg::CDreamSkinDemoDialogDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_nBtnDemoStatus = 0;
+	m_nChk2StateDemoStatus = 0;
+	m_nChk3StateDemoStatus = 0;
 }
 
 void CDreamSkinDemoDialogDlg::UpdateDreamSkinStatus()
@@ -189,6 +281,9 @@ BOOL CDreamSkinDemoDialogDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+	((CButton*)GetDlgItem(IDC_CHK_DEMO_DISABLE_CHECKED))->SetCheck(BST_CHECKED);
+	((CButton*)GetDlgItem(IDC_CHK_DEMO_DISABLE_PARTCHECKED))->SetCheck(BST_INDETERMINATE);
+
 	DREAMSKIN_STATUS status;
 	DreamSkinStatus(&status);
 	m_nHookedWindowCount = status.nHookedWindowCount;
@@ -257,6 +352,9 @@ void CDreamSkinDemoDialogDlg::OnBnClickedDreamskinEnable()
 {
 	UpdateData(TRUE);
 
+	TCHAR tstrText[64];
+	HWND hWnd;
+
 	if (m_bEnableDreamSkin)
 	{
 		DreamSkinInit();
@@ -264,8 +362,57 @@ void CDreamSkinDemoDialogDlg::OnBnClickedDreamskinEnable()
 		GetDlgItem(IDC_BTN_DEMO_NORMAL)->EnableWindow(FALSE);
 		GetDlgItem(IDC_BTN_DEMO_NORMAL)->EnableWindow();
 
+		GetDlgItem(IDC_CHK_DEMO_NORMAL)->EnableWindow(FALSE);
+		GetDlgItem(IDC_CHK_DEMO_NORMAL)->EnableWindow();
+
+		GetDlgItem(IDC_CHK_DEMO_3STATE_NORMAL)->EnableWindow(FALSE);
+		GetDlgItem(IDC_CHK_DEMO_3STATE_NORMAL)->EnableWindow();
+
 		m_SkinProcBtnDemo = (WNDPROC)::GetWindowLong(GetDlgItem(IDC_BTN_DEMO_NORMAL)->m_hWnd, GWL_WNDPROC);
 		::SetWindowLong(GetDlgItem(IDC_BTN_DEMO_NORMAL)->m_hWnd, GWL_WNDPROC, (LONG)::DefWindowProcBtnDemo);
+
+		hWnd = ::GetDlgItem(m_hWnd, IDC_CHK_DEMO_NORMAL);
+		_tcscpy_s(tstrText, 64, _T("2-States Checkbox - "));
+		switch(::SendMessage(hWnd, BM_GETCHECK, 0, 0))
+		{
+		case BST_CHECKED:
+			m_nChk2StateDemoStatus = 10;
+			_tcscat_s(tstrText, 64, _T("Checked Normal"));
+			break;
+		case BST_INDETERMINATE:
+			m_nChk2StateDemoStatus = 20;
+			_tcscat_s(tstrText, 64, _T("Partially-Checked Normal"));
+			break;
+		default:
+			m_nChk2StateDemoStatus = 0;
+			_tcscat_s(tstrText, 64, _T("Unchecked Normal"));
+			break;
+		}
+		::SetWindowText(hWnd, tstrText);
+		m_SkinProcChk2StateDemo = (WNDPROC)::GetWindowLong(hWnd, GWL_WNDPROC);
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)::DefWindowProcChkDemo);
+		
+
+		hWnd = ::GetDlgItem(m_hWnd, IDC_CHK_DEMO_3STATE_NORMAL);
+		_tcscpy_s(tstrText, 64, _T("3-States Checkbox - "));
+		switch(::SendMessage(hWnd, BM_GETCHECK, 0, 0))
+		{
+		case BST_CHECKED:
+			m_nChk3StateDemoStatus = 10;
+			_tcscat_s(tstrText, 64, _T("Checked Normal"));
+			break;
+		case BST_INDETERMINATE:
+			m_nChk3StateDemoStatus = 20;
+			_tcscat_s(tstrText, 64, _T("Partially-Checked Normal"));
+			break;
+		default:
+			m_nChk3StateDemoStatus = 0;
+			_tcscat_s(tstrText, 64, _T("Unchecked Normal"));
+			break;
+		}
+		::SetWindowText(hWnd, tstrText);
+		m_SkinProcChk3StateDemo = (WNDPROC)::GetWindowLong(hWnd, GWL_WNDPROC);
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)::DefWindowProcChkDemo);
 	}
 	else
 	{

@@ -22,6 +22,12 @@
 #define IDC_BTN_DEMO_NORMAL             1011
 #define IDC_BTN_DEMO_NORMAL2            1012
 #define IDC_BTN_DEMO_DISABLE            1012
+#define IDC_CHK_DEMO_NORMAL             1013
+#define IDC_CHK_DEMO_3STATE_NORMAL      1014
+#define IDC_CHK_DEMO_DISABLE_UNCHECKED  1015
+#define IDC_CHK_DEMO_DISABLE_CHECKED    1016
+#define IDC_CHK_DEMO_DISABLE_UNCHECKED2 1017
+#define IDC_CHK_DEMO_DISABLE_PARTCHECKED 1017
 
 // Next default values for new objects
 // 
@@ -29,7 +35,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        129
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1016
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

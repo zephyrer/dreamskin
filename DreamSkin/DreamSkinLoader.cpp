@@ -58,12 +58,14 @@ DOMNode * GetNamedChild(DOMNode* pParentNode, const WCHAR *wstrNodeName)
 
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameButton[] = L"button";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameCheckBox[] = L"checkbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameStatic[] = L"static";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBackground[] = L"background";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBorder[] = L"border";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameColor[] = L"color";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameFont[] = L"font";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameText[] = L"text";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameIcon[] = L"icon";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameImage[] = L"image";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameLeft[] = L"left";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameTop[] = L"top";
@@ -75,6 +77,9 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameHover[] = L"hover";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNamePress[] = L"press";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDisable[] = L"disable";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDefault[] = L"default";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameSelected[] = L"selected";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameUnselected[] = L"unselected";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameIndeterminate[] = L"indeterminate";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameClose[] = L"close";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameMaximize[] = L"maximize";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRestore[] = L"restore";
@@ -147,8 +152,12 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		LoadSkinDialog(parser);
 
 		//Load Skin Button
-		CDreamSkinButton::GetDefaultSkin(&m_SkinButton);
+		CDreamSkinButton::GetDefaultButtonSkin(&m_SkinButton);
 		LoadSkinButton(parser);
+
+		//Load Skin CheckBox
+		CDreamSkinButton::GetDefaultCheckBoxSkin(&m_SkinCheckBox);
+		LoadSkinCheckBox(parser);
 
 		//Load Skin Status
 		CDreamSkinStatic::GetDefaultSkin(&m_SkinStatic);
@@ -187,6 +196,14 @@ void CDreamSkinLoader::GetSkinButton(SKINBUTTON *pSkinButton) const
 	if (pSkinButton)
 	{
 		memcpy(pSkinButton, &m_SkinButton, sizeof(SKINBUTTON));
+	}
+}
+
+void CDreamSkinLoader::GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const
+{
+	if (pSkinCheckBox)
+	{
+		memcpy(pSkinCheckBox, &m_SkinCheckBox, sizeof(SKINCHECKBOX));
 	}
 }
 
@@ -342,6 +359,278 @@ BOOL CDreamSkinLoader::LoadSkinButton(void *parser)
 			pParentNode = pParentNode->getNextSibling();
 		}
 	}
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadSkinCheckBox(void *parser)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pStatusNode, *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pCheckBoxNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameCheckBox);
+	const WCHAR *wstrNodeName;
+	SKINTEXT *pSkinTextList[DRAWSTATUS_PRESS + 1];
+	SKINICON *pSkinIconList[DRAWSTATUS_PRESS + 1];
+
+	if (pCheckBoxNode)
+	{
+		//loop to load all settings
+		pStatusNode = pCheckBoxNode->getFirstChild();
+		while (pStatusNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pStatusNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameUnselected) == 0)
+			{
+				//loop to load all settings
+				pParentNode = pStatusNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinCheckBox.skinBkNormalUnchecked.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinCheckBox.skinBkDisableUnchecked.nDrawType = m_SkinCheckBox.skinBkNormalUnchecked.nDrawType;
+								m_SkinCheckBox.skinBkHoverUnchecked.nDrawType = m_SkinCheckBox.skinBkNormalUnchecked.nDrawType;
+								m_SkinCheckBox.skinBkPressUnchecked.nDrawType = m_SkinCheckBox.skinBkNormalUnchecked.nDrawType;
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkNormalUnchecked));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkDisableUnchecked));
+							}//disable
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkHoverUnchecked));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkPressUnchecked));
+							}//press
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+					{//text
+						pSkinTextList[DRAWSTATUS_NORMAL] = &m_SkinCheckBox.skinTxtNormalUnchecked;
+						pSkinTextList[DRAWSTATUS_DISABLE] = &m_SkinCheckBox.skinTxtDisableUnchecked;
+						pSkinTextList[DRAWSTATUS_HOVER] = &m_SkinCheckBox.skinTxtHoverUnchecked;
+						pSkinTextList[DRAWSTATUS_PRESS] = &m_SkinCheckBox.skinTxtPressUnchecked;
+						LoadText(pParentNode, pSkinTextList, DRAWSTATUS_PRESS + 1);
+					}//text
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIcon) == 0)
+					{//icon
+						pSkinIconList[DRAWSTATUS_NORMAL] = &m_SkinCheckBox.iconNormalUnchecked;
+						pSkinIconList[DRAWSTATUS_DISABLE] = &m_SkinCheckBox.iconDisableUnchecked;
+						pSkinIconList[DRAWSTATUS_HOVER] = &m_SkinCheckBox.iconHoverUnchecked;
+						pSkinIconList[DRAWSTATUS_PRESS] = &m_SkinCheckBox.iconPressUnchecked;
+						LoadIcon(pParentNode, pSkinIconList, DRAWSTATUS_PRESS + 1);
+					}//icon
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//unselected
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameSelected) == 0)
+			{
+				//loop to load all settings
+				pParentNode = pStatusNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinCheckBox.skinBkNormalChecked.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinCheckBox.skinBkDisableChecked.nDrawType = m_SkinCheckBox.skinBkNormalChecked.nDrawType;
+								m_SkinCheckBox.skinBkHoverChecked.nDrawType = m_SkinCheckBox.skinBkNormalChecked.nDrawType;
+								m_SkinCheckBox.skinBkPressChecked.nDrawType = m_SkinCheckBox.skinBkNormalChecked.nDrawType;
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkNormalChecked));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkDisableChecked));
+							}//disable
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkHoverChecked));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkPressChecked));
+							}//press
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+					{//text
+						pSkinTextList[DRAWSTATUS_NORMAL] = &m_SkinCheckBox.skinTxtNormalChecked;
+						pSkinTextList[DRAWSTATUS_DISABLE] = &m_SkinCheckBox.skinTxtDisableChecked;
+						pSkinTextList[DRAWSTATUS_HOVER] = &m_SkinCheckBox.skinTxtHoverChecked;
+						pSkinTextList[DRAWSTATUS_PRESS] = &m_SkinCheckBox.skinTxtPressChecked;
+						LoadText(pParentNode, pSkinTextList, DRAWSTATUS_PRESS + 1);
+					}//text
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIcon) == 0)
+					{//icon
+						pSkinIconList[DRAWSTATUS_NORMAL] = &m_SkinCheckBox.iconNormalChecked;
+						pSkinIconList[DRAWSTATUS_DISABLE] = &m_SkinCheckBox.iconDisableChecked;
+						pSkinIconList[DRAWSTATUS_HOVER] = &m_SkinCheckBox.iconHoverChecked;
+						pSkinIconList[DRAWSTATUS_PRESS] = &m_SkinCheckBox.iconPressChecked;
+						LoadIcon(pParentNode, pSkinIconList, DRAWSTATUS_PRESS + 1);
+					}//icon
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//selected
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIndeterminate) == 0)
+			{
+				//loop to load all settings
+				pParentNode = pStatusNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinCheckBox.skinBkNormalPartChecked.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinCheckBox.skinBkDisablePartChecked.nDrawType = m_SkinCheckBox.skinBkNormalPartChecked.nDrawType;
+								m_SkinCheckBox.skinBkHoverPartChecked.nDrawType = m_SkinCheckBox.skinBkNormalPartChecked.nDrawType;
+								m_SkinCheckBox.skinBkPressPartChecked.nDrawType = m_SkinCheckBox.skinBkNormalPartChecked.nDrawType;
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkNormalPartChecked));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkDisablePartChecked));
+							}//disable
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkHoverPartChecked));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadBackground(pChildNode, &(m_SkinCheckBox.skinBkPressPartChecked));
+							}//press
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+					{//text
+						pSkinTextList[DRAWSTATUS_NORMAL] = &m_SkinCheckBox.skinTxtNormalPartChecked;
+						pSkinTextList[DRAWSTATUS_DISABLE] = &m_SkinCheckBox.skinTxtDisablePartChecked;
+						pSkinTextList[DRAWSTATUS_HOVER] = &m_SkinCheckBox.skinTxtHoverPartChecked;
+						pSkinTextList[DRAWSTATUS_PRESS] = &m_SkinCheckBox.skinTxtPressPartChecked;
+						LoadText(pParentNode, pSkinTextList, DRAWSTATUS_PRESS + 1);
+					}//text
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIcon) == 0)
+					{//icon
+						pSkinIconList[DRAWSTATUS_NORMAL] = &m_SkinCheckBox.iconNormalPartChecked;
+						pSkinIconList[DRAWSTATUS_DISABLE] = &m_SkinCheckBox.iconDisablePartChecked;
+						pSkinIconList[DRAWSTATUS_HOVER] = &m_SkinCheckBox.iconHoverPartChecked;
+						pSkinIconList[DRAWSTATUS_PRESS] = &m_SkinCheckBox.iconPressPartChecked;
+						LoadIcon(pParentNode, pSkinIconList, DRAWSTATUS_PRESS + 1);
+					}//icon
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//partially selected
+
+			pStatusNode = pStatusNode->getNextSibling();
+		}
+
+		if (m_SkinCheckBox.skinBkDisableUnchecked.nDefault)
+			m_SkinCheckBox.skinBkDisableUnchecked = m_SkinCheckBox.skinBkNormalUnchecked;
+
+		if (m_SkinCheckBox.skinBkHoverUnchecked.nDefault)
+			m_SkinCheckBox.skinBkHoverUnchecked = m_SkinCheckBox.skinBkNormalUnchecked;
+
+		if (m_SkinCheckBox.skinBkPressUnchecked.nDefault)
+			m_SkinCheckBox.skinBkPressUnchecked = m_SkinCheckBox.skinBkHoverUnchecked;
+
+		if (m_SkinCheckBox.skinBkNormalChecked.nDefault)
+			m_SkinCheckBox.skinBkNormalChecked = m_SkinCheckBox.skinBkNormalUnchecked;
+
+		if (m_SkinCheckBox.skinBkNormalPartChecked.nDefault)
+			m_SkinCheckBox.skinBkNormalPartChecked = m_SkinCheckBox.skinBkNormalUnchecked;
+
+		if (m_SkinCheckBox.skinBkNormalChecked.nDefault)
+			m_SkinCheckBox.skinBkNormalChecked = m_SkinCheckBox.skinBkNormalUnchecked;
+
+		if (m_SkinCheckBox.skinBkDisableChecked.nDefault)
+			m_SkinCheckBox.skinBkDisableChecked = m_SkinCheckBox.skinBkNormalChecked;
+
+		if (m_SkinCheckBox.skinBkHoverChecked.nDefault)
+			m_SkinCheckBox.skinBkHoverChecked = m_SkinCheckBox.skinBkNormalChecked;
+
+		if (m_SkinCheckBox.skinBkPressChecked.nDefault)
+			m_SkinCheckBox.skinBkPressChecked = m_SkinCheckBox.skinBkHoverChecked;
+
+		if (m_SkinCheckBox.skinBkNormalPartChecked.nDefault)
+			m_SkinCheckBox.skinBkNormalPartChecked = m_SkinCheckBox.skinBkNormalChecked;
+
+		if (m_SkinCheckBox.skinBkDisablePartChecked.nDefault)
+			m_SkinCheckBox.skinBkDisablePartChecked = m_SkinCheckBox.skinBkNormalPartChecked;
+
+		if (m_SkinCheckBox.skinBkHoverPartChecked.nDefault)
+			m_SkinCheckBox.skinBkHoverPartChecked = m_SkinCheckBox.skinBkNormalPartChecked;
+
+		if (m_SkinCheckBox.skinBkPressPartChecked.nDefault)
+			m_SkinCheckBox.skinBkPressPartChecked = m_SkinCheckBox.skinBkHoverPartChecked;
+	} //end load checkbox
 
 	return bResult;
 }
@@ -573,6 +862,162 @@ BOOL CDreamSkinLoader::LoadFont(void *font, SKINTEXTFONT *pSkinFont)
 			pSkinFont->nBold = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
 
 		bResult = TRUE;
+	}
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadIcon(void *icon, SKINICON **pSkinIconList, int nCount)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pIconNode = (DOMNode*)icon;
+	const WCHAR *wstrNodeName;
+	DOMNode *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	int nTemp;
+
+	if (nCount > 0 && pSkinIconList)
+	{
+		pAttr = pIconNode->getAttributes();
+
+		//draw type
+		pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+		if (pTempNode)
+		{
+			nTemp = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+			if (pSkinIconList[DRAWSTATUS_NORMAL])
+				pSkinIconList[DRAWSTATUS_NORMAL]->nDrawType = nTemp;
+
+			if (nCount > DRAWSTATUS_DISABLE && pSkinIconList[DRAWSTATUS_DISABLE])
+				pSkinIconList[DRAWSTATUS_DISABLE]->nDrawType = nTemp;
+
+			if (nCount > DRAWSTATUS_HOVER && pSkinIconList[DRAWSTATUS_HOVER])
+				pSkinIconList[DRAWSTATUS_HOVER]->nDrawType = nTemp;
+
+			if (nCount > DRAWSTATUS_PRESS && pSkinIconList[DRAWSTATUS_PRESS])
+				pSkinIconList[DRAWSTATUS_PRESS]->nDrawType = nTemp;
+
+			if (nCount > DRAWSTATUS_DEFAULT && pSkinIconList[DRAWSTATUS_DEFAULT])
+				pSkinIconList[DRAWSTATUS_DEFAULT]->nDrawType = nTemp;
+		}
+
+		//icon width
+		pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameWidth));
+		if (pTempNode)
+		{
+			nTemp = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+			if (pSkinIconList[DRAWSTATUS_NORMAL])
+				pSkinIconList[DRAWSTATUS_NORMAL]->nWidth = nTemp;
+
+			if (nCount > DRAWSTATUS_DISABLE && pSkinIconList[DRAWSTATUS_DISABLE])
+				pSkinIconList[DRAWSTATUS_DISABLE]->nWidth = nTemp;
+
+			if (nCount > DRAWSTATUS_HOVER && pSkinIconList[DRAWSTATUS_HOVER])
+				pSkinIconList[DRAWSTATUS_HOVER]->nWidth = nTemp;
+
+			if (nCount > DRAWSTATUS_PRESS && pSkinIconList[DRAWSTATUS_PRESS])
+				pSkinIconList[DRAWSTATUS_PRESS]->nWidth = nTemp;
+
+			if (nCount > DRAWSTATUS_DEFAULT && pSkinIconList[DRAWSTATUS_DEFAULT])
+				pSkinIconList[DRAWSTATUS_DEFAULT]->nWidth = nTemp;
+		}
+
+		//icon height
+		pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameHeight));
+		if (pTempNode)
+		{
+			nTemp = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+			if (pSkinIconList[DRAWSTATUS_NORMAL])
+				pSkinIconList[DRAWSTATUS_NORMAL]->nHeight = nTemp;
+
+			if (nCount > DRAWSTATUS_DISABLE && pSkinIconList[DRAWSTATUS_DISABLE])
+				pSkinIconList[DRAWSTATUS_DISABLE]->nHeight = nTemp;
+
+			if (nCount > DRAWSTATUS_HOVER && pSkinIconList[DRAWSTATUS_HOVER])
+				pSkinIconList[DRAWSTATUS_HOVER]->nHeight = nTemp;
+
+			if (nCount > DRAWSTATUS_PRESS && pSkinIconList[DRAWSTATUS_PRESS])
+				pSkinIconList[DRAWSTATUS_PRESS]->nHeight = nTemp;
+
+			if (nCount > DRAWSTATUS_DEFAULT && pSkinIconList[DRAWSTATUS_DEFAULT])
+				pSkinIconList[DRAWSTATUS_DEFAULT]->nHeight = nTemp;
+		}
+
+		pTempNode = pIconNode->getFirstChild();
+		while (pTempNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pTempNode->getNodeName());
+
+			if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+			{//normal
+				if (pSkinIconList[DRAWSTATUS_NORMAL])
+					LoadIconItem(pTempNode, pSkinIconList[DRAWSTATUS_NORMAL]);
+			}//normal
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+			{//disable
+				if (nCount > DRAWSTATUS_DISABLE && pSkinIconList[DRAWSTATUS_DISABLE])
+					LoadIconItem(pTempNode, pSkinIconList[DRAWSTATUS_DISABLE]);
+			}//disable
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+			{//hover
+				if (nCount > DRAWSTATUS_HOVER && pSkinIconList[DRAWSTATUS_HOVER])
+					LoadIconItem(pTempNode, pSkinIconList[DRAWSTATUS_HOVER]);
+			}//hover
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+			{//press
+				if (nCount > DRAWSTATUS_PRESS && pSkinIconList[DRAWSTATUS_PRESS])
+					LoadIconItem(pTempNode, pSkinIconList[DRAWSTATUS_PRESS]);
+			}//press
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameDefault) == 0)
+			{//default
+				if (nCount > DRAWSTATUS_DEFAULT && pSkinIconList[DRAWSTATUS_DEFAULT])
+					LoadIconItem(pTempNode, pSkinIconList[DRAWSTATUS_DEFAULT]);
+			}//default
+			pTempNode = pTempNode->getNextSibling();
+		}
+
+		if (nCount > DRAWSTATUS_DISABLE && pSkinIconList[DRAWSTATUS_DISABLE] && pSkinIconList[DRAWSTATUS_DISABLE]->nDefault && pSkinIconList[DRAWSTATUS_NORMAL])
+			*(pSkinIconList[DRAWSTATUS_DISABLE]) = *(pSkinIconList[DRAWSTATUS_NORMAL]);
+
+		if (nCount > DRAWSTATUS_HOVER && pSkinIconList[DRAWSTATUS_HOVER] && pSkinIconList[DRAWSTATUS_HOVER]->nDefault && pSkinIconList[DRAWSTATUS_NORMAL])
+			*(pSkinIconList[DRAWSTATUS_HOVER]) = *(pSkinIconList[DRAWSTATUS_NORMAL]);
+
+		if (nCount > DRAWSTATUS_DEFAULT && pSkinIconList[DRAWSTATUS_DEFAULT] && pSkinIconList[DRAWSTATUS_DEFAULT]->nDefault && pSkinIconList[DRAWSTATUS_NORMAL])
+			*(pSkinIconList[DRAWSTATUS_DEFAULT]) = *(pSkinIconList[DRAWSTATUS_NORMAL]);
+
+		if (nCount > DRAWSTATUS_PRESS && pSkinIconList[DRAWSTATUS_PRESS] && pSkinIconList[DRAWSTATUS_PRESS]->nDefault)
+			if (pSkinIconList[DRAWSTATUS_HOVER])
+				*(pSkinIconList[DRAWSTATUS_PRESS]) = *(pSkinIconList[DRAWSTATUS_HOVER]);
+			else if (pSkinIconList[DRAWSTATUS_NORMAL])
+				*(pSkinIconList[DRAWSTATUS_PRESS]) = *(pSkinIconList[DRAWSTATUS_HOVER]);
+	}
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadIconItem(void *iconitem, SKINICON *pSkinIcon)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pNode;
+	const WCHAR *wstrNodeName;
+	
+	pSkinIcon->nDefault = 0;
+
+	pNode = ((DOMNode*)iconitem)->getFirstChild();
+	while(pNode != NULL)
+	{
+		wstrNodeName = XStringtoWString(pNode->getNodeName());
+
+		if(wcscmp(wstrNodeName, wstrSkinFileNodeNameColor) == 0)
+		{//color
+			bResult = LoadColorItem(pNode, wstrSkinFileAttrNameStart, &(pSkinIcon->clrDraw.clrStart));
+		}//color
+		else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameImage) == 0)
+		{//image
+			bResult = LoadImage(pNode, &(pSkinIcon->imgDraw));
+		}//image
+
+		pNode = pNode->getNextSibling();
 	}
 
 	return bResult;

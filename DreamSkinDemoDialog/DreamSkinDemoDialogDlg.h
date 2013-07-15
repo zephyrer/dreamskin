@@ -34,6 +34,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	LRESULT DefWindowProcBtnDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT DefWindowProcChkDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	BOOL m_bSysMenuInclude;
 	BOOL m_bEnableDreamSkin;
@@ -61,5 +62,9 @@ public:
 	
 protected:
 	WNDPROC	m_SkinProcBtnDemo;
+	WNDPROC	m_SkinProcChk2StateDemo;
+	WNDPROC	m_SkinProcChk3StateDemo;
 	int     m_nBtnDemoStatus;
+	int     m_nChk2StateDemoStatus;
+	int     m_nChk3StateDemoStatus;
 };

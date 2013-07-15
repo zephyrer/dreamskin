@@ -207,6 +207,95 @@
 			</press>
 		</text>
 	</button>
+	<checkbox>
+		<unselected>
+			<background type="0">
+				<normal>
+					<color start="0x00F7F3F7"/>
+				</normal>
+			</background>
+			<text>
+				<normal>
+					<color start="0x00000000" />
+				</normal>
+				<disable>
+					<color start="0x006B6D6B" />
+				</disable>
+			</text>
+			<icon type="1" width="13" height="13">
+				<normal>
+					<image source="Images/checkbox.bmp" x="0" y="0" width="13" height="13" />
+				</normal>
+				<disable>
+					<image source="Images/checkbox.bmp" x="13" y="0" width="13" height="13" />
+				</disable>
+				<hover>
+					<image source="Images/checkbox.bmp" x="26" y="0" width="13" height="13" />
+				</hover>
+				<press>
+					<image source="Images/checkbox.bmp" x="39" y="0" width="13" height="13" />
+				</press>
+			</icon>
+		</unselected>
+		<selected>
+			<background type="0">
+				<normal>
+					<color start="0x00F7F3F7"/>
+				</normal>
+			</background>
+			<text>
+				<normal>
+					<color start="0x00000000" />
+				</normal>
+				<disable>
+					<color start="0x006B6D6B" />
+				</disable>
+			</text>
+			<icon type="1" width="13" height="13">
+				<normal>
+					<image source="Images/checkbox.bmp" x="0" y="13" width="13" height="13" />
+				</normal>
+				<disable>
+					<image source="Images/checkbox.bmp" x="13" y="13" width="13" height="13" />
+				</disable>
+				<hover>
+					<image source="Images/checkbox.bmp" x="26" y="13" width="13" height="13" />
+				</hover>
+				<press>
+					<image source="Images/checkbox.bmp" x="39" y="13" width="13" height="13" />
+				</press>
+			</icon>
+		</selected>
+		<indeterminate>
+			<background type="0">
+				<normal>
+					<color start="0x00F7F3F7"/>
+				</normal>
+			</background>
+			<text>
+				<normal>
+					<color start="0x00000000" />
+				</normal>
+				<disable>
+					<color start="0x006B6D6B" />
+				</disable>
+			</text>
+			<icon type="1" width="13" height="13">
+				<normal>
+					<image source="Images/checkbox.bmp" x="0" y="26" width="13" height="13" />
+				</normal>
+				<disable>
+					<image source="Images/checkbox.bmp" x="13" y="26" width="13" height="13" />
+				</disable>
+				<hover>
+					<image source="Images/checkbox.bmp" x="26" y="26" width="13" height="13" />
+				</hover>
+				<press>
+					<image source="Images/checkbox.bmp" x="39" y="26" width="13" height="13" />
+				</press>
+			</icon>
+		</indeterminate>
+	</checkbox>
 	<static>
 		<background type="0">
 			<normal>

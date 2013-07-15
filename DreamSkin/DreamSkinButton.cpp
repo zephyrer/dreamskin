@@ -10,6 +10,7 @@
 //static member declaration
 WNDPROC         CDreamSkinButton::s_DefaultWindowProc = NULL;
 SKINBUTTON      CDreamSkinButton::s_SkinButton;
+SKINCHECKBOX    CDreamSkinButton::s_SkinCheckBox;
 
 CDreamSkinButton::CDreamSkinButton(HWND hWnd, WNDPROC OrgWndProc)
 	: CDreamSkinWindow(hWnd, OrgWndProc)
@@ -25,6 +26,7 @@ CDreamSkinButton::~CDreamSkinButton()
 void CDreamSkinButton::Init()
 {
 	m_pSkinButton = &s_SkinButton;
+	m_pSkinCheckBox = &s_SkinCheckBox;
 
 	m_bMouseIn = FALSE;
 	m_bLBtnDown = FALSE;
@@ -36,6 +38,12 @@ void CDreamSkinButton::Destroy()
 	{
 		delete m_pSkinButton;
 		m_pSkinButton = &s_SkinButton;
+	}
+
+	if (m_pSkinCheckBox != &s_SkinCheckBox)
+	{
+		delete m_pSkinCheckBox;
+		m_pSkinCheckBox = &s_SkinCheckBox;
 	}
 }
 
@@ -60,6 +68,10 @@ BOOL CDreamSkinButton::ApplySkin(CDreamSkinLoader *pLoader)
 	SKINBUTTON SkinButton;
 	pLoader->GetSkinButton(&SkinButton);
 	s_SkinButton = SkinButton;
+
+	SKINCHECKBOX SkinCheckBox;
+	pLoader->GetSkinCheckBox(&SkinCheckBox);
+	s_SkinCheckBox = SkinCheckBox;
 
 	return bResult;
 }
@@ -102,7 +114,8 @@ BOOL CDreamSkinButton::InitialClass()
 	}
 	s_DefaultWindowProc = clsButtonDefault.lpfnWndProc;
 
-	GetDefaultSkin(&s_SkinButton);
+	GetDefaultButtonSkin(&s_SkinButton);
+	GetDefaultCheckBoxSkin(&s_SkinCheckBox);
 
 	return TRUE;
 }
@@ -112,7 +125,7 @@ void CDreamSkinButton::DestroyClass()
 
 }
 
-BOOL CDreamSkinButton::GetDefaultSkin(SKINBUTTON *pSkinButton)
+BOOL CDreamSkinButton::GetDefaultButtonSkin(SKINBUTTON *pSkinButton)
 {
 	if (pSkinButton)
 	{
@@ -160,6 +173,63 @@ BOOL CDreamSkinButton::GetDefaultSkin(SKINBUTTON *pSkinButton)
 	return TRUE;
 }
 
+BOOL CDreamSkinButton::GetDefaultCheckBoxSkin(SKINCHECKBOX *pSkinCheckBox)
+{
+	if (pSkinCheckBox)
+	{
+		pSkinCheckBox->nRgnType = RGN_RECT;
+		pSkinCheckBox->clrTansparent = RGB(255, 255, 255);
+
+		GetDefaultBackground(&pSkinCheckBox->skinBkNormalChecked, ::GetSysColor(COLOR_BTNFACE));
+		GetDefaultBackground(&pSkinCheckBox->skinBkNormalPartChecked, ::GetSysColor(COLOR_BTNFACE));
+		GetDefaultBackground(&pSkinCheckBox->skinBkNormalUnchecked, ::GetSysColor(COLOR_BTNFACE));
+
+		GetDefaultBackground(&pSkinCheckBox->skinBkDisableChecked, ::GetSysColor(COLOR_BTNFACE));
+		GetDefaultBackground(&pSkinCheckBox->skinBkDisablePartChecked, ::GetSysColor(COLOR_BTNFACE));
+		GetDefaultBackground(&pSkinCheckBox->skinBkDisableUnchecked, ::GetSysColor(COLOR_BTNFACE));
+
+		GetDefaultBackground(&pSkinCheckBox->skinBkHoverChecked, ::GetSysColor(COLOR_3DLIGHT));
+		GetDefaultBackground(&pSkinCheckBox->skinBkHoverPartChecked, ::GetSysColor(COLOR_3DLIGHT));
+		GetDefaultBackground(&pSkinCheckBox->skinBkHoverUnchecked, ::GetSysColor(COLOR_3DLIGHT));
+
+		GetDefaultBackground(&pSkinCheckBox->skinBkPressChecked, ::GetSysColor(COLOR_3DLIGHT));
+		GetDefaultBackground(&pSkinCheckBox->skinBkPressPartChecked, ::GetSysColor(COLOR_3DLIGHT));
+		GetDefaultBackground(&pSkinCheckBox->skinBkPressUnchecked, ::GetSysColor(COLOR_3DLIGHT));
+
+		GetDefaultText(&pSkinCheckBox->skinTxtNormalChecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtDisableChecked, ::GetSysColor(COLOR_GRAYTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtHoverChecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtPressChecked, ::GetSysColor(COLOR_BTNTEXT));
+
+		GetDefaultText(&pSkinCheckBox->skinTxtNormalPartChecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtDisablePartChecked, ::GetSysColor(COLOR_GRAYTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtHoverPartChecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtPressPartChecked, ::GetSysColor(COLOR_BTNTEXT));
+
+		GetDefaultText(&pSkinCheckBox->skinTxtNormalUnchecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtDisableUnchecked, ::GetSysColor(COLOR_GRAYTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtHoverUnchecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultText(&pSkinCheckBox->skinTxtPressUnchecked, ::GetSysColor(COLOR_BTNTEXT));
+
+		GetDefaultIcon(&pSkinCheckBox->iconNormalChecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconDisableChecked, ::GetSysColor(COLOR_GRAYTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconHoverChecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconPressChecked, ::GetSysColor(COLOR_BTNTEXT));
+
+		GetDefaultIcon(&pSkinCheckBox->iconNormalPartChecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconDisablePartChecked, ::GetSysColor(COLOR_GRAYTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconHoverPartChecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconPressPartChecked, ::GetSysColor(COLOR_BTNTEXT));
+
+		GetDefaultIcon(&pSkinCheckBox->iconNormalUnchecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconDisableUnchecked, ::GetSysColor(COLOR_GRAYTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconHoverUnchecked, ::GetSysColor(COLOR_BTNTEXT));
+		GetDefaultIcon(&pSkinCheckBox->iconPressUnchecked, ::GetSysColor(COLOR_BTNTEXT));
+	}
+
+	return TRUE;
+}
+
 void CDreamSkinButton::GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk)
 {
 	pBackground->nDefault = 1;
@@ -179,6 +249,19 @@ void CDreamSkinButton::GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int
 	memset(&(pBorder->imgDraw), 0, sizeof(DRAWIMAGE));
 }
 
+void CDreamSkinButton::GetDefaultIcon(SKINICON *pIcon, COLORREF clrDraw)
+{
+	pIcon->nDefault = 1;
+	pIcon->nDrawType = DRAWTYPE_CUSTOMIZE;
+	
+	pIcon->nHeight = 13;
+	pIcon->nWidth = 13;
+	pIcon->nPadding = 2;
+
+	pIcon->clrDraw.clrStart = clrDraw;
+	memset(&(pIcon->imgDraw), 0, sizeof(DRAWIMAGE));
+}
+
 void CDreamSkinButton::GetDefaultText(SKINTEXT *pText, COLORREF clrTxt)
 {
 	pText->nDefault = 1;
@@ -195,8 +278,16 @@ LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 {
 	LRESULT nResult = ERROR_SUCCESS;
 
-	DWORD dwButtonStyle = ::GetWindowLong(m_hWnd, GWL_STYLE) & 0xff;
-	if((dwButtonStyle == BS_PUSHBUTTON) || (dwButtonStyle == BS_DEFPUSHBUTTON))
+	DWORD dwButtonStyle = ::GetWindowLong(m_hWnd, GWL_STYLE) & 0x0f;
+
+	if(dwButtonStyle == BS_PUSHBUTTON || dwButtonStyle == BS_DEFPUSHBUTTON)
+		m_nBtnType = BUTTON_TYPE_PUSHBUTTON;
+	else if (dwButtonStyle == BS_CHECKBOX || dwButtonStyle == BS_AUTOCHECKBOX || dwButtonStyle == BS_3STATE || dwButtonStyle == BS_AUTO3STATE)
+		m_nBtnType = BUTTON_TYPE_CHECKBOX;
+	else
+		m_nBtnType = BUTTON_TYPE_UNSUPPORTED;
+
+	if(m_nBtnType >= 0)
 	{
 		switch(message)
 		{
@@ -259,6 +350,9 @@ LRESULT CDreamSkinButton::OnLButtonUp(UINT nFlags, POINTS point)
 {
 	RECT rcClient;
 	POINT ptTemp;
+	DWORD dwButtonStyle = ::GetWindowLong(m_hWnd, GWL_STYLE) & 0x0f;
+	int   nCheckStatus;
+	BOOL  bBtnClick = FALSE;
 	HRGN hRGN = CreateRectRgn(0, 0, 0, 0);
 	if (::GetWindowRgn(m_hWnd, hRGN) != ERROR)
 	{
@@ -268,8 +362,7 @@ LRESULT CDreamSkinButton::OnLButtonUp(UINT nFlags, POINTS point)
 			{
 				m_bLBtnDown = FALSE;
 				::ReleaseCapture();
-				UpdateWindow();
-				::SendMessage(::GetParent(m_hWnd), WM_COMMAND, ::GetDlgCtrlID(m_hWnd), (LPARAM)m_hWnd);
+				bBtnClick = TRUE;
 			}
 		}
 		else
@@ -294,7 +387,7 @@ LRESULT CDreamSkinButton::OnLButtonUp(UINT nFlags, POINTS point)
 				m_bLBtnDown = FALSE;
 				::ReleaseCapture();
 				UpdateWindow();
-				::SendMessage(::GetParent(m_hWnd), WM_COMMAND, ::GetDlgCtrlID(m_hWnd), (LPARAM)m_hWnd);
+				bBtnClick = TRUE;
 			}
 		}
 		else
@@ -309,6 +402,34 @@ LRESULT CDreamSkinButton::OnLButtonUp(UINT nFlags, POINTS point)
 	}
 
 	::DeleteObject(hRGN);
+
+	if (bBtnClick)
+	{
+		switch (m_nBtnType)
+		{
+		case BUTTON_TYPE_CHECKBOX:
+			nCheckStatus = ::SendMessage(m_hWnd, BM_GETCHECK, 0, 0);
+			switch (dwButtonStyle)
+			{
+			case BS_AUTO3STATE:
+				nCheckStatus = (nCheckStatus + 1) % 3;
+				::SendMessage(m_hWnd, BM_SETCHECK, nCheckStatus, 0);
+				break;
+			case BS_AUTOCHECKBOX:
+				nCheckStatus = (nCheckStatus + 1) % 2;
+				::SendMessage(m_hWnd, BM_SETCHECK, nCheckStatus, 0);
+				break;
+			default:
+				UpdateWindow();
+			}
+			::SendMessage(::GetParent(m_hWnd), WM_COMMAND, ::GetDlgCtrlID(m_hWnd), (LPARAM)m_hWnd);
+			break;
+		default:
+			UpdateWindow();
+			::SendMessage(::GetParent(m_hWnd), WM_COMMAND, ::GetDlgCtrlID(m_hWnd), (LPARAM)m_hWnd);
+			break;
+		}
+	}
 
 	return 0;
 }
@@ -385,19 +506,36 @@ LRESULT CDreamSkinButton::OnPaint()
 	RECT rcClient;
 	::GetClientRect(m_hWnd, &rcClient);
 
-	DrawBorder(hPaintDC, rcClient);
-
-	rcClient = GetRectClient(rcClient);
-	DrawBackground(hPaintDC, rcClient);
-
-	DrawTitle(hPaintDC, rcClient);
+	DWORD dwButtonStyle = ::GetWindowLong(m_hWnd, GWL_STYLE) & 0x0f;
+	if (dwButtonStyle == BS_PUSHBUTTON || dwButtonStyle == BS_DEFPUSHBUTTON)
+		DrawPushButton(hPaintDC, rcClient);
+	else if (dwButtonStyle == BS_CHECKBOX || dwButtonStyle == BS_AUTOCHECKBOX || dwButtonStyle == BS_3STATE || dwButtonStyle == BS_AUTO3STATE)
+		DrawCheckBox(hPaintDC, rcClient);
 
 	::EndPaint(m_hWnd, &ps);
 
 	return 0;
 }
 
-void CDreamSkinButton::DrawBackground(HDC hDC, RECT rcClient)
+void CDreamSkinButton::DrawPushButton(HDC hDC, RECT rcWindow)
+{
+	DrawPushButtonBorder(hDC, rcWindow);
+
+	RECT rcClient = GetPushButtonRectClient(rcWindow);
+	DrawPushButtonBackground(hDC, rcClient);
+
+	DrawPushButtonTitle(hDC, rcClient);
+}
+
+void CDreamSkinButton::DrawCheckBox(HDC hDC, RECT rcWindow)
+{
+	int nCheckStatus = ::SendMessage(m_hWnd, BM_GETCHECK, 0, 0);
+	DrawCheckBoxBackground(hDC, rcWindow, nCheckStatus);
+
+	DrawCheckBoxForeground(hDC, rcWindow, nCheckStatus);
+}
+
+void CDreamSkinButton::DrawPushButtonBackground(HDC hDC, RECT rcClient)
 {
 	SKINBACKGROUND *pBackGround;
 	int nStatus = GetCurrentStatus();
@@ -426,7 +564,7 @@ void CDreamSkinButton::DrawBackground(HDC hDC, RECT rcClient)
 		::FillSolidRect(hDC, &rcClient, pBackGround->clrDraw.clrStart);
 }
 
-void CDreamSkinButton::DrawBorder(HDC hDC, RECT rcWindow)
+void CDreamSkinButton::DrawPushButtonBorder(HDC hDC, RECT rcWindow)
 {
 	RECT rcDraw;
 	SKINBORDER *pLBorder, *pRBorder, *pTBorder, *pBBorder;
@@ -520,7 +658,7 @@ void CDreamSkinButton::DrawBorder(HDC hDC, RECT rcWindow)
 	}
 }
 
-void CDreamSkinButton::DrawTitle(HDC hDC, RECT rcClient)
+void CDreamSkinButton::DrawPushButtonTitle(HDC hDC, RECT rcClient)
 {
 	SKINTEXT *pText;
 	HFONT hFnText, hFnOld = NULL;
@@ -554,17 +692,12 @@ void CDreamSkinButton::DrawTitle(HDC hDC, RECT rcClient)
 	{
 		//Create font
 		LOGFONTW fnText;
+		memset(&fnText, 0, sizeof(LOGFONTW));
 		fnText.lfHeight = -MulDiv(pText->skinFont.nFontSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
-		fnText.lfWeight = 0;
-		fnText.lfEscapement = 0;
-		fnText.lfOrientation = 0;
 		if (pText->skinFont.nBold)
 			fnText.lfWeight = FW_BOLD;
 		else
 			fnText.lfWeight = FW_NORMAL;
-		fnText.lfItalic = 0;
-		fnText.lfUnderline = 0;
-		fnText.lfStrikeOut = 0;
 		fnText.lfCharSet = DEFAULT_CHARSET;
 		fnText.lfOutPrecision = OUT_DEFAULT_PRECIS;
 		fnText.lfClipPrecision = OUT_DEFAULT_PRECIS; 
@@ -598,6 +731,266 @@ void CDreamSkinButton::DrawTitle(HDC hDC, RECT rcClient)
 	delete wstrTitle;
 }
 
+void CDreamSkinButton::DrawCheckBoxBackground(HDC hDC, RECT rcClient, int nCheckStatus)
+{
+	SKINBACKGROUND *pBackGround;
+	int nStatus = GetCurrentStatus();
+	switch (nStatus)
+	{
+	case DRAWSTATUS_PRESS:
+		switch (nCheckStatus)
+		{
+		case BST_CHECKED:
+			pBackGround = &m_pSkinCheckBox->skinBkPressChecked;
+			break;
+		case BST_INDETERMINATE:
+			pBackGround = &m_pSkinCheckBox->skinBkPressPartChecked;
+			break;
+		default:
+			pBackGround = &m_pSkinCheckBox->skinBkPressUnchecked;
+			break;
+		}
+		break;
+	case DRAWSTATUS_HOVER:
+		switch (nCheckStatus)
+		{
+		case BST_CHECKED:
+			pBackGround = &m_pSkinCheckBox->skinBkHoverChecked;
+			break;
+		case BST_INDETERMINATE:
+			pBackGround = &m_pSkinCheckBox->skinBkHoverPartChecked;
+			break;
+		default:
+			pBackGround = &m_pSkinCheckBox->skinBkHoverUnchecked;
+			break;
+		}
+		break;
+	case DRAWSTATUS_DISABLE:
+		switch (nCheckStatus)
+		{
+		case BST_CHECKED:
+			pBackGround = &m_pSkinCheckBox->skinBkDisableChecked;
+			break;
+		case BST_INDETERMINATE:
+			pBackGround = &m_pSkinCheckBox->skinBkDisablePartChecked;
+			break;
+		default:
+			pBackGround = &m_pSkinCheckBox->skinBkDisableUnchecked;
+			break;
+		}
+		break;
+	default:
+		switch (nCheckStatus)
+		{
+		case BST_CHECKED:
+			pBackGround = &m_pSkinCheckBox->skinBkNormalChecked;
+			break;
+		case BST_INDETERMINATE:
+			pBackGround = &m_pSkinCheckBox->skinBkNormalPartChecked;
+			break;
+		default:
+			pBackGround = &m_pSkinCheckBox->skinBkNormalUnchecked;
+			break;
+		}
+		break;
+	}
+
+	if (pBackGround->nDrawType == DRAWTYPE_STRETCHBITMAP && pBackGround->imgDraw.hImage)
+		::DrawStretchBitmap(hDC, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, pBackGround->imgDraw.hImage, pBackGround->imgDraw.x, pBackGround->imgDraw.y, pBackGround->imgDraw.nWidth, pBackGround->imgDraw.nHeight);
+	else
+		::FillSolidRect(hDC, &rcClient, pBackGround->clrDraw.clrStart);
+}
+
+void CDreamSkinButton::DrawCheckBoxForeground(HDC hDC, RECT rcClient, int nCheckStatus)
+{
+	SKINICON *pSkinIcon;
+	SKINTEXT *pSkinText;
+	int nStatus = GetCurrentStatus();
+	switch (nStatus)
+	{
+	case DRAWSTATUS_PRESS:
+		switch (nCheckStatus)
+		{
+		case BST_CHECKED:
+			pSkinIcon = &m_pSkinCheckBox->iconPressChecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtPressChecked;
+			break;
+		case BST_INDETERMINATE:
+			pSkinIcon = &m_pSkinCheckBox->iconPressPartChecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtPressPartChecked;
+			break;
+		default:
+			pSkinIcon = &m_pSkinCheckBox->iconPressUnchecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtPressUnchecked;
+			break;
+		}
+		break;
+	case DRAWSTATUS_HOVER:
+		switch (nCheckStatus)
+		{
+		case BST_CHECKED:
+			pSkinIcon = &m_pSkinCheckBox->iconHoverChecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtHoverChecked;
+			break;
+		case BST_INDETERMINATE:
+			pSkinIcon = &m_pSkinCheckBox->iconHoverPartChecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtHoverPartChecked;
+			break;
+		default:
+			pSkinIcon = &m_pSkinCheckBox->iconHoverUnchecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtHoverUnchecked;
+			break;
+		}
+		break;
+	case DRAWSTATUS_DISABLE:
+		switch (nCheckStatus)
+		{
+		case BST_CHECKED:
+			pSkinIcon = &m_pSkinCheckBox->iconDisableChecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtDisableChecked;
+			break;
+		case BST_INDETERMINATE:
+			pSkinIcon = &m_pSkinCheckBox->iconDisablePartChecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtDisablePartChecked;
+			break;
+		default:
+			pSkinIcon = &m_pSkinCheckBox->iconDisableUnchecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtDisableUnchecked;
+			break;
+		}
+		break;
+	default:
+		switch (nCheckStatus)
+		{
+		case BST_CHECKED:
+			pSkinIcon = &m_pSkinCheckBox->iconNormalChecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtNormalChecked;
+			break;
+		case BST_INDETERMINATE:
+			pSkinIcon = &m_pSkinCheckBox->iconNormalPartChecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtNormalPartChecked;
+			break;
+		default:
+			pSkinIcon = &m_pSkinCheckBox->iconNormalUnchecked;
+			pSkinText = &m_pSkinCheckBox->skinTxtNormalUnchecked;
+			break;
+		}
+		break;
+	}
+
+	RECT rcDraw = GetCheckBoxRectIcon(rcClient, pSkinIcon);
+	DrawCheckBoxIcon(hDC, rcDraw, pSkinIcon, nCheckStatus);
+
+	rcDraw.left = rcDraw.right + rcDraw.left - rcClient.left;
+	rcDraw.right = rcClient.right;
+	rcDraw.top = rcClient.top;
+	rcDraw.bottom = rcClient.bottom;
+	DrawCheckBoxTitle(hDC, rcDraw, pSkinText);
+}
+
+void CDreamSkinButton::DrawCheckBoxIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon, int nCheckStatus)
+{
+	HPEN hDrawPen, hOldPen;
+
+	if (pSkinIcon->nDrawType == DRAWTYPE_STRETCHBITMAP && pSkinIcon->imgDraw.hImage)
+		::DrawStretchBitmap(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pSkinIcon->imgDraw.hImage, pSkinIcon->imgDraw.x, pSkinIcon->imgDraw.y, pSkinIcon->imgDraw.nWidth, pSkinIcon->imgDraw.nHeight);
+	else	
+	{
+		switch(nCheckStatus)
+		{
+		case BST_CHECKED:
+			::Draw3dRect(hDC, &rcDraw, pSkinIcon->clrDraw.clrStart, pSkinIcon->clrDraw.clrStart);
+			hDrawPen = ::CreatePen(PS_SOLID, 2, pSkinIcon->clrDraw.clrStart);
+			hOldPen = (HPEN)::SelectObject(hDC, hDrawPen);
+			::MoveToEx(hDC, rcDraw.left + (rcDraw.right - rcDraw.left) / 4, rcDraw.top + (rcDraw.bottom - rcDraw.top) / 2, NULL);
+			::LineTo(hDC, rcDraw.left + (rcDraw.right - rcDraw.left) / 2, rcDraw.top + (rcDraw.bottom - rcDraw.top) * 3 / 4);
+			::LineTo(hDC, rcDraw.left + (rcDraw.right - rcDraw.left) * 3 / 4, rcDraw.top + (rcDraw.bottom - rcDraw.top) / 4);
+			::SelectObject(hDC, hOldPen);
+			::DeleteObject(hDrawPen);
+			break;
+		case BST_INDETERMINATE:
+			::Draw3dRect(hDC, &rcDraw, pSkinIcon->clrDraw.clrStart, pSkinIcon->clrDraw.clrStart);
+			if ((rcDraw.right - rcDraw.left) > 4)
+			{
+				rcDraw.right -= 2;
+				rcDraw.left += 2;
+			}
+			else if ((rcDraw.right - rcDraw.left) > 2)
+			{
+				rcDraw.right -= 1;
+				rcDraw.left += 1;
+			}
+			if ((rcDraw.bottom - rcDraw.top) > 4)
+			{
+				rcDraw.bottom -= 2;
+				rcDraw.top += 2;
+			}
+			else if ((rcDraw.bottom - rcDraw.bottom) > 2)
+			{
+				rcDraw.bottom -= 1;
+				rcDraw.top += 1;
+			}
+			::FillSolidRect(hDC, &rcDraw, pSkinIcon->clrDraw.clrStart);
+			break;
+		default:
+			::Draw3dRect(hDC, &rcDraw, pSkinIcon->clrDraw.clrStart, pSkinIcon->clrDraw.clrStart);
+			break;
+		}
+	}
+}
+
+void CDreamSkinButton::DrawCheckBoxTitle(HDC hDC, RECT rcClient, SKINTEXT *pSkinText)
+{
+	HFONT hFnText, hFnOld = NULL;
+
+	//Get the button title
+	int nLen = ::GetWindowTextLengthW(m_hWnd);
+	WCHAR *wstrTitle = new WCHAR[nLen + 1];
+	::GetWindowTextW(m_hWnd, wstrTitle, nLen + 1);
+
+	if(wstrTitle[0] != 0)
+	{
+		//Create font
+		LOGFONTW fnText;
+		fnText.lfHeight = -MulDiv(pSkinText->skinFont.nFontSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+		fnText.lfWeight = 0;
+		fnText.lfEscapement = 0;
+		fnText.lfOrientation = 0;
+		if (pSkinText->skinFont.nBold)
+			fnText.lfWeight = FW_BOLD;
+		else
+			fnText.lfWeight = FW_NORMAL;
+		fnText.lfItalic = 0;
+		fnText.lfUnderline = 0;
+		fnText.lfStrikeOut = 0;
+		fnText.lfCharSet = DEFAULT_CHARSET;
+		fnText.lfOutPrecision = OUT_DEFAULT_PRECIS;
+		fnText.lfClipPrecision = OUT_DEFAULT_PRECIS; 
+		fnText.lfQuality = DEFAULT_QUALITY;
+		fnText.lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;
+		wcscpy_s(fnText.lfFaceName, LF_FACESIZE, pSkinText->skinFont.wstrFontName);
+
+		hFnText = ::CreateFontIndirectW(&fnText);
+		hFnOld = (HFONT)::SelectObject(hDC, hFnText);
+
+		//we need to draw the shadow of text
+		if(pSkinText->bDrawShadow)
+		{
+			::OffsetRect(&rcClient, 1, 1);
+			::SetTextColor(hDC, pSkinText->clrShadow);
+			::DrawTextW(hDC, wstrTitle, nLen, &rcClient,  DT_WORDBREAK | DT_LEFT);
+			::OffsetRect(&rcClient, -1, -1);
+		}
+		::SetTextColor(hDC, pSkinText->clrDraw);
+		::DrawTextW(hDC, wstrTitle, nLen, &rcClient,  DT_WORDBREAK | DT_LEFT);
+
+		::SelectObject(hDC, hFnOld);
+		::DeleteObject(hFnText);
+	}
+
+	delete wstrTitle;
+}
+
 int CDreamSkinButton::GetCurrentStatus() const
 {
 	int nStatus;
@@ -611,7 +1004,7 @@ int CDreamSkinButton::GetCurrentStatus() const
 		else
 			nStatus = DRAWSTATUS_HOVER;     //Hover
 	else
-		if((dwStyle & 0xff) == BS_DEFPUSHBUTTON)
+		if((dwStyle & 0x0f) == BS_DEFPUSHBUTTON)
 			nStatus = DRAWSTATUS_DEFAULT;   //Default
 		else
 			nStatus = DRAWSTATUS_NORMAL;    //Normal
@@ -619,7 +1012,7 @@ int CDreamSkinButton::GetCurrentStatus() const
 	return nStatus;
 }
 
-RECT CDreamSkinButton::GetRectClient(RECT rcWindow)
+RECT CDreamSkinButton::GetPushButtonRectClient(RECT rcWindow)
 {
 	RECT rcClient;
 	SKINBORDER *pLBorder, *pRBorder, *pTBorder, *pBBorder;
@@ -666,4 +1059,21 @@ RECT CDreamSkinButton::GetRectClient(RECT rcWindow)
 	rcClient.bottom = rcClient.bottom - pBBorder->nWidth;
 
 	return rcClient;
+}
+
+RECT CDreamSkinButton::GetCheckBoxRectIcon(RECT rcWindow, SKINICON *pSkinIcon)
+{
+	RECT rcDraw;
+	if ((rcWindow.right - rcWindow.left) > (pSkinIcon->nWidth + 2 * pSkinIcon->nPadding))
+		rcDraw.left = rcWindow.left + pSkinIcon->nPadding;
+	else
+		rcDraw.left = rcWindow.left + (rcWindow.right - rcWindow.left - pSkinIcon->nWidth) / 2;
+	if ((rcWindow.bottom - rcWindow.top) > (pSkinIcon->nHeight + 2 * pSkinIcon->nPadding))
+		rcDraw.top = rcWindow.top + pSkinIcon->nPadding;
+	else
+		rcDraw.top = rcWindow.top + (rcWindow.bottom - rcWindow.top - pSkinIcon->nHeight) / 2;
+	rcDraw.right = rcDraw.left + pSkinIcon->nWidth;
+	rcDraw.bottom = rcDraw.top + pSkinIcon->nHeight;
+
+	return rcDraw;
 }

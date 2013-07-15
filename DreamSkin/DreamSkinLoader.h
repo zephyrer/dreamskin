@@ -12,6 +12,8 @@ class CImageHandleList;
 //draw type
 #define DRAWTYPE_FILLCOLOR           0
 #define DRAWTYPE_STRETCHBITMAP       1
+#define DRAWTYPE_TILEBITMAP          2
+#define DRAWTYPE_CUSTOMIZE           99
 
 //status
 #define DRAWSTATUS_NORMAL            0
@@ -33,6 +35,17 @@ typedef struct _tag_DRAWIMAGE
 	int              nWidth;                          //Width of the image
 	int              nHeight;                         //Height of the image
 }DRAWIMAGE;
+
+typedef struct _tag_SKINICON
+{
+	int              nDefault;                        //Whether the icon was loaded
+	int              nDrawType;                       //Icon draw type
+	int              nWidth;                          //Width of the icon
+	int              nHeight;                         //Height of the icon
+	DRAWCOLOR        clrDraw;                         //Color to draw the icon if no image specified
+	DRAWIMAGE        imgDraw;                         //Image used to draw the icon
+	int              nPadding;                        //Icon padding
+}SKINICON;
 
 typedef struct _tag_SKINBACKGROUND
 {
@@ -194,6 +207,58 @@ typedef struct _tag_SKINBUTTON
 	SKINBORDER       skinBBorderDefault;              //Bottom border in default status
 }SKINBUTTON;
 
+//skin settings for check box
+typedef struct _tag_SKINCHECKBOX
+{
+	int              nRgnType;                        //Check box region type
+	COLORREF         clrTansparent;                   //Transparent color for creating windows region
+
+	SKINBACKGROUND   skinBkNormalUnchecked;           //Background in normal and unchecked status
+	SKINBACKGROUND   skinBkDisableUnchecked;          //Background in disable and unchecked status
+	SKINBACKGROUND   skinBkHoverUnchecked;            //Background in hover and unchecked status
+	SKINBACKGROUND   skinBkPressUnchecked;            //Background in press and unchecked status
+
+	SKINBACKGROUND   skinBkNormalChecked;             //Background in normal and checked status
+	SKINBACKGROUND   skinBkDisableChecked;            //Background in disable and checked status
+	SKINBACKGROUND   skinBkHoverChecked;              //Background in hover and checked status
+	SKINBACKGROUND   skinBkPressChecked;              //Background in press and checked status
+
+	SKINBACKGROUND   skinBkNormalPartChecked;         //Background in normal and partially checked status
+	SKINBACKGROUND   skinBkDisablePartChecked;        //Background in disable and partially checked status
+	SKINBACKGROUND   skinBkHoverPartChecked;          //Background in hover and partially checked status
+	SKINBACKGROUND   skinBkPressPartChecked;          //Background in press and partially checked status
+
+	SKINTEXT         skinTxtNormalUnchecked;          //Text in normal and unchecked status
+	SKINTEXT         skinTxtDisableUnchecked;         //Text in disable and unchecked status
+	SKINTEXT         skinTxtHoverUnchecked;           //Text in hover and unchecked status
+	SKINTEXT         skinTxtPressUnchecked;           //Text in press and unchecked status
+
+	SKINTEXT         skinTxtNormalChecked;            //Text in normal and checked status
+	SKINTEXT         skinTxtDisableChecked;           //Text in disable and checked status
+	SKINTEXT         skinTxtHoverChecked;             //Text in hover and checked status
+	SKINTEXT         skinTxtPressChecked;             //Text in press and checked status
+
+	SKINTEXT         skinTxtNormalPartChecked;        //Text in normal and partially checked status
+	SKINTEXT         skinTxtDisablePartChecked;       //Text in disable and partially checked status
+	SKINTEXT         skinTxtHoverPartChecked;         //Text in hover and partially checked status
+	SKINTEXT         skinTxtPressPartChecked;         //Text in press and partially checked status
+
+	SKINICON         iconNormalUnchecked;             //Icon in normal and unchecked status
+	SKINICON         iconDisableUnchecked;            //Icon in disable and unchecked status
+	SKINICON         iconHoverUnchecked;              //Icon in hover and unchecked status
+	SKINICON         iconPressUnchecked;              //Icon in press and unchecked status
+
+	SKINICON         iconNormalChecked;               //Icon in normal and checked status
+	SKINICON         iconDisableChecked;              //Icon in disable and checked status
+	SKINICON         iconHoverChecked;                //Icon in hover and checked status
+	SKINICON         iconPressChecked;                //Icon in press and checked status
+
+	SKINICON         iconNormalPartChecked;           //Icon in normal and partially checked status
+	SKINICON         iconDisablePartChecked;          //Icon in disable and partially checked status
+	SKINICON         iconHoverPartChecked;            //Icon in hover and partially checked status
+	SKINICON         iconPressPartChecked;            //Icon in press and partially checked status
+}SKINCHECKBOX;
+
 typedef struct _tag_SKINSTATIC
 {
 	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
@@ -209,12 +274,14 @@ public:
 protected:
 	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameButton[];
+	static WCHAR wstrSkinFileNodeNameCheckBox[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameBackground[];
 	static WCHAR wstrSkinFileNodeNameBorder[];
 	static WCHAR wstrSkinFileNodeNameColor[];
 	static WCHAR wstrSkinFileNodeNameFont[];
 	static WCHAR wstrSkinFileNodeNameText[];
+	static WCHAR wstrSkinFileNodeNameIcon[];
 	static WCHAR wstrSkinFileNodeNameImage[];
 	static WCHAR wstrSkinFileNodeNameLeft[];
 	static WCHAR wstrSkinFileNodeNameRight[];
@@ -226,6 +293,9 @@ protected:
 	static WCHAR wstrSkinFileNodeNamePress[];
 	static WCHAR wstrSkinFileNodeNameDisable[];
 	static WCHAR wstrSkinFileNodeNameDefault[];
+	static WCHAR wstrSkinFileNodeNameSelected[];
+	static WCHAR wstrSkinFileNodeNameUnselected[];
+	static WCHAR wstrSkinFileNodeNameIndeterminate[];
 	static WCHAR wstrSkinFileNodeNameClose[];
 	static WCHAR wstrSkinFileNodeNameMaximize[];
 	static WCHAR wstrSkinFileNodeNameRestore[];
@@ -255,16 +325,20 @@ public:
 	BOOL Load(const WCHAR *wstrSkinFilePath);
 
 	void GetSkinButton(SKINBUTTON *pSkinButton) const;
+	void GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const;
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
 
 protected:
 	BOOL LoadSkinDialog(void *parser);
 	BOOL LoadSkinButton(void *parser);
+	BOOL LoadSkinCheckBox(void *parser);
 	BOOL LoadSkinStatic(void *parser);
 	BOOL LoadColor(void *color, DRAWCOLOR *pDrawColor);
 	BOOL LoadColorItem(void *color, WCHAR* wstrColorItemName, COLORREF *pColor);
 	BOOL LoadFont(void *font, SKINTEXTFONT *pSkinFont);
+	BOOL LoadIcon(void *icon, SKINICON **pSkinIconList, int nCount);
+	BOOL LoadIconItem(void *iconitem, SKINICON *pSkinIcon);
 	BOOL LoadImage(void *image, DRAWIMAGE *pDrawImage);
 	BOOL LoadBackground(void *bkitem, SKINBACKGROUND *pSkinBackground);
 	BOOL LoadBorder(void *border, SKINBORDER **pSkinBorderList, int nCount);
@@ -275,9 +349,10 @@ protected:
 	BOOL LoadTitleBar(void *titlebar, SKINTITLEBAR *pSkinTitleBar);
 
 protected:
-	SKINDIALOG m_SkinDialog;
-	SKINBUTTON m_SkinButton;
-	SKINSTATIC m_SkinStatic;
+	SKINDIALOG   m_SkinDialog;
+	SKINBUTTON   m_SkinButton;
+	SKINCHECKBOX m_SkinCheckBox;
+	SKINSTATIC   m_SkinStatic;
 	CImageHandleList *m_pImageHandleList;
 };
 
