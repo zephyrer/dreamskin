@@ -13,10 +13,6 @@ public:
 	CDreamSkinStatic(HWND hWnd, WNDPROC OrgWndProc);
 	virtual ~CDreamSkinStatic();
 
-	virtual void    Init();
-
-	virtual void    Destroy();
-
 	virtual void    Reload();
 
 public:
@@ -52,7 +48,7 @@ protected:
 	//Draw the title of the static
 	virtual void    DrawTitle(HDC hDC, RECT rcClient);
 
-public:
+protected:
 	SKINSTATIC      *m_pSkinStatic;                   //Instance Related Static Skin Settings
 };
 

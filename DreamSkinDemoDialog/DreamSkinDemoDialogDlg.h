@@ -67,4 +67,8 @@ protected:
 	int     m_nBtnDemoStatus;
 	int     m_nChk2StateDemoStatus;
 	int     m_nChk3StateDemoStatus;
+public:
+	CString m_strEditDemoNormal;
+	CString m_strEditDemoReadOnly;
+	CString m_strEditDemoDisable;
 };

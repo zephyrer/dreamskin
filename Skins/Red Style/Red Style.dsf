@@ -229,4 +229,116 @@
 			</normal>
 		</text>
 	</static>
+	<edit>
+		<readwrite>
+			<background type="0">
+				<normal>
+					<color start="0x00FFFFFF"/>
+				</normal>
+				<disable>
+					<color start="0x00F8E6E6"/>
+				</disable>
+			</background>
+			<border type="0">
+				<left width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+					<hover>
+						<color start="0x00FF0000"/>
+					</hover>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</left>
+				<right width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+					<hover>
+						<color start="0x00FF0000"/>
+					</hover>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</right>
+				<top width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+					<hover>
+						<color start="0x00FF0000"/>
+					</hover>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</top>
+				<bottom width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+					<hover>
+						<color start="0x00FF0000"/>
+					</hover>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</bottom>
+			</border>
+			<text>
+				<normal>
+					<color start="0x00666666" />
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</text>
+		</readwrite>
+		<readonly>
+			<background type="0">
+				<normal>
+					<color start="0x00F8E6E6"/>
+				</normal>
+			</background>
+			<border type="0">
+				<left width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+					<hover>
+						<color start="0x00D89F9F"/>
+					</hover>
+				</left>
+				<right width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+					<hover>
+						<color start="0x00D89F9F"/>
+					</hover>
+				</right>
+				<top width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+					<hover>
+						<color start="0x00D89F9F"/>
+					</hover>
+				</top>
+				<bottom width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+					<hover>
+						<color start="0x00D89F9F"/>
+					</hover>
+				</bottom>
+			</border>
+			<text>
+				<normal>
+					<color start="0x00666666" />
+				</normal>
+			</text>
+		</readonly>
+	</edit>
 </dreamskin>

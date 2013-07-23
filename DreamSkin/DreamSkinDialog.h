@@ -13,10 +13,6 @@ public:
 	CDreamSkinDialog(HWND hWnd, WNDPROC OrgWndProc);
 	virtual ~CDreamSkinDialog();
 
-	virtual void    Init();
-
-	virtual void    Destroy();
-
 	virtual void    Reload();
 
 public:
@@ -143,10 +139,9 @@ protected:
 	//Check whether point in border
 	virtual int     PointOnBorder(POINT point, RECT rcWindow, DWORD dwStyle);
 
-public:
+protected:
 	SKINDIALOG      *m_pSkinDialog;                   //Instance Related Dialog Skin Settings
 
-protected:
 	BOOL             m_bActive;                       //Indicate whether the dialog is in active status
 	UINT             m_nLastHitTest;                  //Store the last NcHitTest value to check if the window need to be redraw
 	UINT             m_nNcLButtonDown;                //Store the last NcLButtonDown value to check if need to invoke any event

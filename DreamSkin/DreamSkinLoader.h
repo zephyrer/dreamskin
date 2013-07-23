@@ -265,6 +265,62 @@ typedef struct _tag_SKINSTATIC
 	SKINTEXT         skinTxtNormal;                   //Text in normal status
 }SKINSTATIC;
 
+typedef struct _tag_SKINEDIT
+{
+	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
+	SKINBACKGROUND   skinBkDisable;                   //Background in disable status
+	SKINBACKGROUND   skinBkHover;                     //Background in hover status
+	SKINBACKGROUND   skinBkPress;                     //Background in focus status
+
+	SKINBACKGROUND   skinBkNormalReadOnly;            //Background in normal status
+	SKINBACKGROUND   skinBkHoverReadOnly;             //Background in hover status
+	SKINBACKGROUND   skinBkPressReadOnly;             //Background in focus status
+
+	SKINTEXT         skinTxtNormal;                   //Text in normal and unchecked status
+	SKINTEXT         skinTxtDisable;                  //Text in disable and unchecked status
+	SKINTEXT         skinTxtHover;                    //Text in hover and unchecked status
+	SKINTEXT         skinTxtPress;                    //Text in press and unchecked status
+
+	SKINTEXT         skinTxtNormalReadOnly;           //Text in normal and checked status
+	SKINTEXT         skinTxtHoverReadOnly;            //Text in hover and checked status
+	SKINTEXT         skinTxtPressReadOnly;            //Text in press and checked status
+
+	SKINBORDER       skinLBorderNormal;               //Left border in normal status
+	SKINBORDER       skinRBorderNormal;               //Right border in normal status
+	SKINBORDER       skinTBorderNormal;               //Top border in normal status
+	SKINBORDER       skinBBorderNormal;               //Bottom border in normal status
+
+	SKINBORDER       skinLBorderDisable;              //Left border in disable status
+	SKINBORDER       skinRBorderDisable;              //Right border in disable status
+	SKINBORDER       skinTBorderDisable;              //Top border in disable status
+	SKINBORDER       skinBBorderDisable;              //Bottom border in disable status
+
+	SKINBORDER       skinLBorderHover;                //Left border in hover status
+	SKINBORDER       skinRBorderHover;                //Right border in hover status
+	SKINBORDER       skinTBorderHover;                //Top border in hover status
+	SKINBORDER       skinBBorderHover;                //Bottom border in hover status
+
+	SKINBORDER       skinLBorderPress;                //Left border in focus status
+	SKINBORDER       skinRBorderPress;                //Right border in focus status
+	SKINBORDER       skinTBorderPress;                //Top border in focus status
+	SKINBORDER       skinBBorderPress;                //Bottom border in focus status
+
+	SKINBORDER       skinLBorderNormalReadOnly;       //Left border in normal status for read only edit
+	SKINBORDER       skinRBorderNormalReadOnly;       //Right border in normal status for read only edit
+	SKINBORDER       skinTBorderNormalReadOnly;       //Top border in normal status for read only edit
+	SKINBORDER       skinBBorderNormalReadOnly;       //Bottom border in normal status for read only edit
+
+	SKINBORDER       skinLBorderHoverReadOnly;        //Left border in hover status for read only edit
+	SKINBORDER       skinRBorderHoverReadOnly;        //Right border in hover status for read only edit
+	SKINBORDER       skinTBorderHoverReadOnly;        //Top border in hover status for read only edit
+	SKINBORDER       skinBBorderHoverReadOnly;        //Bottom border in hover status for read only edit
+
+	SKINBORDER       skinLBorderPressReadOnly;        //Left border in focus status for read only edit
+	SKINBORDER       skinRBorderPressReadOnly;        //Right border in focus status for read only edit
+	SKINBORDER       skinTBorderPressReadOnly;        //Top border in focus status for read only edit
+	SKINBORDER       skinBBorderPressReadOnly;        //Bottom border in focus status for read only edit
+}SKINEDIT;
+
 class CDreamSkinLoader
 {
 public:
@@ -272,9 +328,10 @@ public:
 	~CDreamSkinLoader();
 
 protected:
-	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameButton[];
 	static WCHAR wstrSkinFileNodeNameCheckBox[];
+	static WCHAR wstrSkinFileNodeNameDialog[];
+	static WCHAR wstrSkinFileNodeNameEdit[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameBackground[];
 	static WCHAR wstrSkinFileNodeNameBorder[];
@@ -296,6 +353,8 @@ protected:
 	static WCHAR wstrSkinFileNodeNameSelected[];
 	static WCHAR wstrSkinFileNodeNameUnselected[];
 	static WCHAR wstrSkinFileNodeNameIndeterminate[];
+	static WCHAR wstrSkinFileNodeNameReadWrite[];
+	static WCHAR wstrSkinFileNodeNameReadOnly[];
 	static WCHAR wstrSkinFileNodeNameClose[];
 	static WCHAR wstrSkinFileNodeNameMaximize[];
 	static WCHAR wstrSkinFileNodeNameRestore[];
@@ -327,10 +386,12 @@ public:
 	void GetSkinButton(SKINBUTTON *pSkinButton) const;
 	void GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const;
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
+	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
 
 protected:
 	BOOL LoadSkinDialog(void *parser);
+	BOOL LoadSkinEdit(void *parser);
 	BOOL LoadSkinButton(void *parser);
 	BOOL LoadSkinCheckBox(void *parser);
 	BOOL LoadSkinStatic(void *parser);
@@ -352,6 +413,7 @@ protected:
 	SKINDIALOG   m_SkinDialog;
 	SKINBUTTON   m_SkinButton;
 	SKINCHECKBOX m_SkinCheckBox;
+	SKINEDIT     m_SkinEdit;
 	SKINSTATIC   m_SkinStatic;
 	CImageHandleList *m_pImageHandleList;
 };

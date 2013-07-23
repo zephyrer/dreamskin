@@ -48,11 +48,6 @@ public:
 	
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	
-
-	//virtual LRESULT SetWindowRgnType(RGNTYPE RgnType, RGNCREATEDATAW_PTR pRgnData);
-
-	virtual void    Init() {};
-
 	virtual void    Reload() {};
 
 	virtual inline void UpdateWindow()

@@ -18,10 +18,6 @@ public:
 	CDreamSkinButton(HWND hWnd, WNDPROC OrgWndProc);
 	virtual ~CDreamSkinButton();
 
-	virtual void    Init();
-
-	virtual void    Destroy();
-
 	virtual void    Reload();
 
 public:
@@ -95,11 +91,10 @@ protected:
 	RECT    GetCheckBoxRectIcon(RECT rcWindow, SKINICON *pSkinIcon);
 	
 
-public:
+protected:
 	SKINBUTTON      *m_pSkinButton;                   //Instance Related Button Skin Settings
 	SKINCHECKBOX    *m_pSkinCheckBox;                 //Instance Related CheckBox Skin Settings
 
-protected:
 	int              m_nBtnType;                      //The button type
 	BOOL             m_bMouseIn;                      //Whether the mouse over the button
 	BOOL             m_bLBtnDown;                     //Whether the mouse left button down on the button

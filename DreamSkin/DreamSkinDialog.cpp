@@ -15,16 +15,6 @@ SKINDIALOG      CDreamSkinDialog::s_SkinDialog;
 CDreamSkinDialog::CDreamSkinDialog(HWND hWnd, WNDPROC OrgWndProc)
 	: CDreamSkinWindow(hWnd, OrgWndProc)
 {
-	Init();
-}
-
-CDreamSkinDialog::~CDreamSkinDialog()
-{
-	Destroy();
-}
-
-void CDreamSkinDialog::Init()
-{
 	m_pSkinDialog = &s_SkinDialog;
 
 	m_bActive = FALSE;
@@ -32,13 +22,10 @@ void CDreamSkinDialog::Init()
 	m_nNcLButtonDown = 0;
 }
 
-void CDreamSkinDialog::Destroy()
+CDreamSkinDialog::~CDreamSkinDialog()
 {
 	if (m_pSkinDialog != &s_SkinDialog)
-	{
 		delete m_pSkinDialog;
-		m_pSkinDialog = &s_SkinDialog;
-	}
 }
 
 void CDreamSkinDialog::Reload()
@@ -265,6 +252,12 @@ LRESULT CDreamSkinDialog::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 	{
 	case WM_ACTIVATE:
 		nResult = OnActive((UINT)wParam, (HANDLE)lParam);
+		break;
+	case WM_CTLCOLOREDIT:
+		nResult = ::SendMessage((HWND)lParam, WM_CTLCOLOREDIT, wParam, (LPARAM)m_hWnd);
+		break;
+	case WM_CTLCOLORSTATIC:
+		nResult = ::SendMessage((HWND)lParam, WM_CTLCOLORSTATIC, wParam, (LPARAM)m_hWnd);
 		break;
 	case WM_NCACTIVATE:
 		nResult = OnNcActive((BOOL)wParam);

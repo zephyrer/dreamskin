@@ -14,26 +14,13 @@ SKINSTATIC      CDreamSkinStatic::s_SkinStatic;
 CDreamSkinStatic::CDreamSkinStatic(HWND hWnd, WNDPROC OrgWndProc)
 	: CDreamSkinWindow(hWnd, OrgWndProc)
 {
-	Init();
+	m_pSkinStatic = &s_SkinStatic;
 }
 
 CDreamSkinStatic::~CDreamSkinStatic()
 {
-	Destroy();
-}
-
-void CDreamSkinStatic::Init()
-{
-	m_pSkinStatic = &s_SkinStatic;
-}
-
-void CDreamSkinStatic::Destroy()
-{
 	if (m_pSkinStatic != &s_SkinStatic)
-	{
 		delete m_pSkinStatic;
-		m_pSkinStatic = &s_SkinStatic;
-	}
 }
 
 void CDreamSkinStatic::Reload()

@@ -199,6 +199,9 @@ CDreamSkinDemoDialogDlg::CDreamSkinDemoDialogDlg(CWnd* pParent /*=NULL*/)
 	, m_bIconInclude(TRUE)
 	, m_nHookedWindowCount(0)
 	, m_strSkinPath(_T(""))
+	, m_strEditDemoNormal(_T("Normal Edit Control"))
+	, m_strEditDemoReadOnly(_T("Read Only Edit Control"))
+	, m_strEditDemoDisable(_T("Disabled Edit Control"))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_nBtnDemoStatus = 0;
@@ -210,9 +213,12 @@ void CDreamSkinDemoDialogDlg::UpdateDreamSkinStatus()
 {
 	DREAMSKIN_STATUS status;
 	DreamSkinStatus(&status);
-	m_nHookedWindowCount = status.nHookedWindowCount;
+	if (m_nHookedWindowCount != status.nHookedWindowCount)
+	{
+		m_nHookedWindowCount = status.nHookedWindowCount;
 
-	UpdateData(FALSE);
+		UpdateData(FALSE);
+	}
 }
 
 void CDreamSkinDemoDialogDlg::DoDataExchange(CDataExchange* pDX)
@@ -228,6 +234,9 @@ void CDreamSkinDemoDialogDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_ICON_INCLUDE, m_bIconInclude);
 	DDX_Text(pDX, IDC_EDIT_HOOKED_WINDOW_COUNT, m_nHookedWindowCount);
 	DDX_Text(pDX, IDC_EDIT_SKIN_PATH, m_strSkinPath);
+	DDX_Text(pDX, IDC_EDIT_DEMO_NORMAL, m_strEditDemoNormal);
+	DDX_Text(pDX, IDC_EDIT_DEMO_READONLY, m_strEditDemoReadOnly);
+	DDX_Text(pDX, IDC_EDIT_DEMO_DISABLE, m_strEditDemoDisable);
 }
 
 BEGIN_MESSAGE_MAP(CDreamSkinDemoDialogDlg, CDialog)

@@ -15,16 +15,6 @@ SKINCHECKBOX    CDreamSkinButton::s_SkinCheckBox;
 CDreamSkinButton::CDreamSkinButton(HWND hWnd, WNDPROC OrgWndProc)
 	: CDreamSkinWindow(hWnd, OrgWndProc)
 {
-	Init();
-}
-
-CDreamSkinButton::~CDreamSkinButton()
-{
-	Destroy();
-}
-
-void CDreamSkinButton::Init()
-{
 	m_pSkinButton = &s_SkinButton;
 	m_pSkinCheckBox = &s_SkinCheckBox;
 
@@ -32,19 +22,13 @@ void CDreamSkinButton::Init()
 	m_bLBtnDown = FALSE;
 }
 
-void CDreamSkinButton::Destroy()
+CDreamSkinButton::~CDreamSkinButton()
 {
 	if (m_pSkinButton != &s_SkinButton)
-	{
 		delete m_pSkinButton;
-		m_pSkinButton = &s_SkinButton;
-	}
 
 	if (m_pSkinCheckBox != &s_SkinCheckBox)
-	{
 		delete m_pSkinCheckBox;
-		m_pSkinCheckBox = &s_SkinCheckBox;
-	}
 }
 
 void CDreamSkinButton::Reload()
@@ -314,6 +298,8 @@ LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 		case WM_PAINT:
 			nResult = OnPaint();
 			break;
+		//case BM_SETSTATE:
+		//case BM_SETCHECK:
 		case WM_SETTEXT:
 			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
 			UpdateWindow();
@@ -448,16 +434,16 @@ LRESULT CDreamSkinButton::OnMouseLeave()
 
 LRESULT CDreamSkinButton::OnMouseMove(UINT nHitTest, POINTS point)
 {
-	TRACKMOUSEEVENT EventTrack;
-	EventTrack.cbSize = sizeof(TRACKMOUSEEVENT);
-	EventTrack.dwFlags = TME_LEAVE;
-	EventTrack.hwndTrack = m_hWnd;
-	EventTrack.dwHoverTime = 0;
-
-	TrackMouseEvent(&EventTrack);
-
 	if(!m_bMouseIn)
 	{
+		TRACKMOUSEEVENT EventTrack;
+		EventTrack.cbSize = sizeof(TRACKMOUSEEVENT);
+		EventTrack.dwFlags = TME_LEAVE;
+		EventTrack.hwndTrack = m_hWnd;
+		EventTrack.dwHoverTime = 0;
+
+		TrackMouseEvent(&EventTrack);
+
 		m_bMouseIn = TRUE;
 		UpdateWindow();
 	}
