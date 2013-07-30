@@ -9,6 +9,7 @@
 #include "DreamSkinDialog.h"
 #include "DreamSkinButton.h"
 #include "DreamSkinStatic.h"
+#include "DreamSkinTab.h"
 #include "DreamSkinEdit.h"
 
 CDreamSkinMain theSkinMain;
@@ -134,6 +135,16 @@ BOOL CDreamSkinMain::InitDefaultHookWindowClassList()
 		m_pDefaultHookWindowClasses->Add(DEFAULT_EDIT_CLASSNAME_W, CDreamSkinEdit::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinEdit::CreateInstance);
 	}
 
+	bReturn = CDreamSkinTab::InitialClass();
+	if(!bReturn)
+	{   //Init for dialog failed
+		//TODO: Add error handle code
+	}
+	else
+	{
+		m_pDefaultHookWindowClasses->Add(DEFAULT_TAB_CLASSNAME_W, CDreamSkinTab::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinTab::CreateInstance);
+	}
+
 
 	return TRUE;
 }
@@ -193,6 +204,7 @@ BOOL CDreamSkinMain::LoadSkin(const WCHAR *wstrSkinFilePath)
 		CDreamSkinButton::ApplySkin(&theLoader);
 		CDreamSkinStatic::ApplySkin(&theLoader);
 		CDreamSkinEdit::ApplySkin(&theLoader);
+		CDreamSkinTab::ApplySkin(&theLoader);
 
 		if (m_pImageHandleList)
 		{

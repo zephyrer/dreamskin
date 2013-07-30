@@ -205,6 +205,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DreamSkinTab.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DreamSkinWindow.cpp"
 				>
 			</File>
@@ -260,6 +264,10 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinStatic.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DreamSkinTab.h"
 				>
 			</File>
 			<File

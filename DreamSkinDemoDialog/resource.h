@@ -8,6 +8,7 @@
 #define IDD_DREAMSKINDEMODIALOG_DIALOG  102
 #define IDS_SKIN_FILE_FILTER            102
 #define IDR_MAINFRAME                   128
+#define IDC_TAB_QUICK_DEMO              999
 #define IDC_SYSMENU_INCLUDE             1000
 #define IDC_DREAMSKIN_ENABLE            1001
 #define IDC_MAXIMIZEBOX_INCLUDE         1002
@@ -29,8 +30,12 @@
 #define IDC_CHK_DEMO_DISABLE_PARTCHECKED 1017
 #define IDC_EDIT_DEMO_NORMAL            1018
 #define IDC_EDIT_DEMO_READONLY          1019
-#define IDC_EDIT3                       1020
 #define IDC_EDIT_DEMO_DISABLE           1020
+#define IDC_EDIT1                       1023
+#define IDC_STATIC_BUTTONS              1025
+#define IDC_STATIC_CHECKBOXES           1026
+#define IDC_STATIC_EDITS                1027
+#define IDC_STATIC_QUICK_DEMO           1028
 
 // Next default values for new objects
 // 
@@ -38,7 +43,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        129
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1029
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

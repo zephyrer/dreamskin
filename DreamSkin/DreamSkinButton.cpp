@@ -295,11 +295,17 @@ LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 		case WM_NCHITTEST:
 			nResult = OnNcHitTest(MAKEPOINTS(lParam));
 			break;
+		case WM_NCPAINT:
+			break;
 		case WM_PAINT:
 			nResult = OnPaint();
 			break;
 		//case BM_SETSTATE:
 		//case BM_SETCHECK:
+		case BM_SETSTYLE:
+			nResult = OnSetButtonStyle(wParam & 0x0000FFFF);
+			//OnPaint();
+			break;
 		case WM_SETTEXT:
 			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
 			UpdateWindow();
@@ -321,7 +327,6 @@ LRESULT CDreamSkinButton::OnLButtonDown(UINT nFlags, POINTS point)
 	if(!m_bLBtnDown)
 	{
 		m_bLBtnDown = TRUE;
-		m_bMouseIn  = TRUE;
 
 		::SetFocus(m_hWnd);
 		::SetCapture(m_hWnd);
@@ -356,6 +361,7 @@ LRESULT CDreamSkinButton::OnLButtonUp(UINT nFlags, POINTS point)
 			if (m_bLBtnDown)
 			{
 				m_bLBtnDown = FALSE;
+				m_bMouseIn = FALSE;
 				::ReleaseCapture();
 				UpdateWindow();
 			}
@@ -378,9 +384,10 @@ LRESULT CDreamSkinButton::OnLButtonUp(UINT nFlags, POINTS point)
 		}
 		else
 		{
-			if (m_bLBtnDown)
+			if (m_bLBtnDown || m_bMouseIn)
 			{
 				m_bLBtnDown = FALSE;
+				m_bMouseIn = FALSE;
 				::ReleaseCapture();
 				UpdateWindow();
 			}
@@ -407,6 +414,7 @@ LRESULT CDreamSkinButton::OnLButtonUp(UINT nFlags, POINTS point)
 				break;
 			default:
 				UpdateWindow();
+				break;
 			}
 			::SendMessage(::GetParent(m_hWnd), WM_COMMAND, ::GetDlgCtrlID(m_hWnd), (LPARAM)m_hWnd);
 			break;
@@ -499,6 +507,14 @@ LRESULT CDreamSkinButton::OnPaint()
 		DrawCheckBox(hPaintDC, rcClient);
 
 	::EndPaint(m_hWnd, &ps);
+
+	return 0;
+}
+
+LRESULT CDreamSkinButton::OnSetButtonStyle(DWORD dwNewStyle)
+{
+	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE) & 0xFFFF0000 | dwNewStyle;
+	::SetWindowLong(m_hWnd, GWL_STYLE, dwStyle);
 
 	return 0;
 }

@@ -61,6 +61,8 @@ public:
 	virtual LRESULT OnNcHitTest(POINTS point);
 	//process the WM_PAINT message
 	virtual LRESULT OnPaint();
+	//process the BM_SETSTYLE message
+	virtual LRESULT OnSetButtonStyle(DWORD dwNewStyle);
 
 protected:
 	//Draw push button

@@ -237,6 +237,7 @@ void CDreamSkinDemoDialogDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_DEMO_NORMAL, m_strEditDemoNormal);
 	DDX_Text(pDX, IDC_EDIT_DEMO_READONLY, m_strEditDemoReadOnly);
 	DDX_Text(pDX, IDC_EDIT_DEMO_DISABLE, m_strEditDemoDisable);
+	DDX_Control(pDX, IDC_TAB_QUICK_DEMO, m_tabQuickDemo);
 }
 
 BEGIN_MESSAGE_MAP(CDreamSkinDemoDialogDlg, CDialog)
@@ -255,6 +256,7 @@ BEGIN_MESSAGE_MAP(CDreamSkinDemoDialogDlg, CDialog)
 	ON_BN_CLICKED(IDC_ICON_INCLUDE, &CDreamSkinDemoDialogDlg::OnBnClickedIconInclude)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BTN_LOADSKIN, &CDreamSkinDemoDialogDlg::OnBnClickedBtnLoadskin)
+	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_QUICK_DEMO, &CDreamSkinDemoDialogDlg::OnTcnSelchangeTabQuickDemo)
 END_MESSAGE_MAP()
 
 
@@ -290,6 +292,10 @@ BOOL CDreamSkinDemoDialogDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 
 	// TODO: Add extra initialization here
+	m_tabQuickDemo.InsertItem(0, _T("Common Controls"));
+	m_tabQuickDemo.InsertItem(1, _T("Dialog Settings"));
+	ShowDialogSettings(FALSE);
+
 	((CButton*)GetDlgItem(IDC_CHK_DEMO_DISABLE_CHECKED))->SetCheck(BST_CHECKED);
 	((CButton*)GetDlgItem(IDC_CHK_DEMO_DISABLE_PARTCHECKED))->SetCheck(BST_INDETERMINATE);
 
@@ -301,6 +307,47 @@ BOOL CDreamSkinDemoDialogDlg::OnInitDialog()
 	
 
 	return TRUE;  // return TRUE  unless you set the focus to a control
+}
+
+void CDreamSkinDemoDialogDlg::ShowDialogSettings(BOOL bShow)
+{
+	int nCmdShow;
+	if (bShow)
+		nCmdShow = SW_SHOW;
+	else
+		nCmdShow = SW_HIDE;
+
+	GetDlgItem(IDC_BORDER_INCLUDE)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_BORDER_SIZABLE)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_TITLEBAR_INCLUDE)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_SYSMENU_INCLUDE)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_MAXIMIZEBOX_INCLUDE)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_MINIMIZEBOX_INCLUDE)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_ICON_INCLUDE)->ShowWindow(nCmdShow);
+}
+
+void CDreamSkinDemoDialogDlg::ShowCommonControls(BOOL bShow)
+{
+	int nCmdShow;
+	if (bShow)
+		nCmdShow = SW_SHOW;
+	else
+		nCmdShow = SW_HIDE;
+
+	GetDlgItem(IDC_STATIC_QUICK_DEMO)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_STATIC_BUTTONS)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_BTN_DEMO_NORMAL)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_BTN_DEMO_DISABLE)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_STATIC_CHECKBOXES)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_CHK_DEMO_NORMAL)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_CHK_DEMO_3STATE_NORMAL)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_CHK_DEMO_DISABLE_UNCHECKED)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_CHK_DEMO_DISABLE_CHECKED)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_CHK_DEMO_DISABLE_PARTCHECKED)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_STATIC_EDITS)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_EDIT_DEMO_NORMAL)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_EDIT_DEMO_READONLY)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_EDIT_DEMO_DISABLE)->ShowWindow(nCmdShow);
 }
 
 void CDreamSkinDemoDialogDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -618,4 +665,23 @@ void CDreamSkinDemoDialogDlg::OnBnClickedBtnLoadskin()
 	}
 
 	UpdateData(FALSE);
+}
+
+void CDreamSkinDemoDialogDlg::OnTcnSelchangeTabQuickDemo(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	int sel = m_tabQuickDemo.GetCurSel(); 
+
+	switch(sel) 
+	{
+	case 1:
+		ShowCommonControls(FALSE);
+		ShowDialogSettings(TRUE);
+		break;
+	case 0:
+		ShowDialogSettings(FALSE);
+		ShowCommonControls(TRUE);
+		break;
+	}
+
+	*pResult = 0;
 }

@@ -432,4 +432,97 @@
 			</text>
 		</readonly>
 	</edit>
+	<tab>
+		<background type="0">
+			<normal>
+				<color start="0x00F7F3F7"/>
+			</normal>
+		</background>
+		<border type="0">
+			<left width="1">
+				<normal>
+					<color start="0x008C8E94"/>
+				</normal>
+			</left>
+			<right width="1">
+				<normal>
+					<color start="0x008C8E94"/>
+				</normal>
+			</right>
+			<top width="1">
+				<normal>
+					<color start="0x008C8E94"/>
+				</normal>
+			</top>
+			<bottom width="1">
+				<normal>
+					<color start="0x008C8E94"/>
+				</normal>
+			</bottom>
+		</border>
+		<button>
+			<background type="1">
+				<normal>
+					<image source="Images/tab.bmp" x="2" y="2" width="59" height="16" />
+				</normal>
+				<hover>
+					<image source="Images/tab.bmp" x="2" y="20" width="59" height="16" />
+				</hover>
+				<press>
+					<image source="Images/tab.bmp" x="2" y="38" width="59" height="16" />
+				</press>
+			</background>
+			<border type="1">
+				<left width="2" type="1">
+					<normal>
+						<image source="Images/tab.bmp" x="0" y="2" width="2" height="16" />
+					</normal>
+					<hover>
+						<image source="Images/tab.bmp" x="0" y="20" width="2" height="16" />
+					</hover>
+					<press>
+						<image source="Images/tab.bmp" x="0" y="38" width="2" height="16" />
+					</press>
+				</left>
+				<right width="2" type="1">
+					<normal>
+						<image source="Images/tab.bmp" x="61" y="2" width="2" height="16" />
+					</normal>
+					<hover>
+						<image source="Images/tab.bmp" x="61" y="20" width="2" height="16" />
+					</hover>
+					<press>
+						<image source="Images/tab.bmp" x="61" y="38" width="2" height="16" />
+					</press>
+				</right>
+				<top width="2" type="1">
+					<normal>
+						<image source="Images/tab.bmp" x="0" y="0" width="63" height="2" />
+					</normal>
+					<hover>
+						<image source="Images/tab.bmp" x="0" y="18" width="63" height="2" />
+					</hover>
+					<press>
+						<image source="Images/tab.bmp" x="0" y="36" width="63" height="2" />
+					</press>
+				</top>
+				<bottom width="1" type="0">
+					<normal>
+						<color start="0x008C8E94"/>
+					</normal>
+					<hover>
+						<color start="0x008C8E94"/>
+					</hover>
+					<press>
+						<color start="0x00F7F3F7"/>
+					</press>
+				</bottom>
+			</border>
+			<text>
+				<normal>
+					<color start="0x00000000" />
+				</normal>
+			</text>
+		</button>
+	</tab>
 </dreamskin>

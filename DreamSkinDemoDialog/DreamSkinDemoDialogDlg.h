@@ -4,6 +4,7 @@
 
 #pragma once
 #include "afxwin.h"
+#include "afxcmn.h"
 
 
 // CDreamSkinDemoDialogDlg dialog
@@ -67,8 +68,13 @@ protected:
 	int     m_nBtnDemoStatus;
 	int     m_nChk2StateDemoStatus;
 	int     m_nChk3StateDemoStatus;
+
+	void    ShowDialogSettings(BOOL bShow);
+	void    ShowCommonControls(BOOL bShow);
 public:
 	CString m_strEditDemoNormal;
 	CString m_strEditDemoReadOnly;
 	CString m_strEditDemoDisable;
+	CTabCtrl m_tabQuickDemo;
+	afx_msg void OnTcnSelchangeTabQuickDemo(NMHDR *pNMHDR, LRESULT *pResult);
 };

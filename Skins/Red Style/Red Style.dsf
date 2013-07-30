@@ -3,7 +3,7 @@
 	<dialog>
 		<background type="0">
 			<normal>
-				<color start="0x00FCE4E4"/>
+				<color start="0x00F6E9E9"/>
 			</normal>
 		</background>
 		<border type="0">
@@ -114,7 +114,7 @@
 		<unselected>
 			<background type="0">
 				<normal>
-					<color start="0x00F8E6E6"/>
+					<color start="0x00F6E9E9"/>
 				</normal>
 			</background>
 			<text>
@@ -149,7 +149,7 @@
 		<selected>
 			<background type="0">
 				<normal>
-					<color start="0x00F8E6E6"/>
+					<color start="0x00F6E9E9"/>
 				</normal>
 			</background>
 			<text>
@@ -184,7 +184,7 @@
 		<indeterminate>
 			<background type="0">
 				<normal>
-					<color start="0x00F8E6E6"/>
+					<color start="0x00F6E9E9"/>
 				</normal>
 			</background>
 			<text>
@@ -220,7 +220,7 @@
 	<static>
 		<background type="0">
 			<normal>
-				<color start="0x00F8E6E6"/>
+				<color start="0x00F6E9E9"/>
 			</normal>
 		</background>
 		<text>
@@ -297,7 +297,7 @@
 		<readonly>
 			<background type="0">
 				<normal>
-					<color start="0x00F8E6E6"/>
+					<color start="0x00F6E9E9"/>
 				</normal>
 			</background>
 			<border type="0">
@@ -341,4 +341,82 @@
 			</text>
 		</readonly>
 	</edit>
+	<tab>
+		<background type="0">
+			<normal>
+				<color start="0x00F6E9E9"/>
+			</normal>
+		</background>
+		<border type="0">
+			<left width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+			</left>
+			<right width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+			</right>
+			<top width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+			</top>
+			<bottom width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+			</bottom>
+		</border>
+		<button>
+			<background type="0">
+				<normal>
+					<color start="0x00F2D6D6"/>
+				</normal>
+				<hover>
+					<color start="0x00F6E9E9"/>
+				</hover>
+			</background>
+			<border type="0">
+				<left width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</left>
+				<right width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</right>
+				<top width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</top>
+				<bottom width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<hover>
+						<color start="0x00E5C5C5"/>
+					</hover>
+					<press>
+						<color start="0x00F6E9E9"/>
+					</press>
+				</bottom>
+			</border>
+			<text>
+				<normal>
+					<color start="0x00BF4D4D" />
+				</normal>
+				<hover>
+					<color start="0x00C96060" />
+				</hover>
+				<press>
+					<color start="0x00C96060" />
+				</press>
+			</text>
+		</button>
+	</tab>
 </dreamskin>

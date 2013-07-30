@@ -13,6 +13,7 @@ class CImageHandleList;
 #define DRAWTYPE_FILLCOLOR           0
 #define DRAWTYPE_STRETCHBITMAP       1
 #define DRAWTYPE_TILEBITMAP          2
+#define DRAWTYPE_TRANSPARENT         98
 #define DRAWTYPE_CUSTOMIZE           99
 
 //status
@@ -321,6 +322,22 @@ typedef struct _tag_SKINEDIT
 	SKINBORDER       skinBBorderPressReadOnly;        //Bottom border in focus status for read only edit
 }SKINEDIT;
 
+typedef struct _tag_SKINTAB
+{
+	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
+
+	SKINBORDER       skinLBorderNormal;               //Left border in normal status
+	SKINBORDER       skinRBorderNormal;               //Right border in normal status
+	SKINBORDER       skinTBorderNormal;               //Top border in normal status
+	SKINBORDER       skinBBorderNormal;               //Bottom border in normal status
+
+	SKINBUTTON       skinTabButton;                   //Tab button
+	int              nButtonWidth;                    //Button width
+	int              nButtonMargin;                   //Button margin
+	int              nButtonPadding;                  //Button padding
+	int              nDrawOrder;                      //Button draw order
+}SKINTAB;
+
 class CDreamSkinLoader
 {
 public:
@@ -333,6 +350,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameEdit[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
+	static WCHAR wstrSkinFileNodeNameTab[];
 	static WCHAR wstrSkinFileNodeNameBackground[];
 	static WCHAR wstrSkinFileNodeNameBorder[];
 	static WCHAR wstrSkinFileNodeNameColor[];
@@ -387,6 +405,7 @@ public:
 	void GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const;
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
 	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
+	void GetSkinTab(SKINTAB *pSkinTab) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
 
 protected:
@@ -395,6 +414,8 @@ protected:
 	BOOL LoadSkinButton(void *parser);
 	BOOL LoadSkinCheckBox(void *parser);
 	BOOL LoadSkinStatic(void *parser);
+	BOOL LoadSkinTab(void *parser);
+	BOOL LoadButton(void *button, SKINBUTTON *pSkinButton);
 	BOOL LoadColor(void *color, DRAWCOLOR *pDrawColor);
 	BOOL LoadColorItem(void *color, WCHAR* wstrColorItemName, COLORREF *pColor);
 	BOOL LoadFont(void *font, SKINTEXTFONT *pSkinFont);
@@ -414,6 +435,7 @@ protected:
 	SKINBUTTON   m_SkinButton;
 	SKINCHECKBOX m_SkinCheckBox;
 	SKINEDIT     m_SkinEdit;
+	SKINTAB      m_SkinTab;
 	SKINSTATIC   m_SkinStatic;
 	CImageHandleList *m_pImageHandleList;
 };
