@@ -296,6 +296,66 @@
 			</icon>
 		</indeterminate>
 	</checkbox>
+	<radio>
+		<unselected>
+			<background type="0">
+				<normal>
+					<color start="0x00F7F3F7"/>
+				</normal>
+			</background>
+			<text>
+				<normal>
+					<color start="0x00000000" />
+				</normal>
+				<disable>
+					<color start="0x006B6D6B" />
+				</disable>
+			</text>
+			<icon type="1" width="12" height="12">
+				<normal>
+					<image source="Images/radio.bmp" x="0" y="0" width="12" height="12" />
+				</normal>
+				<disable>
+					<image source="Images/radio.bmp" x="12" y="0" width="12" height="12" />
+				</disable>
+				<hover>
+					<image source="Images/radio.bmp" x="24" y="0" width="12" height="12" />
+				</hover>
+				<press>
+					<image source="Images/radio.bmp" x="36" y="0" width="12" height="12" />
+				</press>
+			</icon>
+		</unselected>
+		<selected>
+			<background type="0">
+				<normal>
+					<color start="0x00F7F3F7"/>
+				</normal>
+			</background>
+			<text>
+				<normal>
+					<color start="0x00000000" />
+				</normal>
+				<disable>
+					<color start="0x006B6D6B" />
+				</disable>
+			</text>
+			<icon type="1" width="12" height="12">
+				<normal>
+					<image source="Images/radio.bmp" x="0" y="12" width="12" height="12" />
+				</normal>
+				<disable>
+					<image source="Images/radio.bmp" x="12" y="12" width="12" height="12" />
+				</disable>
+				<hover>
+					<image source="Images/radio.bmp" x="24" y="12" width="12" height="12" />
+				</hover>
+				<press>
+					<image source="Images/radio.bmp" x="36" y="12" width="12" height="12" />
+				</press>
+			</icon>
+		</selected>
+	</radio>
 	<static>
 		<background type="0">
 			<normal>

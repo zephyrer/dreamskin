@@ -200,10 +200,10 @@ BOOL CDreamSkinMain::LoadSkin(const WCHAR *wstrSkinFilePath)
 	CDreamSkinLoader theLoader(pImageHandleList);
 	if (bResult = theLoader.Load(wstrSkinFilePath))
 	{
-		CDreamSkinDialog::ApplySkin(&theLoader);
 		CDreamSkinButton::ApplySkin(&theLoader);
-		CDreamSkinStatic::ApplySkin(&theLoader);
+		CDreamSkinDialog::ApplySkin(&theLoader);
 		CDreamSkinEdit::ApplySkin(&theLoader);
+		CDreamSkinStatic::ApplySkin(&theLoader);
 		CDreamSkinTab::ApplySkin(&theLoader);
 
 		if (m_pImageHandleList)

@@ -10,6 +10,7 @@
 #define BUTTON_TYPE_UNSUPPORTED         -1
 #define BUTTON_TYPE_PUSHBUTTON          0
 #define BUTTON_TYPE_CHECKBOX            1
+#define BUTTON_TYPE_RADIO               2
 
 class CDreamSkinButton : public CDreamSkinWindow
 {
@@ -35,11 +36,14 @@ public:
 	static BOOL GetDefaultButtonSkin(SKINBUTTON *pSkinButton);
 	//Get the default skin for check box
 	static BOOL GetDefaultCheckBoxSkin(SKINCHECKBOX *pSkinCheckBox);
+	//Get the default skin for radio
+	static BOOL GetDefaultRadioSkin(SKINRADIO* pSkinRadio);
 
 public:
 	static WNDPROC          s_DefaultWindowProc;      //Default button window proc
 	static SKINBUTTON       s_SkinButton;             //Button Skin Settings
 	static SKINCHECKBOX     s_SkinCheckBox;           //Check Box Skin Settings
+	static SKINRADIO        s_SkinRadio;              //Radio Skin Settings
 
 protected:
 	static void GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk);
@@ -69,6 +73,8 @@ protected:
 	void    DrawPushButton(HDC hDC, RECT rcWindow);
 	//Draw check box
 	void    DrawCheckBox(HDC hDC, RECT rcWindow);
+	//Draw radio
+	void    DrawRadio(HDC hDC, RECT rcWindow);
 	//Draw the background of the button
 	void    DrawPushButtonBackground(HDC hDC, RECT rcClient);
 	//Draw the border of the button
@@ -83,6 +89,14 @@ protected:
 	void    DrawCheckBoxIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon, int nCheckStatus);
 	//Draw the title of the checkbox
 	void    DrawCheckBoxTitle(HDC hDC, RECT rcClient, SKINTEXT *pSkinText);
+	//Draw the background of the radio
+	void    DrawRadioBackground(HDC hDC, RECT rcClient, int nCheckStatus);
+	//Draw the foreground of the radio
+	void    DrawRadioForeground(HDC hDC, RECT rcClient, int nCheckStatus);
+	//Draw the radio icon
+	void    DrawRadioIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon, int nCheckStatus);
+	//Draw the title of the radio
+	void    DrawRadioTitle(HDC hDC, RECT rcClient, SKINTEXT *pSkinText);
 
 	//Get current button status
 	int     GetCurrentStatus() const;
@@ -91,11 +105,14 @@ protected:
 	RECT    GetPushButtonRectClient(RECT rcWindow);
 	//Get rect of icon
 	RECT    GetCheckBoxRectIcon(RECT rcWindow, SKINICON *pSkinIcon);
+	//Get rect of icon
+	RECT    GetRadioRectIcon(RECT rcWindow, SKINICON *pSkinIcon);
 	
 
 protected:
 	SKINBUTTON      *m_pSkinButton;                   //Instance Related Button Skin Settings
 	SKINCHECKBOX    *m_pSkinCheckBox;                 //Instance Related CheckBox Skin Settings
+	SKINRADIO       *m_pSkinRadio;                    //Instance Related Radio Skin Settings
 
 	int              m_nBtnType;                      //The button type
 	BOOL             m_bMouseIn;                      //Whether the mouse over the button

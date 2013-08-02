@@ -62,6 +62,7 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameEdit[] = L"edit";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameButton[] = L"button";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameCheckBox[] = L"checkbox";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRadio[] = L"radio";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameStatic[] = L"static";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameTab[] = L"tab";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBackground[] = L"background";
@@ -165,6 +166,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinButton::GetDefaultCheckBoxSkin(&m_SkinCheckBox);
 		LoadSkinCheckBox(parser);
 
+		//Load Skin Radio
+		CDreamSkinButton::GetDefaultRadioSkin(&m_SkinRadio);
+		LoadSkinRadio(parser);
+
 		//Load Skin Edit
 		CDreamSkinEdit::GetDefaultSkin(&m_SkinEdit);
 		LoadSkinEdit(parser);
@@ -242,6 +247,14 @@ void CDreamSkinLoader::GetSkinTab(SKINTAB *pSkinTab) const
 	if (pSkinTab)
 	{
 		memcpy(pSkinTab, &m_SkinTab, sizeof(SKINTAB));
+	}
+}
+
+void CDreamSkinLoader::GetSkinRadio(SKINRADIO *pSkinRadio) const
+{
+	if (pSkinRadio)
+	{
+		memcpy(pSkinRadio, &m_SkinRadio, sizeof(SKINRADIO));
 	}
 }
 
@@ -504,12 +517,6 @@ BOOL CDreamSkinLoader::LoadSkinCheckBox(void *parser)
 
 		if (m_SkinCheckBox.skinBkPressUnchecked.nDefault)
 			m_SkinCheckBox.skinBkPressUnchecked = m_SkinCheckBox.skinBkHoverUnchecked;
-
-		if (m_SkinCheckBox.skinBkNormalChecked.nDefault)
-			m_SkinCheckBox.skinBkNormalChecked = m_SkinCheckBox.skinBkNormalUnchecked;
-
-		if (m_SkinCheckBox.skinBkNormalPartChecked.nDefault)
-			m_SkinCheckBox.skinBkNormalPartChecked = m_SkinCheckBox.skinBkNormalUnchecked;
 
 		if (m_SkinCheckBox.skinBkNormalChecked.nDefault)
 			m_SkinCheckBox.skinBkNormalChecked = m_SkinCheckBox.skinBkNormalUnchecked;
@@ -899,6 +906,191 @@ BOOL CDreamSkinLoader::LoadSkinEdit(void *parser)
 
 		if (m_SkinEdit.skinBkPressReadOnly.nDefault)
 			m_SkinEdit.skinBkPressReadOnly = m_SkinEdit.skinBkHoverReadOnly;
+	} //end load checkbox
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadSkinRadio(void *parser)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pStatusNode, *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pRadioNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameRadio);
+	const WCHAR *wstrNodeName;
+	SKINTEXT *pSkinTextList[DRAWSTATUS_PRESS + 1];
+	SKINICON *pSkinIconList[DRAWSTATUS_PRESS + 1];
+
+	if (pRadioNode)
+	{
+		//loop to load all settings
+		pStatusNode = pRadioNode->getFirstChild();
+		while (pStatusNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pStatusNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameUnselected) == 0)
+			{
+				//loop to load all settings
+				pParentNode = pStatusNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinRadio.skinBkNormalUnchecked.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinRadio.skinBkDisableUnchecked.nDrawType = m_SkinRadio.skinBkNormalUnchecked.nDrawType;
+								m_SkinRadio.skinBkHoverUnchecked.nDrawType = m_SkinRadio.skinBkNormalUnchecked.nDrawType;
+								m_SkinRadio.skinBkPressUnchecked.nDrawType = m_SkinRadio.skinBkNormalUnchecked.nDrawType;
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinRadio.skinBkNormalUnchecked));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadBackground(pChildNode, &(m_SkinRadio.skinBkDisableUnchecked));
+							}//disable
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadBackground(pChildNode, &(m_SkinRadio.skinBkHoverUnchecked));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadBackground(pChildNode, &(m_SkinRadio.skinBkPressUnchecked));
+							}//press
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+					{//text
+						pSkinTextList[DRAWSTATUS_NORMAL] = &m_SkinRadio.skinTxtNormalUnchecked;
+						pSkinTextList[DRAWSTATUS_DISABLE] = &m_SkinRadio.skinTxtDisableUnchecked;
+						pSkinTextList[DRAWSTATUS_HOVER] = &m_SkinRadio.skinTxtHoverUnchecked;
+						pSkinTextList[DRAWSTATUS_PRESS] = &m_SkinRadio.skinTxtPressUnchecked;
+						LoadText(pParentNode, pSkinTextList, DRAWSTATUS_PRESS + 1);
+					}//text
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIcon) == 0)
+					{//icon
+						pSkinIconList[DRAWSTATUS_NORMAL] = &m_SkinRadio.iconNormalUnchecked;
+						pSkinIconList[DRAWSTATUS_DISABLE] = &m_SkinRadio.iconDisableUnchecked;
+						pSkinIconList[DRAWSTATUS_HOVER] = &m_SkinRadio.iconHoverUnchecked;
+						pSkinIconList[DRAWSTATUS_PRESS] = &m_SkinRadio.iconPressUnchecked;
+						LoadIcon(pParentNode, pSkinIconList, DRAWSTATUS_PRESS + 1);
+					}//icon
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//unselected
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameSelected) == 0)
+			{
+				//loop to load all settings
+				pParentNode = pStatusNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinRadio.skinBkNormalChecked.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinRadio.skinBkDisableChecked.nDrawType = m_SkinRadio.skinBkNormalChecked.nDrawType;
+								m_SkinRadio.skinBkHoverChecked.nDrawType = m_SkinRadio.skinBkNormalChecked.nDrawType;
+								m_SkinRadio.skinBkPressChecked.nDrawType = m_SkinRadio.skinBkNormalChecked.nDrawType;
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinRadio.skinBkNormalChecked));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadBackground(pChildNode, &(m_SkinRadio.skinBkDisableChecked));
+							}//disable
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadBackground(pChildNode, &(m_SkinRadio.skinBkHoverChecked));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadBackground(pChildNode, &(m_SkinRadio.skinBkPressChecked));
+							}//press
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+					{//text
+						pSkinTextList[DRAWSTATUS_NORMAL] = &m_SkinRadio.skinTxtNormalChecked;
+						pSkinTextList[DRAWSTATUS_DISABLE] = &m_SkinRadio.skinTxtDisableChecked;
+						pSkinTextList[DRAWSTATUS_HOVER] = &m_SkinRadio.skinTxtHoverChecked;
+						pSkinTextList[DRAWSTATUS_PRESS] = &m_SkinRadio.skinTxtPressChecked;
+						LoadText(pParentNode, pSkinTextList, DRAWSTATUS_PRESS + 1);
+					}//text
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIcon) == 0)
+					{//icon
+						pSkinIconList[DRAWSTATUS_NORMAL] = &m_SkinRadio.iconNormalChecked;
+						pSkinIconList[DRAWSTATUS_DISABLE] = &m_SkinRadio.iconDisableChecked;
+						pSkinIconList[DRAWSTATUS_HOVER] = &m_SkinRadio.iconHoverChecked;
+						pSkinIconList[DRAWSTATUS_PRESS] = &m_SkinRadio.iconPressChecked;
+						LoadIcon(pParentNode, pSkinIconList, DRAWSTATUS_PRESS + 1);
+					}//icon
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//selected
+
+			pStatusNode = pStatusNode->getNextSibling();
+		}
+
+		if (m_SkinRadio.skinBkDisableUnchecked.nDefault)
+			m_SkinRadio.skinBkDisableUnchecked = m_SkinRadio.skinBkNormalUnchecked;
+
+		if (m_SkinRadio.skinBkHoverUnchecked.nDefault)
+			m_SkinRadio.skinBkHoverUnchecked = m_SkinRadio.skinBkNormalUnchecked;
+
+		if (m_SkinRadio.skinBkPressUnchecked.nDefault)
+			m_SkinRadio.skinBkPressUnchecked = m_SkinRadio.skinBkHoverUnchecked;
+
+		if (m_SkinRadio.skinBkNormalChecked.nDefault)
+			m_SkinRadio.skinBkNormalChecked = m_SkinRadio.skinBkNormalUnchecked;
+
+		if (m_SkinRadio.skinBkDisableChecked.nDefault)
+			m_SkinRadio.skinBkDisableChecked = m_SkinRadio.skinBkNormalChecked;
+
+		if (m_SkinRadio.skinBkHoverChecked.nDefault)
+			m_SkinRadio.skinBkHoverChecked = m_SkinRadio.skinBkNormalChecked;
+
+		if (m_SkinRadio.skinBkPressChecked.nDefault)
+			m_SkinRadio.skinBkPressChecked = m_SkinRadio.skinBkHoverChecked;
 	} //end load checkbox
 
 	return bResult;

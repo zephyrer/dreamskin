@@ -217,6 +217,78 @@
 			</icon>
 		</indeterminate>
 	</checkbox>
+	<radio>
+		<unselected>
+			<background type="0">
+				<normal>
+					<color start="0x00F6E9E9"/>
+				</normal>
+			</background>
+			<text>
+				<normal>
+					<color start="0x00BF4D4D" />
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+				<hover>
+					<color start="0x00FF0000" />
+				</hover>
+				<press>
+					<color start="0x00C14848" />
+				</press>
+			</text>
+			<icon type="99" width="13" height="13">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+				<hover>
+					<color start="0x00FF0000" />
+				</hover>
+				<press>
+					<color start="0x00C14848" />
+				</press>
+			</icon>
+		</unselected>
+		<selected>
+			<background type="0">
+				<normal>
+					<color start="0x00F6E9E9"/>
+				</normal>
+			</background>
+			<text>
+				<normal>
+					<color start="0x008F1D1D" />
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+				<hover>
+					<color start="0x00FF0000" />
+				</hover>
+				<press>
+					<color start="0x00C14848" />
+				</press>
+			</text>
+			<icon type="99" width="13" height="13">
+				<normal>
+					<color start="0x00BF4D4D"/>
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+				<hover>
+					<color start="0x00FF0000" />
+				</hover>
+				<press>
+					<color start="0x00C14848" />
+				</press>
+			</icon>
+		</selected>
+	</radio>
 	<static>
 		<background type="0">
 			<normal>

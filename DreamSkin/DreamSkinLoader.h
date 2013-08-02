@@ -260,6 +260,43 @@ typedef struct _tag_SKINCHECKBOX
 	SKINICON         iconPressPartChecked;            //Icon in press and partially checked status
 }SKINCHECKBOX;
 
+//skin settings for radio
+typedef struct _tag_SKINRADIO
+{
+	int              nRgnType;                        //Check box region type
+	COLORREF         clrTansparent;                   //Transparent color for creating windows region
+
+	SKINBACKGROUND   skinBkNormalUnchecked;           //Background in normal and unchecked status
+	SKINBACKGROUND   skinBkDisableUnchecked;          //Background in disable and unchecked status
+	SKINBACKGROUND   skinBkHoverUnchecked;            //Background in hover and unchecked status
+	SKINBACKGROUND   skinBkPressUnchecked;            //Background in press and unchecked status
+
+	SKINBACKGROUND   skinBkNormalChecked;             //Background in normal and checked status
+	SKINBACKGROUND   skinBkDisableChecked;            //Background in disable and checked status
+	SKINBACKGROUND   skinBkHoverChecked;              //Background in hover and checked status
+	SKINBACKGROUND   skinBkPressChecked;              //Background in press and checked status
+
+	SKINTEXT         skinTxtNormalUnchecked;          //Text in normal and unchecked status
+	SKINTEXT         skinTxtDisableUnchecked;         //Text in disable and unchecked status
+	SKINTEXT         skinTxtHoverUnchecked;           //Text in hover and unchecked status
+	SKINTEXT         skinTxtPressUnchecked;           //Text in press and unchecked status
+
+	SKINTEXT         skinTxtNormalChecked;            //Text in normal and checked status
+	SKINTEXT         skinTxtDisableChecked;           //Text in disable and checked status
+	SKINTEXT         skinTxtHoverChecked;             //Text in hover and checked status
+	SKINTEXT         skinTxtPressChecked;             //Text in press and checked status
+
+	SKINICON         iconNormalUnchecked;             //Icon in normal and unchecked status
+	SKINICON         iconDisableUnchecked;            //Icon in disable and unchecked status
+	SKINICON         iconHoverUnchecked;              //Icon in hover and unchecked status
+	SKINICON         iconPressUnchecked;              //Icon in press and unchecked status
+
+	SKINICON         iconNormalChecked;               //Icon in normal and checked status
+	SKINICON         iconDisableChecked;              //Icon in disable and checked status
+	SKINICON         iconHoverChecked;                //Icon in hover and checked status
+	SKINICON         iconPressChecked;                //Icon in press and checked status
+}SKINRADIO;
+
 typedef struct _tag_SKINSTATIC
 {
 	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
@@ -349,6 +386,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameCheckBox[];
 	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameEdit[];
+	static WCHAR wstrSkinFileNodeNameRadio[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameTab[];
 	static WCHAR wstrSkinFileNodeNameBackground[];
@@ -405,14 +443,16 @@ public:
 	void GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const;
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
 	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
-	void GetSkinTab(SKINTAB *pSkinTab) const;
+	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
+	void GetSkinTab(SKINTAB *pSkinTab) const;
 
 protected:
 	BOOL LoadSkinDialog(void *parser);
 	BOOL LoadSkinEdit(void *parser);
 	BOOL LoadSkinButton(void *parser);
 	BOOL LoadSkinCheckBox(void *parser);
+	BOOL LoadSkinRadio(void *parser);
 	BOOL LoadSkinStatic(void *parser);
 	BOOL LoadSkinTab(void *parser);
 	BOOL LoadButton(void *button, SKINBUTTON *pSkinButton);
@@ -435,8 +475,10 @@ protected:
 	SKINBUTTON   m_SkinButton;
 	SKINCHECKBOX m_SkinCheckBox;
 	SKINEDIT     m_SkinEdit;
-	SKINTAB      m_SkinTab;
+	SKINRADIO    m_SkinRadio;
 	SKINSTATIC   m_SkinStatic;
+	SKINTAB      m_SkinTab;
+	
 	CImageHandleList *m_pImageHandleList;
 };
 

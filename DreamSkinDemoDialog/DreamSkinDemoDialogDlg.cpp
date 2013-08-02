@@ -58,6 +58,11 @@ LRESULT WINAPI DefWindowProcChkDemo(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	return ((CDreamSkinDemoDialogDlg*)(AfxGetApp()->GetMainWnd()))->DefWindowProcChkDemo(hWnd, message, wParam, lParam);
 }
 
+LRESULT WINAPI DefWindowProcRadioDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	return ((CDreamSkinDemoDialogDlg*)(AfxGetApp()->GetMainWnd()))->DefWindowProcRadioDemo(hWnd, message, wParam, lParam);
+}
+
 LRESULT CDreamSkinDemoDialogDlg::DefWindowProcBtnDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (::IsWindow(m_hWnd) && ::IsWindow(hWnd))
@@ -174,9 +179,9 @@ LRESULT CDreamSkinDemoDialogDlg::DefWindowProcChkDemo(HWND hWnd, UINT message, W
 			break;
 		case WM_LBUTTONDOWN:
 			nStatus = nStatus * 10 + 2;
-			if (m_nBtnDemoStatus != nStatus)
+			if (*pChkDemoStatus != nStatus)
 			{
-				m_nBtnDemoStatus = nStatus;
+				*pChkDemoStatus = nStatus;
 				_tcscat_s(tstrText, 64, _T("Press"));
 				::SetWindowText(hWnd, tstrText);
 			}
@@ -185,6 +190,107 @@ LRESULT CDreamSkinDemoDialogDlg::DefWindowProcChkDemo(HWND hWnd, UINT message, W
 	}
 
 	return SkinProcChkDemo(hWnd, message, wParam, lParam);
+}
+
+LRESULT CDreamSkinDemoDialogDlg::DefWindowProcRadioDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	TCHAR tstrText[64];
+	int *pRadioDemoStatus;
+	int nStatus;
+	WNDPROC SkinProcRadioDemo;
+	if (::IsWindow(m_hWnd) && ::IsWindow(hWnd))
+	{
+		if (hWnd == ::GetDlgItem(m_hWnd, IDC_RADIO_NORMAL1))
+		{
+			pRadioDemoStatus = &m_nRadioDemo1Status;
+			_tcscpy_s(tstrText, 64, _T("Radio1 - "));
+			SkinProcRadioDemo = m_SkinProcRadio1Demo;
+		}
+		else
+		{
+			pRadioDemoStatus = &m_nRadioDemo2Status;
+			_tcscpy_s(tstrText, 64, _T("Radio2 - "));
+			SkinProcRadioDemo = m_SkinProcRadio2Demo;
+		}
+
+		switch(::SendMessage(hWnd, BM_GETCHECK, 0, 0))
+		{
+		case BST_CHECKED:
+			nStatus = 1;
+			_tcscat_s(tstrText, 64, _T("Selected "));
+			break;
+		default:
+			nStatus = 0;
+			_tcscat_s(tstrText, 64, _T("Unselected "));
+			break;
+		}
+
+		switch(message)
+		{
+		case WM_MOUSEMOVE:
+			if (::GetCapture() == hWnd)
+			{
+				nStatus = nStatus * 10 + 2;
+				if (*pRadioDemoStatus != nStatus)
+				{
+					*pRadioDemoStatus = nStatus;
+					_tcscat_s(tstrText, 64, _T("Press"));
+					::SetWindowText(hWnd, tstrText);
+				}
+			}
+			else
+			{
+				nStatus = nStatus * 10 + 1;
+				if (*pRadioDemoStatus != nStatus)
+				{
+					*pRadioDemoStatus = nStatus;
+					_tcscat_s(tstrText, 64, _T("Hover"));
+					::SetWindowText(hWnd, tstrText);
+				}
+			}
+			break;
+		case WM_MOUSELEAVE:
+			nStatus = nStatus * 10 + 0;
+			if (*pRadioDemoStatus != nStatus)
+			{
+				*pRadioDemoStatus = nStatus;
+				_tcscat_s(tstrText, 64, _T("Normal"));
+				::SetWindowText(hWnd, tstrText);
+			}
+			break;
+		case WM_LBUTTONDOWN:
+			nStatus = nStatus * 10 + 2;
+			if (*pRadioDemoStatus != nStatus)
+			{
+				*pRadioDemoStatus = nStatus;
+				_tcscat_s(tstrText, 64, _T("Press"));
+				::SetWindowText(hWnd, tstrText);
+			}
+			break;
+		case BM_SETCHECK:
+			nStatus = nStatus * 10 + (*pRadioDemoStatus % 10);
+			if (*pRadioDemoStatus != nStatus)
+			{
+				*pRadioDemoStatus = nStatus;
+				switch (nStatus % 10)
+				{
+				case 1:
+					_tcscat_s(tstrText, 64, _T("Hover"));
+					break;
+				case 2:
+					_tcscat_s(tstrText, 64, _T("Press"));
+					break;
+				default:
+					_tcscat_s(tstrText, 64, _T("Normal"));
+					break;
+				}
+				
+				::SetWindowText(hWnd, tstrText);
+			}
+		}
+	}
+
+	return SkinProcRadioDemo(hWnd, message, wParam, lParam);
 }
 
 CDreamSkinDemoDialogDlg::CDreamSkinDemoDialogDlg(CWnd* pParent /*=NULL*/)
@@ -200,13 +306,17 @@ CDreamSkinDemoDialogDlg::CDreamSkinDemoDialogDlg(CWnd* pParent /*=NULL*/)
 	, m_nHookedWindowCount(0)
 	, m_strSkinPath(_T(""))
 	, m_strEditDemoNormal(_T("Normal Edit Control"))
-	, m_strEditDemoReadOnly(_T("Read Only Edit Control"))
+	, m_strEditDemoReadOnly(_T("Read Only - Radio1 Selected"))
 	, m_strEditDemoDisable(_T("Disabled Edit Control"))
+	, m_nRadioDemo(0)
+	, m_nRadioDisabled(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_nBtnDemoStatus = 0;
 	m_nChk2StateDemoStatus = 0;
 	m_nChk3StateDemoStatus = 0;
+	m_nRadioDemo1Status = 0;
+	m_nRadioDemo2Status = 0;
 }
 
 void CDreamSkinDemoDialogDlg::UpdateDreamSkinStatus()
@@ -238,6 +348,8 @@ void CDreamSkinDemoDialogDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_DEMO_READONLY, m_strEditDemoReadOnly);
 	DDX_Text(pDX, IDC_EDIT_DEMO_DISABLE, m_strEditDemoDisable);
 	DDX_Control(pDX, IDC_TAB_QUICK_DEMO, m_tabQuickDemo);
+	DDX_Radio(pDX, IDC_RADIO_NORMAL1, m_nRadioDemo);
+	DDX_Radio(pDX, IDC_RADIO_DISABLE_SELECTED, m_nRadioDisabled);
 }
 
 BEGIN_MESSAGE_MAP(CDreamSkinDemoDialogDlg, CDialog)
@@ -257,6 +369,9 @@ BEGIN_MESSAGE_MAP(CDreamSkinDemoDialogDlg, CDialog)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BTN_LOADSKIN, &CDreamSkinDemoDialogDlg::OnBnClickedBtnLoadskin)
 	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_QUICK_DEMO, &CDreamSkinDemoDialogDlg::OnTcnSelchangeTabQuickDemo)
+	ON_BN_CLICKED(IDC_RADIO_NORMAL1, &CDreamSkinDemoDialogDlg::OnBnClickedRadioNormal)
+	ON_BN_CLICKED(IDC_RADIO_NORMAL2, &CDreamSkinDemoDialogDlg::OnBnClickedRadioNormal)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -348,6 +463,11 @@ void CDreamSkinDemoDialogDlg::ShowCommonControls(BOOL bShow)
 	GetDlgItem(IDC_EDIT_DEMO_NORMAL)->ShowWindow(nCmdShow);
 	GetDlgItem(IDC_EDIT_DEMO_READONLY)->ShowWindow(nCmdShow);
 	GetDlgItem(IDC_EDIT_DEMO_DISABLE)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_STATIC_RATIOS)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_RADIO_NORMAL1)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_RADIO_NORMAL2)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_RADIO_DISABLE_SELECTED)->ShowWindow(nCmdShow);
+	GetDlgItem(IDC_RADIO_DISABLE_UNSELECTED)->ShowWindow(nCmdShow);
 }
 
 void CDreamSkinDemoDialogDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -424,6 +544,12 @@ void CDreamSkinDemoDialogDlg::OnBnClickedDreamskinEnable()
 		GetDlgItem(IDC_CHK_DEMO_3STATE_NORMAL)->EnableWindow(FALSE);
 		GetDlgItem(IDC_CHK_DEMO_3STATE_NORMAL)->EnableWindow();
 
+		GetDlgItem(IDC_RADIO_NORMAL1)->EnableWindow(FALSE);
+		GetDlgItem(IDC_RADIO_NORMAL1)->EnableWindow();
+
+		GetDlgItem(IDC_RADIO_NORMAL2)->EnableWindow(FALSE);
+		GetDlgItem(IDC_RADIO_NORMAL2)->EnableWindow();
+
 		m_SkinProcBtnDemo = (WNDPROC)::GetWindowLong(GetDlgItem(IDC_BTN_DEMO_NORMAL)->m_hWnd, GWL_WNDPROC);
 		::SetWindowLong(GetDlgItem(IDC_BTN_DEMO_NORMAL)->m_hWnd, GWL_WNDPROC, (LONG)::DefWindowProcBtnDemo);
 
@@ -469,9 +595,64 @@ void CDreamSkinDemoDialogDlg::OnBnClickedDreamskinEnable()
 		::SetWindowText(hWnd, tstrText);
 		m_SkinProcChk3StateDemo = (WNDPROC)::GetWindowLong(hWnd, GWL_WNDPROC);
 		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)::DefWindowProcChkDemo);
+
+		hWnd = ::GetDlgItem(m_hWnd, IDC_RADIO_NORMAL1);
+		m_SkinProcRadio1Demo = (WNDPROC)::GetWindowLong(hWnd, GWL_WNDPROC);
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)::DefWindowProcRadioDemo);
+
+		hWnd = ::GetDlgItem(m_hWnd, IDC_RADIO_NORMAL2);
+		m_SkinProcRadio2Demo = (WNDPROC)::GetWindowLong(hWnd, GWL_WNDPROC);
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)::DefWindowProcRadioDemo);
 	}
 	else
 	{
+		hWnd = ::GetDlgItem(m_hWnd, IDC_CHK_DEMO_NORMAL);
+		_tcscpy_s(tstrText, 64, _T("2-States Checkbox - "));
+		switch(::SendMessage(hWnd, BM_GETCHECK, 0, 0))
+		{
+		case BST_CHECKED:
+			m_nChk2StateDemoStatus = 10;
+			_tcscat_s(tstrText, 64, _T("Checked Normal"));
+			break;
+		case BST_INDETERMINATE:
+			m_nChk2StateDemoStatus = 20;
+			_tcscat_s(tstrText, 64, _T("Partially-Checked Normal"));
+			break;
+		default:
+			m_nChk2StateDemoStatus = 0;
+			_tcscat_s(tstrText, 64, _T("Unchecked Normal"));
+			break;
+		}
+		::SetWindowText(hWnd, tstrText);
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)m_SkinProcChk2StateDemo);
+		
+
+		hWnd = ::GetDlgItem(m_hWnd, IDC_CHK_DEMO_3STATE_NORMAL);
+		_tcscpy_s(tstrText, 64, _T("3-States Checkbox - "));
+		switch(::SendMessage(hWnd, BM_GETCHECK, 0, 0))
+		{
+		case BST_CHECKED:
+			m_nChk3StateDemoStatus = 10;
+			_tcscat_s(tstrText, 64, _T("Checked Normal"));
+			break;
+		case BST_INDETERMINATE:
+			m_nChk3StateDemoStatus = 20;
+			_tcscat_s(tstrText, 64, _T("Partially-Checked Normal"));
+			break;
+		default:
+			m_nChk3StateDemoStatus = 0;
+			_tcscat_s(tstrText, 64, _T("Unchecked Normal"));
+			break;
+		}
+		::SetWindowText(hWnd, tstrText);
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)m_SkinProcChk3StateDemo);
+
+		hWnd = ::GetDlgItem(m_hWnd, IDC_RADIO_NORMAL1);
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)m_SkinProcRadio1Demo);
+
+		hWnd = ::GetDlgItem(m_hWnd, IDC_RADIO_NORMAL2);
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG)m_SkinProcRadio2Demo);
+
 		DreamSkinExit();
 	}
 
@@ -684,4 +865,25 @@ void CDreamSkinDemoDialogDlg::OnTcnSelchangeTabQuickDemo(NMHDR *pNMHDR, LRESULT 
 	}
 
 	*pResult = 0;
+}
+
+void CDreamSkinDemoDialogDlg::OnBnClickedRadioNormal()
+{
+	UpdateData();
+
+	if (m_nRadioDemo)
+	{
+		m_strEditDemoReadOnly = _T("Read Only - Radio2 Selected");
+	}
+	else
+	{
+		m_strEditDemoReadOnly = _T("Read Only - Radio1 Selected");
+	}
+
+	UpdateData(FALSE);
+}
+
+void CDreamSkinDemoDialogDlg::OnDestroy()
+{
+	CDialog::OnDestroy();
 }

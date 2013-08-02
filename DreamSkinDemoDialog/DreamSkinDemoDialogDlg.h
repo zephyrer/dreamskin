@@ -36,6 +36,7 @@ protected:
 public:
 	LRESULT DefWindowProcBtnDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	LRESULT DefWindowProcChkDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	LRESULT DefWindowProcRadioDemo(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	BOOL m_bSysMenuInclude;
 	BOOL m_bEnableDreamSkin;
@@ -60,14 +61,20 @@ public:
 	afx_msg void OnBnClickedIconInclude();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnBnClickedBtnLoadskin();
+	afx_msg void OnTcnSelchangeTabQuickDemo(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedRadioNormal();
 	
 protected:
 	WNDPROC	m_SkinProcBtnDemo;
 	WNDPROC	m_SkinProcChk2StateDemo;
 	WNDPROC	m_SkinProcChk3StateDemo;
+	WNDPROC	m_SkinProcRadio1Demo;
+	WNDPROC	m_SkinProcRadio2Demo;
 	int     m_nBtnDemoStatus;
 	int     m_nChk2StateDemoStatus;
 	int     m_nChk3StateDemoStatus;
+	int     m_nRadioDemo1Status;
+	int     m_nRadioDemo2Status;
 
 	void    ShowDialogSettings(BOOL bShow);
 	void    ShowCommonControls(BOOL bShow);
@@ -76,5 +83,8 @@ public:
 	CString m_strEditDemoReadOnly;
 	CString m_strEditDemoDisable;
 	CTabCtrl m_tabQuickDemo;
-	afx_msg void OnTcnSelchangeTabQuickDemo(NMHDR *pNMHDR, LRESULT *pResult);
+	
+	int m_nRadioDemo;
+	int m_nRadioDisabled;
+	afx_msg void OnDestroy();
 };
