@@ -44,6 +44,7 @@ DREAMSKIN_API BOOL DreamSkinStatusW(DREAMSKIN_STATUSW* pDreamSkinStatus)
 	if (pDreamSkinStatus)
 	{
 		pDreamSkinStatus->nHookedWindowCount = theSkinMain.GetHookedWindowCount();
+		pDreamSkinStatus->nHookedThreadCount = theSkinMain.GetHookedThreadCount();
 		return TRUE;
 	}
 	else
@@ -60,6 +61,7 @@ DREAMSKIN_API BOOL DreamSkinStatusA(DREAMSKIN_STATUSA* pDreamSkinStatus)
 		if(DreamSkinStatusW(&status))
 		{
 			pDreamSkinStatus->nHookedWindowCount = status.nHookedWindowCount;
+			pDreamSkinStatus->nHookedThreadCount = status.nHookedThreadCount;
 			return TRUE;
 		}
 	}

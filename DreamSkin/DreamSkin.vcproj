@@ -217,6 +217,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\HookedThreadList.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\HookedWindowList.cpp"
 				>
 			</File>
@@ -276,6 +280,10 @@
 			</File>
 			<File
 				RelativePath=".\HexBin.h"
+				>
+			</File>
+			<File
+				RelativePath=".\HookedThreadList.h"
 				>
 			</File>
 			<File

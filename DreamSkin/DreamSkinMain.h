@@ -9,6 +9,7 @@ class CHookWindowClassList;
 class CHookedWindowList;
 class CDreamSkinWindow;
 class CImageHandleList;
+class CHookedThreadList;
 
 class CDreamSkinMain
 {
@@ -24,6 +25,7 @@ public:
 
 	BOOL AddHookedWindow(HWND hWnd, WNDPROC OrgWndProc);
 	CDreamSkinWindow* GetHookedWindow(HWND hWnd);
+	UINT GetHookedThreadCount();
 	UINT GetHookedWindowCount();
 	void DelHookedWindow(HWND hWnd);
 
@@ -35,8 +37,8 @@ protected:
 	BOOL    InitDefaultHookWindowClassList();
 
 protected:
-	HHOOK  m_hOrgWndHook;
 	CHookWindowClassList *m_pDefaultHookWindowClasses;
+	CHookedThreadList    *m_pHookedThreads;
 	CHookedWindowList    *m_pHookedWindows;
 	CImageHandleList     *m_pImageHandleList;
 };

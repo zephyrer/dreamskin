@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "DreamSkinDemoDialog.h"
 #include "DreamSkinDemoDialogDlg.h"
+#include "CtrlDemoThread.h"
 
 //DreamSkin Support
 #include "../DreamSkin/DreamSkin.h"
@@ -310,6 +311,7 @@ CDreamSkinDemoDialogDlg::CDreamSkinDemoDialogDlg(CWnd* pParent /*=NULL*/)
 	, m_strEditDemoDisable(_T("Disabled Edit Control"))
 	, m_nRadioDemo(0)
 	, m_nRadioDisabled(0)
+	, m_nHookedThreadCount(0)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	m_nBtnDemoStatus = 0;
@@ -321,14 +323,23 @@ CDreamSkinDemoDialogDlg::CDreamSkinDemoDialogDlg(CWnd* pParent /*=NULL*/)
 
 void CDreamSkinDemoDialogDlg::UpdateDreamSkinStatus()
 {
+	BOOL bUpdate = FALSE;
 	DREAMSKIN_STATUS status;
 	DreamSkinStatus(&status);
 	if (m_nHookedWindowCount != status.nHookedWindowCount)
 	{
 		m_nHookedWindowCount = status.nHookedWindowCount;
-
-		UpdateData(FALSE);
+		bUpdate = TRUE;
 	}
+
+	if (m_nHookedThreadCount != status.nHookedThreadCount)
+	{
+		m_nHookedThreadCount = status.nHookedThreadCount;
+		bUpdate = TRUE;
+	}
+
+	if (bUpdate)
+		UpdateData(FALSE);
 }
 
 void CDreamSkinDemoDialogDlg::DoDataExchange(CDataExchange* pDX)
@@ -343,6 +354,7 @@ void CDreamSkinDemoDialogDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_BORDER_SIZABLE, m_bBorderSizable);
 	DDX_Check(pDX, IDC_ICON_INCLUDE, m_bIconInclude);
 	DDX_Text(pDX, IDC_EDIT_HOOKED_WINDOW_COUNT, m_nHookedWindowCount);
+	DDX_Text(pDX, IDC_EDIT_HOOKED_THREAD_COUNT, m_nHookedThreadCount);
 	DDX_Text(pDX, IDC_EDIT_SKIN_PATH, m_strSkinPath);
 	DDX_Text(pDX, IDC_EDIT_DEMO_NORMAL, m_strEditDemoNormal);
 	DDX_Text(pDX, IDC_EDIT_DEMO_READONLY, m_strEditDemoReadOnly);
@@ -372,6 +384,7 @@ BEGIN_MESSAGE_MAP(CDreamSkinDemoDialogDlg, CDialog)
 	ON_BN_CLICKED(IDC_RADIO_NORMAL1, &CDreamSkinDemoDialogDlg::OnBnClickedRadioNormal)
 	ON_BN_CLICKED(IDC_RADIO_NORMAL2, &CDreamSkinDemoDialogDlg::OnBnClickedRadioNormal)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BTN_NEWDIALOG, &CDreamSkinDemoDialogDlg::OnBnClickedBtnNewdialog)
 END_MESSAGE_MAP()
 
 
@@ -417,6 +430,7 @@ BOOL CDreamSkinDemoDialogDlg::OnInitDialog()
 	DREAMSKIN_STATUS status;
 	DreamSkinStatus(&status);
 	m_nHookedWindowCount = status.nHookedWindowCount;
+	m_nHookedThreadCount = status.nHookedThreadCount;
 
 	SetTimer(1, 1000, 0);
 	
@@ -886,4 +900,11 @@ void CDreamSkinDemoDialogDlg::OnBnClickedRadioNormal()
 void CDreamSkinDemoDialogDlg::OnDestroy()
 {
 	CDialog::OnDestroy();
+}
+
+void CDreamSkinDemoDialogDlg::OnBnClickedBtnNewdialog()
+{
+	CWinThread* pThread = AfxBeginThread( RUNTIME_CLASS( CCtrlDemoThread ) );
+	if ( !pThread )
+		AfxMessageBox( _T( "Thread creation failed!" ), MB_YESNOCANCEL | MB_ICONWARNING ); 
 }

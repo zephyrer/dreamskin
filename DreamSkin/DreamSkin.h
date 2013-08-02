@@ -32,10 +32,12 @@ DREAMSKIN_API void DreamSkinExit();
 typedef struct _tag_DREAMSKIN_STATUSA
 {
 	UINT     nHookedWindowCount;
+	UINT     nHookedThreadCount;
 }DREAMSKIN_STATUSA;
 typedef struct _tag_DREAMSKIN_STATUSW
 {
 	UINT     nHookedWindowCount;
+	UINT     nHookedThreadCount;
 }DREAMSKIN_STATUSW;
 DREAMSKIN_API BOOL DreamSkinStatusA(DREAMSKIN_STATUSA* pDreamSkinStatus);
 DREAMSKIN_API BOOL DreamSkinStatusW(DREAMSKIN_STATUSW* pDreamSkinStatus);

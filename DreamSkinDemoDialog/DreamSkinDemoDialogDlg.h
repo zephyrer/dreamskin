@@ -48,6 +48,7 @@ public:
 	BOOL m_bIconInclude;
 
 	UINT m_nHookedWindowCount;
+	UINT m_nHookedThreadCount;
 	CString m_strSkinPath;
 
 	afx_msg void OnBnClickedSysmenuInclude();
@@ -87,4 +88,5 @@ public:
 	int m_nRadioDemo;
 	int m_nRadioDisabled;
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedBtnNewdialog();
 };

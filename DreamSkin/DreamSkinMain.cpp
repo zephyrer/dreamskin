@@ -2,6 +2,7 @@
 #include <windows.h>
 #include "HookWindowClassList.h"
 #include "HookedWindowList.h"
+#include "HookedThreadList.h"
 #include "ImageHandleList.h"
 #include "DreamSkinLoader.h"
 #include "DreamSkinMain.h"
@@ -27,7 +28,7 @@ LRESULT CALLBACK CDreamSkinMain::DreamSkinCallWndProc( int nCode, WPARAM wParam,
 
 CDreamSkinMain::CDreamSkinMain()
 {
-	m_hOrgWndHook = NULL;
+	m_pHookedThreads = new CHookedThreadList();
 	m_pDefaultHookWindowClasses = new CHookWindowClassList();
 	m_pHookedWindows = new CHookedWindowList();
 	m_pImageHandleList = NULL;
@@ -38,6 +39,7 @@ CDreamSkinMain::~CDreamSkinMain()
 	ExitInstance();
 	delete m_pDefaultHookWindowClasses;
 	delete m_pHookedWindows;
+	delete m_pHookedThreads;
 	if (m_pImageHandleList)
 		delete m_pImageHandleList;
 }
@@ -88,7 +90,11 @@ LRESULT CDreamSkinMain::CallWndProc(int nCode, WPARAM wParam, LPARAM lParam)
 		}
 	}
 
-	return CallNextHookEx(m_hOrgWndHook, nCode, wParam, lParam);
+	HHOOK hOrgWndHook = m_pHookedThreads->GetOrgWndHook(GetCurrentThreadId());
+	if (hOrgWndHook)
+		return CallNextHookEx(hOrgWndHook, nCode, wParam, lParam);
+	else
+		return 0;
 }
 
 BOOL CDreamSkinMain::InitDefaultHookWindowClassList()
@@ -153,17 +159,22 @@ BOOL CDreamSkinMain::InitInstance()
 {
 	BOOL bReturn = TRUE;
 	
-	bReturn = InitDefaultHookWindowClassList();
-	if(!bReturn)
-	{   //Fail to do the init
-		//TODO: add error handle for this case
-		return FALSE;
+	if (m_pHookedThreads->Size() == 0)
+	{
+		bReturn = InitDefaultHookWindowClassList();
+		if(!bReturn)
+		{   //Fail to do the init
+			//TODO: add error handle for this case
+			return FALSE;
+		}
 	}
 
-	m_hOrgWndHook = SetWindowsHookEx(WH_CALLWNDPROC, (HOOKPROC)CDreamSkinMain::DreamSkinCallWndProc, GetModuleHandle(NULL), GetCurrentThreadId());
+	DWORD dwThreadID = ::GetCurrentThreadId();
+	HHOOK hOrgWndHook = ::SetWindowsHookEx(WH_CALLWNDPROC, (HOOKPROC)CDreamSkinMain::DreamSkinCallWndProc, ::GetModuleHandle(NULL), dwThreadID);
 
-	if(m_hOrgWndHook != NULL)
+	if(hOrgWndHook != NULL)
 	{
+		m_pHookedThreads->Add(dwThreadID, hOrgWndHook);
 		return TRUE;
 	}
 	else
@@ -177,18 +188,13 @@ BOOL CDreamSkinMain::InitInstance()
 
 void CDreamSkinMain::ExitInstance()
 {
-	if (m_hOrgWndHook)
+	m_pHookedThreads->Del(::GetCurrentThreadId());
+
+	if (m_pHookedThreads->Size() == 0)
 	{
-		if(!UnhookWindowsHookEx(m_hOrgWndHook))
-		{
-			//TODO: Error Handle
-		}
-
-		m_hOrgWndHook = NULL;
+		m_pDefaultHookWindowClasses->Clear();
+		m_pHookedWindows->Clear();
 	}
-
-	m_pDefaultHookWindowClasses->Clear();
-	m_pHookedWindows->Clear();
 
 }
 
@@ -252,6 +258,11 @@ CDreamSkinWindow* CDreamSkinMain::GetHookedWindow(HWND hWnd)
 UINT CDreamSkinMain::GetHookedWindowCount()
 {
 	return m_pHookedWindows->Size();
+}
+
+UINT CDreamSkinMain::GetHookedThreadCount()
+{
+	return m_pHookedThreads->Size();
 }
 
 void CDreamSkinMain::DelHookedWindow(HWND hWnd)
