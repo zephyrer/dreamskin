@@ -17,7 +17,7 @@ CDreamSkinDialog::CDreamSkinDialog(HWND hWnd, WNDPROC OrgWndProc)
 {
 	m_pSkinDialog = &s_SkinDialog;
 
-	m_bActive = FALSE;
+	m_bActive = TRUE;
 	m_nLastHitTest = 0;
 	m_nNcLButtonDown = 0;
 }
@@ -381,39 +381,40 @@ LRESULT CDreamSkinDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	int nHeightGap = 0;
 
 	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
-	if((dwStyle & WS_BORDER) || (dwStyle & WS_THICKFRAME) || (dwStyle & DS_MODALFRAME))
+	if (!(dwStyle & WS_CHILD))
 	{
-		nWidthGap = m_pSkinDialog->skinLBorderActive.nWidth + m_pSkinDialog->skinRBorderActive.nWidth - 2 * ::GetSystemMetrics(SM_CXDLGFRAME);
-		nHeightGap = m_pSkinDialog->skinTBorderActive.nWidth + m_pSkinDialog->skinBBorderActive.nWidth - 2 * ::GetSystemMetrics(SM_CYDLGFRAME);
-	}
+		if((dwStyle & WS_BORDER) || (dwStyle & WS_THICKFRAME) || (dwStyle & DS_MODALFRAME))
+		{
+			nWidthGap = m_pSkinDialog->skinLBorderActive.nWidth + m_pSkinDialog->skinRBorderActive.nWidth - 2 * ::GetSystemMetrics(SM_CXDLGFRAME);
+			nHeightGap = m_pSkinDialog->skinTBorderActive.nWidth + m_pSkinDialog->skinBBorderActive.nWidth - 2 * ::GetSystemMetrics(SM_CYDLGFRAME);
+		}
 
-	if((dwStyle & WS_BORDER) && (dwStyle & WS_DLGFRAME))  // WS_CAPTION
-	{
-		if (m_pSkinDialog->skinTitleBar.nIncBorder)
-			nHeightGap += m_pSkinDialog->skinTitleBar.nWidth - ::GetSystemMetrics(SM_CYSIZE) - m_pSkinDialog->skinTBorderActive.nWidth;
-		else
-			nHeightGap += m_pSkinDialog->skinTitleBar.nWidth - ::GetSystemMetrics(SM_CYSIZE);
-	}
+		if((dwStyle & WS_BORDER) && (dwStyle & WS_DLGFRAME))  // WS_CAPTION
+		{
+			if (m_pSkinDialog->skinTitleBar.nIncBorder)
+				nHeightGap += m_pSkinDialog->skinTitleBar.nWidth - ::GetSystemMetrics(SM_CYSIZE) - m_pSkinDialog->skinTBorderActive.nWidth;
+			else
+				nHeightGap += m_pSkinDialog->skinTitleBar.nWidth - ::GetSystemMetrics(SM_CYSIZE);
+		}
 
-	if(nWidthGap < 0)
+		if(nWidthGap < 0)
 		nWidthGap = 0;
 
-	if(nHeightGap < 0)
-		nHeightGap = 0;
+		if(nHeightGap < 0)
+			nHeightGap = 0;
 
-	if(nWidthGap > 0 || nHeightGap > 0)
-	{
-		lpCreateStruct->cx = lpCreateStruct->cx + nWidthGap;
-		lpCreateStruct->cy = lpCreateStruct->cy + nHeightGap;
-		if(::SetWindowPos(m_hWnd, 0, 0, 0, lpCreateStruct->cx, lpCreateStruct->cy, SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED))
-			return 0;
-		else
-			return 1;
+		if(nWidthGap > 0 || nHeightGap > 0)
+		{
+			lpCreateStruct->cx = lpCreateStruct->cx + nWidthGap;
+			lpCreateStruct->cy = lpCreateStruct->cy + nHeightGap;
+			if(::SetWindowPos(m_hWnd, 0, 0, 0, lpCreateStruct->cx, lpCreateStruct->cy, SWP_NOMOVE | SWP_NOZORDER | SWP_FRAMECHANGED))
+				return 0;
+			else
+				return 1;
+		}
 	}
-	else
-	{
-		return 0;
-	}
+
+	return 0;
 }
 
 /***********************************************************************
@@ -468,62 +469,65 @@ LRESULT CDreamSkinDialog::OnNcHitTest(POINTS point)
 
 	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
 
-	//Has title bar
-	if ((dwStyle & WS_BORDER) && (dwStyle & WS_DLGFRAME))      // WS_CAPTION
+	if (!(dwStyle & WS_CHILD))
 	{
-		if (dwStyle & WS_SYSMENU)
+		//Has title bar
+		if ((dwStyle & WS_BORDER) && (dwStyle & WS_DLGFRAME))      // WS_CAPTION
 		{
-			//Check close button
-			rcTemp = GetRectClose(rcWindow);
-			::OffsetRect(&rcTemp, rcWindow.left, rcWindow.top);
+			if (dwStyle & WS_SYSMENU)
+			{
+				//Check close button
+				rcTemp = GetRectClose(rcWindow);
+				::OffsetRect(&rcTemp, rcWindow.left, rcWindow.top);
+				if(::PtInRect(&rcTemp, ptTemp))
+					return HTCLOSE;
+
+				//Check maximize button
+				if (dwStyle & WS_MAXIMIZEBOX)
+				{
+					rcTemp = GetRectMax(rcWindow);
+					::OffsetRect(&rcTemp, rcWindow.left, rcWindow.top);
+					if(::PtInRect(&rcTemp, ptTemp))
+						return HTMAXBUTTON;
+				}
+
+				//Check minimize button
+				if (dwStyle & WS_MINIMIZEBOX)
+				{
+					rcTemp = GetRectMin(rcWindow, dwStyle & WS_MAXIMIZEBOX);
+					::OffsetRect(&rcTemp, rcWindow.left, rcWindow.top);
+					if(::PtInRect(&rcTemp, ptTemp))
+						return HTMINBUTTON;
+				}
+
+				//Check icon
+				if (::SendMessage(m_hWnd, WM_GETICON, ICON_SMALL, 0) || ::SendMessage(m_hWnd, WM_GETICON, ICON_BIG, 0))
+				{
+					rcTemp = GetRectIcon(rcWindow);
+					::OffsetRect(&rcTemp, rcWindow.left, rcWindow.top);
+					if(::PtInRect(&rcTemp, ptTemp))
+						return HTSYSMENU;
+				}
+			}
+
+			//Check the title bar
+			rcTemp.left = rcWindow.left;
+			rcTemp.right = rcWindow.right;
+			rcTemp.top = rcWindow.top + m_pSkinDialog->skinTBorderActive.nWidth;
+			rcTemp.bottom = rcTemp.top + m_pSkinDialog->skinTitleBar.nWidth;
 			if(::PtInRect(&rcTemp, ptTemp))
-				return HTCLOSE;
-
-			//Check maximize button
-			if (dwStyle & WS_MAXIMIZEBOX)
-			{
-				rcTemp = GetRectMax(rcWindow);
-				::OffsetRect(&rcTemp, rcWindow.left, rcWindow.top);
-				if(::PtInRect(&rcTemp, ptTemp))
-					return HTMAXBUTTON;
-			}
-
-			//Check minimize button
-			if (dwStyle & WS_MINIMIZEBOX)
-			{
-				rcTemp = GetRectMin(rcWindow, dwStyle & WS_MAXIMIZEBOX);
-				::OffsetRect(&rcTemp, rcWindow.left, rcWindow.top);
-				if(::PtInRect(&rcTemp, ptTemp))
-					return HTMINBUTTON;
-			}
-
-			//Check icon
-			if (::SendMessage(m_hWnd, WM_GETICON, ICON_SMALL, 0) || ::SendMessage(m_hWnd, WM_GETICON, ICON_BIG, 0))
-			{
-				rcTemp = GetRectIcon(rcWindow);
-				::OffsetRect(&rcTemp, rcWindow.left, rcWindow.top);
-				if(::PtInRect(&rcTemp, ptTemp))
-					return HTSYSMENU;
-			}
+				return HTCAPTION;
 		}
 
-		//Check the title bar
-		rcTemp.left = rcWindow.left;
-		rcTemp.right = rcWindow.right;
-		rcTemp.top = rcWindow.top + m_pSkinDialog->skinTBorderActive.nWidth;
-		rcTemp.bottom = rcTemp.top + m_pSkinDialog->skinTitleBar.nWidth;
-		if(::PtInRect(&rcTemp, ptTemp))
-			return HTCAPTION;
-	}
-
-	//Has border
-	LRESULT result = PointOnBorder(ptTemp, rcWindow, dwStyle);
-	if (result != HTNOWHERE)
-	{
-		if (dwStyle & WS_THICKFRAME)
-			return result;
-		else
-			return HTBORDER;
+		//Has border
+		LRESULT result = PointOnBorder(ptTemp, rcWindow, dwStyle);
+		if (result != HTNOWHERE)
+		{
+			if (dwStyle & WS_THICKFRAME)
+				return result;
+			else
+				return HTBORDER;
+		}
 	}
 
 	return HTCLIENT;
@@ -754,112 +758,115 @@ void CDreamSkinDialog::OnDrawBorder(HDC hDC, RECT rcWindow)
 
 	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
 
-	if(m_bActive)
+	if (!(dwStyle & WS_CHILD))
 	{
-		pLBorder = &(m_pSkinDialog->skinLBorderActive);
-		pRBorder = &(m_pSkinDialog->skinRBorderActive);
-		pTBorder = &(m_pSkinDialog->skinTBorderActive);
-		pBBorder = &(m_pSkinDialog->skinBBorderActive);
-		bTitleIncBorder = m_pSkinDialog->skinTitleBar.nIncBorder;
-	}
-	else
-	{
-		pLBorder = &(m_pSkinDialog->skinLBorderInactive);
-		pRBorder = &(m_pSkinDialog->skinRBorderInactive);
-		pTBorder = &(m_pSkinDialog->skinTBorderInactive);
-		pBBorder = &(m_pSkinDialog->skinBBorderInactive);
-		bTitleIncBorder = m_pSkinDialog->skinTitleBar.nIncBorder;
-	}
+		if(m_bActive)
+		{
+			pLBorder = &(m_pSkinDialog->skinLBorderActive);
+			pRBorder = &(m_pSkinDialog->skinRBorderActive);
+			pTBorder = &(m_pSkinDialog->skinTBorderActive);
+			pBBorder = &(m_pSkinDialog->skinBBorderActive);
+			bTitleIncBorder = m_pSkinDialog->skinTitleBar.nIncBorder;
+		}
+		else
+		{
+			pLBorder = &(m_pSkinDialog->skinLBorderInactive);
+			pRBorder = &(m_pSkinDialog->skinRBorderInactive);
+			pTBorder = &(m_pSkinDialog->skinTBorderInactive);
+			pBBorder = &(m_pSkinDialog->skinBBorderInactive);
+			bTitleIncBorder = m_pSkinDialog->skinTitleBar.nIncBorder;
+		}
 
-	RECT rcDraw;
+		RECT rcDraw;
 
-	//Draw title bar
-	if((dwStyle & WS_BORDER) && (dwStyle & WS_DLGFRAME) && (m_pSkinDialog->skinTitleBar.nWidth > 0))
-	{
-		if (bTitleIncBorder)
+		//Draw title bar
+		if((dwStyle & WS_BORDER) && (dwStyle & WS_DLGFRAME) && (m_pSkinDialog->skinTitleBar.nWidth > 0))
+		{
+			if (bTitleIncBorder)
+			{
+				rcDraw.left = 0;
+				rcDraw.top = 0;
+				rcDraw.bottom = rcDraw.top + m_pSkinDialog->skinTitleBar.nWidth;
+				rcDraw.right = rcWindow.right - rcWindow.left;
+			}
+			else
+			{
+				rcDraw.left = m_pSkinDialog->skinLBorderActive.nWidth;
+				rcDraw.top = m_pSkinDialog->skinTBorderActive.nWidth;
+				rcDraw.bottom = rcDraw.top + m_pSkinDialog->skinTitleBar.nWidth;
+				rcDraw.right = rcWindow.right - rcWindow.left - m_pSkinDialog->skinRBorderActive.nWidth;
+			}
+			
+			DrawTitleBar(hDC, rcDraw);
+
+			OnDrawSysButton(hDC, rcWindow);
+		}
+		else
+		{
+			bTitleIncBorder = FALSE;
+		}
+
+		//Draw top border
+		if(pTBorder->nWidth > 0 && !bTitleIncBorder)
 		{
 			rcDraw.left = 0;
 			rcDraw.top = 0;
-			rcDraw.bottom = rcDraw.top + m_pSkinDialog->skinTitleBar.nWidth;
+			rcDraw.bottom = pTBorder->nWidth;
 			rcDraw.right = rcWindow.right - rcWindow.left;
+
+			if (pTBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pTBorder->imgDraw.hImage)
+				::DrawStretchBitmapEx(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pTBorder->imgDraw.hImage, pTBorder->imgDraw.x, pTBorder->imgDraw.y, pTBorder->imgDraw.nWidth, pTBorder->imgDraw.nHeight, pTBorder->nStart, pTBorder->nEnd, 0);
+			else
+				::FillSolidRect(hDC, &rcDraw, pTBorder->clrDraw.clrStart);
 		}
-		else
+			
+		//Draw left border
+		if(pLBorder->nWidth > 0)
 		{
-			rcDraw.left = m_pSkinDialog->skinLBorderActive.nWidth;
-			rcDraw.top = m_pSkinDialog->skinTBorderActive.nWidth;
-			rcDraw.bottom = rcDraw.top + m_pSkinDialog->skinTitleBar.nWidth;
-			rcDraw.right = rcWindow.right - rcWindow.left - m_pSkinDialog->skinRBorderActive.nWidth;
+			rcDraw.left = 0;
+			if (bTitleIncBorder)
+				rcDraw.top = m_pSkinDialog->skinTitleBar.nWidth;
+			else
+				rcDraw.top = pTBorder->nWidth;
+			rcDraw.bottom = rcWindow.bottom - rcWindow.top - pBBorder->nWidth;
+			rcDraw.right = pLBorder->nWidth;
+
+			if (pLBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pLBorder->imgDraw.hImage)
+				::DrawStretchBitmapEx(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pLBorder->imgDraw.hImage, pLBorder->imgDraw.x, pLBorder->imgDraw.y, pLBorder->imgDraw.nWidth, pLBorder->imgDraw.nHeight, pLBorder->nStart, pLBorder->nEnd, 1);
+			else
+				::FillSolidRect(hDC, &rcDraw, pLBorder->clrDraw.clrStart);
 		}
-		
-		DrawTitleBar(hDC, rcDraw);
 
-		OnDrawSysButton(hDC, rcWindow);
-	}
-	else
-	{
-		bTitleIncBorder = FALSE;
-	}
+		//Draw right border
+		if(pRBorder->nWidth > 0)
+		{
+			rcDraw.left = rcWindow.right - rcWindow.left - pRBorder->nWidth;
+			if (bTitleIncBorder)
+				rcDraw.top = m_pSkinDialog->skinTitleBar.nWidth;
+			else
+				rcDraw.top = pTBorder->nWidth;
+			rcDraw.bottom = rcWindow.bottom - rcWindow.top - pBBorder->nWidth;
+			rcDraw.right = rcWindow.right - rcWindow.left;
+			
+			if (pRBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pRBorder->imgDraw.hImage)
+				::DrawStretchBitmapEx(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pRBorder->imgDraw.hImage, pRBorder->imgDraw.x, pRBorder->imgDraw.y, pRBorder->imgDraw.nWidth, pRBorder->imgDraw.nHeight, pRBorder->nStart, pRBorder->nEnd, 1);
+			else
+				::FillSolidRect(hDC, &rcDraw, pRBorder->clrDraw.clrStart);
+		}
 
-	//Draw top border
-	if(pTBorder->nWidth > 0 && !bTitleIncBorder)
-	{
-		rcDraw.left = 0;
-		rcDraw.top = 0;
-		rcDraw.bottom = pTBorder->nWidth;
-		rcDraw.right = rcWindow.right - rcWindow.left;
+		//Draw bottom border
+		if(pBBorder->nWidth > 0)
+		{
+			rcDraw.left = 0;
+			rcDraw.top = rcWindow.bottom - rcWindow.top - pBBorder->nWidth;
+			rcDraw.bottom = rcWindow.bottom - rcWindow.top;
+			rcDraw.right = rcWindow.right - rcWindow.left;
 
-		if (pTBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pTBorder->imgDraw.hImage)
-			::DrawStretchBitmapEx(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pTBorder->imgDraw.hImage, pTBorder->imgDraw.x, pTBorder->imgDraw.y, pTBorder->imgDraw.nWidth, pTBorder->imgDraw.nHeight, pTBorder->nStart, pTBorder->nEnd, 0);
-		else
-			::FillSolidRect(hDC, &rcDraw, pTBorder->clrDraw.clrStart);
-	}
-		
-	//Draw left border
-	if(pLBorder->nWidth > 0)
-	{
-		rcDraw.left = 0;
-		if (bTitleIncBorder)
-			rcDraw.top = m_pSkinDialog->skinTitleBar.nWidth;
-		else
-			rcDraw.top = pTBorder->nWidth;
-		rcDraw.bottom = rcWindow.bottom - rcWindow.top - pBBorder->nWidth;
-		rcDraw.right = pLBorder->nWidth;
-
-		if (pLBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pLBorder->imgDraw.hImage)
-			::DrawStretchBitmapEx(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pLBorder->imgDraw.hImage, pLBorder->imgDraw.x, pLBorder->imgDraw.y, pLBorder->imgDraw.nWidth, pLBorder->imgDraw.nHeight, pLBorder->nStart, pLBorder->nEnd, 1);
-		else
-			::FillSolidRect(hDC, &rcDraw, pLBorder->clrDraw.clrStart);
-	}
-
-	//Draw right border
-	if(pRBorder->nWidth > 0)
-	{
-		rcDraw.left = rcWindow.right - rcWindow.left - pRBorder->nWidth;
-		if (bTitleIncBorder)
-			rcDraw.top = m_pSkinDialog->skinTitleBar.nWidth;
-		else
-			rcDraw.top = pTBorder->nWidth;
-		rcDraw.bottom = rcWindow.bottom - rcWindow.top - pBBorder->nWidth;
-		rcDraw.right = rcWindow.right - rcWindow.left;
-		
-		if (pRBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pRBorder->imgDraw.hImage)
-			::DrawStretchBitmapEx(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pRBorder->imgDraw.hImage, pRBorder->imgDraw.x, pRBorder->imgDraw.y, pRBorder->imgDraw.nWidth, pRBorder->imgDraw.nHeight, pRBorder->nStart, pRBorder->nEnd, 1);
-		else
-			::FillSolidRect(hDC, &rcDraw, pRBorder->clrDraw.clrStart);
-	}
-
-	//Draw bottom border
-	if(pBBorder->nWidth > 0)
-	{
-		rcDraw.left = 0;
-		rcDraw.top = rcWindow.bottom - rcWindow.top - pBBorder->nWidth;
-		rcDraw.bottom = rcWindow.bottom - rcWindow.top;
-		rcDraw.right = rcWindow.right - rcWindow.left;
-
-		if (pBBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pBBorder->imgDraw.hImage)
-			::DrawStretchBitmapEx(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pBBorder->imgDraw.hImage, pBBorder->imgDraw.x, pBBorder->imgDraw.y, pBBorder->imgDraw.nWidth, pBBorder->imgDraw.nHeight, pBBorder->nStart, pBBorder->nEnd, 0);
-		else
-			::FillSolidRect(hDC, &rcDraw, pBBorder->clrDraw.clrStart);
+			if (pBBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pBBorder->imgDraw.hImage)
+				::DrawStretchBitmapEx(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pBBorder->imgDraw.hImage, pBBorder->imgDraw.x, pBBorder->imgDraw.y, pBBorder->imgDraw.nWidth, pBBorder->imgDraw.nHeight, pBBorder->nStart, pBBorder->nEnd, 0);
+			else
+				::FillSolidRect(hDC, &rcDraw, pBBorder->clrDraw.clrStart);
+		}
 	}
 }
 
@@ -903,8 +910,10 @@ void CDreamSkinDialog::CreateWindowRegion(HDC hDC)
 
 	long nWndHeight = rcWindow.bottom;
 	long nWndWidth = rcWindow.right;
+
+	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
 	
-	if (m_pSkinDialog->nRgnType == RGN_BITMAP)
+	if (m_pSkinDialog->nRgnType == RGN_BITMAP && !(dwStyle & WS_CHILD))
 	{
 		//Create compatible DC for the specified device
 		HDC hMemDC = ::CreateCompatibleDC(hDC);
@@ -1195,36 +1204,41 @@ RECT CDreamSkinDialog::GetRectClient(RECT rcWindow)
 
 	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
 
-	if(m_bActive)
-	{
-		pLBorder = &(m_pSkinDialog->skinLBorderActive);
-		pRBorder = &(m_pSkinDialog->skinRBorderActive);
-		pTBorder = &(m_pSkinDialog->skinTBorderActive);
-		pBBorder = &(m_pSkinDialog->skinBBorderActive);
-	}
-	else
-	{
-		pLBorder = &(m_pSkinDialog->skinLBorderInactive);
-		pRBorder = &(m_pSkinDialog->skinRBorderInactive);
-		pTBorder = &(m_pSkinDialog->skinTBorderInactive);
-		pBBorder = &(m_pSkinDialog->skinBBorderInactive);
-	}
-
 	rcClient = rcWindow;
-	if((dwStyle & WS_BORDER) || (dwStyle & WS_THICKFRAME) || (dwStyle & DS_MODALFRAME))
-	{
-		rcClient.left = rcClient.left + pLBorder->nWidth;
-		rcClient.right = rcClient.right - pRBorder->nWidth;
-		rcClient.top = rcClient.top + pTBorder->nWidth;
-		rcClient.bottom = rcClient.bottom - pBBorder->nWidth;
-	}
 
-	if((dwStyle & WS_BORDER) && (dwStyle & WS_DLGFRAME))  // WS_CAPTION
+	if (!(dwStyle & WS_CHILD))
 	{
-		if (m_pSkinDialog->skinTitleBar.nIncBorder)
-			rcClient.top = rcClient.top + m_pSkinDialog->skinTitleBar.nWidth - pTBorder->nWidth;
+		if(m_bActive)
+		{
+			pLBorder = &(m_pSkinDialog->skinLBorderActive);
+			pRBorder = &(m_pSkinDialog->skinRBorderActive);
+			pTBorder = &(m_pSkinDialog->skinTBorderActive);
+			pBBorder = &(m_pSkinDialog->skinBBorderActive);
+		}
 		else
-			rcClient.top = rcClient.top + m_pSkinDialog->skinTitleBar.nWidth;
+		{
+			pLBorder = &(m_pSkinDialog->skinLBorderInactive);
+			pRBorder = &(m_pSkinDialog->skinRBorderInactive);
+			pTBorder = &(m_pSkinDialog->skinTBorderInactive);
+			pBBorder = &(m_pSkinDialog->skinBBorderInactive);
+		}
+
+		
+		if((dwStyle & WS_BORDER) || (dwStyle & WS_THICKFRAME) || (dwStyle & DS_MODALFRAME))
+		{
+			rcClient.left = rcClient.left + pLBorder->nWidth;
+			rcClient.right = rcClient.right - pRBorder->nWidth;
+			rcClient.top = rcClient.top + pTBorder->nWidth;
+			rcClient.bottom = rcClient.bottom - pBBorder->nWidth;
+		}
+
+		if((dwStyle & WS_BORDER) && (dwStyle & WS_DLGFRAME))  // WS_CAPTION
+		{
+			if (m_pSkinDialog->skinTitleBar.nIncBorder)
+				rcClient.top = rcClient.top + m_pSkinDialog->skinTitleBar.nWidth - pTBorder->nWidth;
+			else
+				rcClient.top = rcClient.top + m_pSkinDialog->skinTitleBar.nWidth;
+		}
 	}
 
 	return rcClient;

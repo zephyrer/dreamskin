@@ -7,7 +7,12 @@
 #define IDS_ABOUTBOX                    101
 #define IDD_DREAMSKINDEMODIALOG_DIALOG  102
 #define IDS_SKIN_FILE_FILTER            102
+#define IDS_PROPSHT_TITLE               103
+#define IDS_MESSAGEBOX_DEMO_MESSAGE     104
+#define IDS_MESSAGEBOX_DEMO_RESULT      105
 #define IDR_MAINFRAME                   128
+#define IDD_DLG_SYSTEM_DIALOG           129
+#define IDD_DLG_LIST_EDIT               131
 #define IDC_TAB_QUICK_DEMO              999
 #define IDC_SYSMENU_INCLUDE             1000
 #define IDC_DREAMSKIN_ENABLE            1001
@@ -31,9 +36,11 @@
 #define IDC_EDIT_DEMO_NORMAL            1018
 #define IDC_EDIT_DEMO_READONLY          1019
 #define IDC_EDIT_DEMO_DISABLE           1020
-#define IDC_EDIT_HOOKED_WINDOW_COUNT2   1021
 #define IDC_EDIT_HOOKED_THREAD_COUNT    1021
 #define IDC_EDIT1                       1023
+#define IDC_EDIT_RESULT_MESSAGEBOX      1023
+#define IDC_EDIT_LISTBOX_RESULT         1023
+#define IDC_EDIT_RESULT_LISTBOX         1023
 #define IDC_STATIC_BUTTONS              1025
 #define IDC_STATIC_CHECKBOXES           1026
 #define IDC_STATIC_EDITS                1027
@@ -46,14 +53,17 @@
 #define IDC_RADIO_DISABLE_UNSELECTED    1033
 #define IDC_BUTTON1                     1034
 #define IDC_BTN_NEWDIALOG               1034
+#define IDC_BTN_MESSAGEBOX              1034
+#define IDC_CMB_MESSAGEBOX_TYPE         1035
+#define IDC_LISTBOX_DEMO                1036
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        129
+#define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1035
+#define _APS_NEXT_CONTROL_VALUE         1037
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

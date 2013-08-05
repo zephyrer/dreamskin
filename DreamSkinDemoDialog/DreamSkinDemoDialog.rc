@@ -71,6 +71,42 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\DreamSkinDemoDialog.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DLG_LIST_EDIT DIALOGEX 0, 0, 358, 214
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Lists && Edits"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LISTBOX         IDC_LISTBOX_DEMO,7,18,109,114,LBS_SORT | LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "List Box:",IDC_STATIC,7,7,28,8
+    LTEXT           "List Box Selection:",IDC_STATIC,7,147,59,8
+    EDITTEXT        IDC_EDIT_RESULT_LISTBOX,72,144,279,14,ES_AUTOHSCROLL | ES_READONLY
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DLG_LIST_EDIT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 351
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 207
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
 #endif    // Chinese (P.R.C.) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -151,6 +187,19 @@ BEGIN
     EDITTEXT        IDC_EDIT_HOOKED_THREAD_COUNT,258,19,40,14,ES_AUTOHSCROLL | ES_READONLY
 END
 
+IDD_DLG_SYSTEM_DIALOG DIALOGEX 0, 0, 315, 180
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_CHILD | WS_CAPTION | WS_SYSMENU
+CAPTION "System Dialogs"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "Message Box",IDC_STATIC,7,7,301,46
+    PUSHBUTTON      "Message Box",IDC_BTN_MESSAGEBOX,239,17,69,14
+    LTEXT           "Options:",IDC_STATIC,17,20,28,8
+    LTEXT           "Result:",IDC_STATIC,17,36,24,8
+    EDITTEXT        IDC_EDIT_RESULT_MESSAGEBOX,62,34,246,14,ES_AUTOHSCROLL | ES_READONLY
+    COMBOBOX        IDC_CMB_MESSAGEBOX_TYPE,61,17,89,73,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -214,8 +263,40 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 242
     END
+
+    IDD_DLG_SYSTEM_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 308
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
+    END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DLG_SYSTEM_DIALOG DLGINIT
+BEGIN
+    IDC_CMB_MESSAGEBOX_TYPE, 0x403, 6, 0
+0x424d, 0x4f5f, 0x004b, 
+    IDC_CMB_MESSAGEBOX_TYPE, 0x403, 12, 0
+0x424d, 0x4f5f, 0x434b, 0x4e41, 0x4543, 0x004c, 
+    IDC_CMB_MESSAGEBOX_TYPE, 0x403, 9, 0
+0x424d, 0x595f, 0x5345, 0x4f4e, "\000" 
+    IDC_CMB_MESSAGEBOX_TYPE, 0x403, 15, 0
+0x424d, 0x595f, 0x5345, 0x4f4e, 0x4143, 0x434e, 0x4c45, "\000" 
+    IDC_CMB_MESSAGEBOX_TYPE, 0x403, 15, 0
+0x424d, 0x525f, 0x5445, 0x5952, 0x4143, 0x434e, 0x4c45, "\000" 
+    IDC_CMB_MESSAGEBOX_TYPE, 0x403, 20, 0
+0x424d, 0x415f, 0x4f42, 0x5452, 0x4552, 0x5254, 0x4959, 0x4e47, 0x524f, 
+0x0045, 
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -227,6 +308,10 @@ STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About DreamSkinDemoDialog..."
     IDS_SKIN_FILE_FILTER    "DreamSkin Definition File (*.dsf)|*.dsf|All Files (*.*)|*.*||"
+    IDS_PROPSHT_TITLE       "DreamSkin Ctrl Demo Dialog"
+    IDS_MESSAGEBOX_DEMO_MESSAGE 
+                            "This is a demo message box. Please select your choosen by click one of below buttons."
+    IDS_MESSAGEBOX_DEMO_RESULT "Your selected result for message box is: %s"
 END
 
 #endif    // English (U.S.) resources

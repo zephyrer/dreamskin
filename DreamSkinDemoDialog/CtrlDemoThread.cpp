@@ -5,6 +5,7 @@
 #include "DreamSkinDemoDialog.h"
 #include "CtrlDemoThread.h"
 
+#include "CtrlDemoPropertySheet.h"
 //DreamSkin Support
 #include "../DreamSkin/DreamSkin.h"
 
@@ -23,14 +24,17 @@ CCtrlDemoThread::~CCtrlDemoThread()
 
 BOOL CCtrlDemoThread::InitInstance()
 {
-	DreamSkinInit();
-	AfxMessageBox(_T("test"));
+	if (theApp.EnableDreamSkin())
+		DreamSkinInit();
+	CCtrlDemoPropertySheet dlgCtrlDemo;
+	dlgCtrlDemo.DoModal();
 	return FALSE;
 }
 
 int CCtrlDemoThread::ExitInstance()
 {
-	DreamSkinExit();
+	if (theApp.EnableDreamSkin())
+		DreamSkinExit();
 	return CWinThread::ExitInstance();
 }
 

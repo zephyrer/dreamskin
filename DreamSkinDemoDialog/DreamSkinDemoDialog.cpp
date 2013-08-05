@@ -89,3 +89,8 @@ BOOL CDreamSkinDemoDialogApp::InitInstance()
 	//  application, rather than start the application's message pump.
 	return FALSE;
 }
+
+BOOL CDreamSkinDemoDialogApp::EnableDreamSkin()
+{
+	return ((CDreamSkinDemoDialogDlg*)m_pMainWnd)->m_bEnableDreamSkin;
+}

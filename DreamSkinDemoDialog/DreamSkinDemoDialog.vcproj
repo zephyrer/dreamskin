@@ -190,6 +190,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\CtrlDemoPropertySheet.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\CtrlDemoThread.cpp"
 				>
 			</File>
@@ -199,6 +203,14 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinDemoDialogDlg.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PropertyPageListEdit.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\PropertyPageSystemDialog.cpp"
 				>
 			</File>
 			<File
@@ -228,6 +240,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\CtrlDemoPropertySheet.h"
+				>
+			</File>
+			<File
 				RelativePath=".\CtrlDemoThread.h"
 				>
 			</File>
@@ -237,6 +253,14 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinDemoDialogDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PropertyPageListEdit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PropertyPageSystemDialog.h"
 				>
 			</File>
 			<File

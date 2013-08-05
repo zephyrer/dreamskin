@@ -330,6 +330,10 @@ LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 	{
 		switch(message)
 		{
+		case WM_ENABLE:
+			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+			UpdateWindow();
+			break;
 		case WM_ERASEBKGND:
 			break;
 		case WM_LBUTTONDOWN:

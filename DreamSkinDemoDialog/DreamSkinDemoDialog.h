@@ -24,6 +24,8 @@ public:
 	public:
 	virtual BOOL InitInstance();
 
+	BOOL EnableDreamSkin();
+
 // Implementation
 
 	DECLARE_MESSAGE_MAP()

@@ -559,6 +559,7 @@ void CDreamSkinTab::DrawButtonTitle(HDC hDC, RECT rcClient, int nIndex, int nSta
 
 void CDreamSkinTab::DrawButtons(HDC hDC, RECT rcWindow, RECT rcClient)
 {
+	RECT rcItem;
 	int nItemCount = ::SendMessage(m_hWnd, TCM_GETITEMCOUNT, 0, 0);
 	if (nItemCount > 0)
 	{
@@ -575,12 +576,20 @@ void CDreamSkinTab::DrawButtons(HDC hDC, RECT rcWindow, RECT rcClient)
 				nIndex = nItemCount - i - 1;
 			}
 
-			RECT rcItem;
-			::SendMessage(m_hWnd, TCM_GETITEMRECT, nIndex, (LPARAM)&rcItem);
-			if (!(rcItem.right < rcClient.left || rcItem.left > rcClient.right))
+			if (nIndex != m_nCurSel)
 			{
-				DrawButton(hDC, rcItem, nIndex);
+				::SendMessage(m_hWnd, TCM_GETITEMRECT, nIndex, (LPARAM)&rcItem);
+				if (!(rcItem.right < rcWindow.left || rcItem.left > rcWindow.right))
+					DrawButton(hDC, rcItem, nIndex);
 			}
+		}
+
+		::SendMessage(m_hWnd, TCM_GETITEMRECT, m_nCurSel, (LPARAM)&rcItem);
+		if (!(rcItem.right < rcWindow.left || rcItem.left > rcWindow.right))
+		{
+			if (m_nCurSel == 0 && rcItem.left > rcWindow.left)
+				rcItem.left = rcWindow.left;
+			DrawButton(hDC, rcItem, m_nCurSel);
 		}
 	}
 }
