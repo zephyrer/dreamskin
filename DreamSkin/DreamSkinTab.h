@@ -44,7 +44,7 @@ public:
 	//process the WM_MOUSELEAVE message
 	virtual LRESULT OnMouseLeave();
 	//process the WM_MOUSEMOVE message
-	virtual LRESULT OnMouseMove(UINT nHitTest, POINTS point);
+	virtual LRESULT OnMouseMove(UINT nFlags, POINTS point);
 	//process the WM_PAINT message
 	virtual LRESULT OnPaint();
 

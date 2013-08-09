@@ -193,6 +193,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DreamSkinListBox.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DreamSkinLoader.cpp"
 				>
 			</File>
@@ -256,6 +260,10 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinEdit.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DreamSkinListBox.h"
 				>
 			</File>
 			<File

@@ -23,4 +23,7 @@ public:
 	CString m_strResultListBox;
 	CListBox m_lsDemoListBox;
 	virtual BOOL OnInitDialog();
+	BOOL m_bEnableListBox;
+	afx_msg void OnBnClickedChkListboxEnable();
+	afx_msg void OnLbnSelchangeListboxDemo();
 };

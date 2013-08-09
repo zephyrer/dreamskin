@@ -47,7 +47,7 @@ public:
 	//process the WM_MOUSELEAVE message
 	virtual LRESULT OnMouseLeave();
 	//process the WM_MOUSEMOVE message
-	virtual LRESULT OnMouseMove(UINT nHitTest, POINTS point);
+	virtual LRESULT OnMouseMove(UINT nFlags, POINTS point);
 	//process the WM_NCCALCSIZE message
 	virtual LRESULT OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS* lpncsp);
 	//process the WM_NCPAINT message

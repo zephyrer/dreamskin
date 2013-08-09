@@ -360,7 +360,7 @@ LRESULT CDreamSkinEdit::OnMouseLeave()
 	return 0;
 }
 
-LRESULT CDreamSkinEdit::OnMouseMove(UINT nHitTest, POINTS point)
+LRESULT CDreamSkinEdit::OnMouseMove(UINT nFlags, POINTS point)
 {
 	if(!m_bMouseIn)
 	{
@@ -376,7 +376,7 @@ LRESULT CDreamSkinEdit::OnMouseMove(UINT nHitTest, POINTS point)
 		UpdateWindow();
 	}
 
-	return CDreamSkinWindow::DefWindowProc(WM_MOUSEMOVE, nHitTest, MAKELPARAM(point.x, point.y));
+	return CDreamSkinWindow::DefWindowProc(WM_MOUSEMOVE, nFlags, MAKELPARAM(point.x, point.y));
 }
 
 LRESULT CDreamSkinEdit::OnNcCalcSize(BOOL bCalcValidRects, NCCALCSIZE_PARAMS *lpncsp)

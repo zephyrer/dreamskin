@@ -22,6 +22,7 @@ class CImageHandleList;
 #define DRAWSTATUS_HOVER             2
 #define DRAWSTATUS_PRESS             3
 #define DRAWSTATUS_DEFAULT           4
+#define DRAWSTATUS_MAXCOUNT          5
 
 typedef struct _tag_DRAWCOLOR
 {
@@ -91,6 +92,18 @@ typedef struct _tag_SKINTEXT
 	BOOL             bDrawShadow;                     //Whether to draw shadow of text
 	COLORREF         clrShadow;                       //Shadow of text
 }SKINTEXT;
+
+typedef struct _tag_SKINITEM
+{
+	int              nDefault;                        //Whether the item was loaded
+	SKINBACKGROUND   skinBk;                          //Background skin settings
+	SKINTEXT         skinTxt;                         //Text skin settings
+	SKINBORDER       skinLBorder;                     //Left border skin settings
+	SKINBORDER       skinRBorder;                     //Right border skin settings
+	SKINBORDER       skinTBorder;                     //Top border skin settings
+	SKINBORDER       skinBBorder;                     //Bottom border skin settings
+	SKINICON         skinIcon;                        //Icon skin settings
+}SKINITEM;
 
 typedef struct _tag_SKINTITLEBAR
 {
@@ -375,6 +388,30 @@ typedef struct _tag_SKINTAB
 	int              nDrawOrder;                      //Button draw order
 }SKINTAB;
 
+typedef struct _tag_SKINLISTBOX
+{
+	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
+	SKINBACKGROUND   skinBkDisable;                   //Background in disable status
+
+	SKINBORDER       skinLBorderNormal;               //Left border in normal status
+	SKINBORDER       skinRBorderNormal;               //Right border in normal status
+	SKINBORDER       skinTBorderNormal;               //Top border in normal status
+	SKINBORDER       skinBBorderNormal;               //Bottom border in normal status
+
+	SKINBORDER       skinLBorderDisable;              //Left border in disable status
+	SKINBORDER       skinRBorderDisable;              //Right border in disable status
+	SKINBORDER       skinTBorderDisable;              //Top border in disable status
+	SKINBORDER       skinBBorderDisable;              //Bottom border in disable status
+
+	SKINITEM         skinItemNormalUnselected;        //Unselected item in normal status
+	SKINITEM         skinItemDisableUnselected;       //Unselected item in disable status
+	SKINITEM         skinItemHoverUnselected;         //Unselecetd item in disable status
+
+	SKINITEM         skinItemNormalSelected;          //Selected item in normal status
+	SKINITEM         skinItemDisableSelected;         //Selected item in disable status
+	SKINITEM         skinItemHoverSelected;           //Selected item in hover status
+}SKINLISTBOX;
+
 class CDreamSkinLoader
 {
 public:
@@ -386,9 +423,11 @@ protected:
 	static WCHAR wstrSkinFileNodeNameCheckBox[];
 	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameEdit[];
+	static WCHAR wstrSkinFileNodeNameListBox[];
 	static WCHAR wstrSkinFileNodeNameRadio[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameTab[];
+
 	static WCHAR wstrSkinFileNodeNameBackground[];
 	static WCHAR wstrSkinFileNodeNameBorder[];
 	static WCHAR wstrSkinFileNodeNameColor[];
@@ -396,6 +435,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameText[];
 	static WCHAR wstrSkinFileNodeNameIcon[];
 	static WCHAR wstrSkinFileNodeNameImage[];
+	static WCHAR wstrSkinFileNodeNameItem[];
 	static WCHAR wstrSkinFileNodeNameLeft[];
 	static WCHAR wstrSkinFileNodeNameRight[];
 	static WCHAR wstrSkinFileNodeNameTop[];
@@ -443,6 +483,7 @@ public:
 	void GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const;
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
 	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
+	void GetSkinListBox(SKINLISTBOX *pSkinListBox) const;
 	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
 	void GetSkinTab(SKINTAB *pSkinTab) const;
@@ -452,9 +493,13 @@ protected:
 	BOOL LoadSkinEdit(void *parser);
 	BOOL LoadSkinButton(void *parser);
 	BOOL LoadSkinCheckBox(void *parser);
+	BOOL LoadSkinListBox(void *parser);
 	BOOL LoadSkinRadio(void *parser);
 	BOOL LoadSkinStatic(void *parser);
 	BOOL LoadSkinTab(void *parser);
+
+	BOOL LoadBackground(void *bkgnd, SKINBACKGROUND **pSkinBackgroundList, int nCount);
+	BOOL LoadBackgrounditem(void *bkitem, SKINBACKGROUND *pSkinBackground);
 	BOOL LoadButton(void *button, SKINBUTTON *pSkinButton);
 	BOOL LoadColor(void *color, DRAWCOLOR *pDrawColor);
 	BOOL LoadColorItem(void *color, WCHAR* wstrColorItemName, COLORREF *pColor);
@@ -462,6 +507,7 @@ protected:
 	BOOL LoadIcon(void *icon, SKINICON **pSkinIconList, int nCount);
 	BOOL LoadIconItem(void *iconitem, SKINICON *pSkinIcon);
 	BOOL LoadImage(void *image, DRAWIMAGE *pDrawImage);
+	BOOL LoadItem(void *item, SKINITEM **pSkinItemList, int nCount);
 	BOOL LoadBackground(void *bkitem, SKINBACKGROUND *pSkinBackground);
 	BOOL LoadBorder(void *border, SKINBORDER **pSkinBorderList, int nCount);
 	BOOL LoadBorderItem(void *bditem, SKINBORDER *pSkinBorder);
@@ -475,6 +521,7 @@ protected:
 	SKINBUTTON   m_SkinButton;
 	SKINCHECKBOX m_SkinCheckBox;
 	SKINEDIT     m_SkinEdit;
+	SKINLISTBOX  m_SkinListBox;
 	SKINRADIO    m_SkinRadio;
 	SKINSTATIC   m_SkinStatic;
 	SKINTAB      m_SkinTab;

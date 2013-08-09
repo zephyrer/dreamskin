@@ -39,7 +39,6 @@
 #define IDC_EDIT_HOOKED_THREAD_COUNT    1021
 #define IDC_EDIT1                       1023
 #define IDC_EDIT_RESULT_MESSAGEBOX      1023
-#define IDC_EDIT_LISTBOX_RESULT         1023
 #define IDC_EDIT_RESULT_LISTBOX         1023
 #define IDC_STATIC_BUTTONS              1025
 #define IDC_STATIC_CHECKBOXES           1026
@@ -56,6 +55,8 @@
 #define IDC_BTN_MESSAGEBOX              1034
 #define IDC_CMB_MESSAGEBOX_TYPE         1035
 #define IDC_LISTBOX_DEMO                1036
+#define IDC_CHECK1                      1037
+#define IDC_CHK_LISTBOX_ENABLE          1037
 
 // Next default values for new objects
 // 
@@ -63,7 +64,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1037
+#define _APS_NEXT_CONTROL_VALUE         1038
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

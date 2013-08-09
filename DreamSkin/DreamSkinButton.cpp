@@ -532,7 +532,7 @@ LRESULT CDreamSkinButton::OnMouseLeave()
 	return 0;
 }
 
-LRESULT CDreamSkinButton::OnMouseMove(UINT nHitTest, POINTS point)
+LRESULT CDreamSkinButton::OnMouseMove(UINT nFlags, POINTS point)
 {
 	if(!m_bMouseIn)
 	{

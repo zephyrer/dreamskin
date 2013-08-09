@@ -253,11 +253,22 @@ LRESULT CDreamSkinDialog::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 	case WM_ACTIVATE:
 		nResult = OnActive((UINT)wParam, (HANDLE)lParam);
 		break;
+	case WM_COMPAREITEM:
+		break;
 	case WM_CTLCOLOREDIT:
 		nResult = ::SendMessage((HWND)lParam, WM_CTLCOLOREDIT, wParam, (LPARAM)m_hWnd);
 		break;
 	case WM_CTLCOLORSTATIC:
 		nResult = ::SendMessage((HWND)lParam, WM_CTLCOLORSTATIC, wParam, (LPARAM)m_hWnd);
+		break;
+	case WM_CTLCOLORLISTBOX:
+		nResult = ::SendMessage((HWND)lParam, WM_CTLCOLORLISTBOX, wParam, (LPARAM)m_hWnd);
+		break;
+	case WM_DRAWITEM:
+		nResult = OnDrawItem((UINT)wParam, (LPDRAWITEMSTRUCT)lParam);
+		break;
+	case WM_MEASUREITEM:
+		nResult = OnMesureItem((UINT)wParam, (LPMEASUREITEMSTRUCT)lParam);
 		break;
 	case WM_NCACTIVATE:
 		nResult = OnNcActive((BOOL)wParam);
@@ -415,6 +426,40 @@ LRESULT CDreamSkinDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	}
 
 	return 0;
+}
+
+LRESULT CDreamSkinDialog::OnDrawItem(UINT nCtrlID, LPDRAWITEMSTRUCT lpDrawItem)
+{
+	switch (lpDrawItem->CtlType)
+	{
+	case ODT_LISTBOX:
+		return CDreamSkinWindow::DefWindowProc(lpDrawItem->hwndItem, WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem); //::SendMessage(lpDrawItem->hwndItem, WM_DRAWITEM, (WPARAM)m_hWnd, (LPARAM)lpDrawItem);
+		break;
+	default:
+		return CDreamSkinWindow::DefWindowProc(WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
+		break;
+	}
+}
+
+LRESULT CDreamSkinDialog::OnMesureItem(int nCtrlID, LPMEASUREITEMSTRUCT lpMeasureItemStruct)
+{
+	HWND hWndCtrl;
+	LRESULT lResult = 0;
+	switch (lpMeasureItemStruct->CtlType)
+	{
+	case ODT_LISTBOX:
+		hWndCtrl = ::GetDlgItem(m_hWnd, lpMeasureItemStruct->CtlID);
+		if (hWndCtrl)
+			lResult = CDreamSkinWindow::DefWindowProc(hWndCtrl, WM_MEASUREITEM, (WPARAM)nCtrlID, (LPARAM)lpMeasureItemStruct);
+		else
+			lResult = CDreamSkinWindow::DefWindowProc(WM_MEASUREITEM, (WPARAM)nCtrlID, (LPARAM)lpMeasureItemStruct);
+		break;
+	default:
+		lResult = CDreamSkinWindow::DefWindowProc(WM_MEASUREITEM, (WPARAM)nCtrlID, (LPARAM)lpMeasureItemStruct);
+		break;
+	}
+
+	return lResult;
 }
 
 /***********************************************************************

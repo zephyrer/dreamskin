@@ -233,7 +233,7 @@ LRESULT CDreamSkinTab::OnMouseLeave()
 	return 0;
 }
 
-LRESULT CDreamSkinTab::OnMouseMove(UINT nHitTest, POINTS point)
+LRESULT CDreamSkinTab::OnMouseMove(UINT nFlags, POINTS point)
 {
 	TRACKMOUSEEVENT EventTrack;
 	EventTrack.cbSize = sizeof(TRACKMOUSEEVENT);

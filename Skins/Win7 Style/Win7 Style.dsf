@@ -585,4 +585,65 @@
 			</text>
 		</button>
 	</tab>
+	<listbox>
+		<background type="0">
+			<normal>
+				<color start="0x00FFFFFF"/>
+			</normal>
+		</background>
+		<border type="0">
+			<left width="1">
+				<normal>
+					<color start="0x00848694"/>
+				</normal>
+			</left>
+			<right width="1">
+				<normal>
+					<color start="0x00848694"/>
+				</normal>
+			</right>
+			<top width="1">
+				<normal>
+					<color start="0x00848694"/>
+				</normal>
+			</top>
+			<bottom width="1">
+				<normal>
+					<color start="0x00848694"/>
+				</normal>
+			</bottom>
+		</border>
+		<item>
+			<unselected>
+				<background type="0">
+					<normal>
+						<color start="0x00FFFFFF"/>
+					</normal>
+				</background>
+				<text>
+					<normal>
+						<color start="0x00000000" />
+					</normal>
+					<disable>
+						<color start="0x006B6D6B" />
+					</disable>
+				</text>
+			</unselected>
+			<selected>
+				<background type="0">
+					<normal>
+						<color start="0x00319AFF"/>
+					</normal>
+				</background>
+				<text>
+					<normal>
+						<color start="0x00FFFFFF" />
+					</normal>
+					<disable>
+						<color start="0x006B6D6B" />
+					</disable>
+				</text>
+			</selected>
+		</item>
+	</listbox>
 </dreamskin>

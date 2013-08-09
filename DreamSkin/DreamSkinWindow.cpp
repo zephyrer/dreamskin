@@ -29,6 +29,24 @@ LRESULT WINAPI CDreamSkinWindow::DefWindowProc(HWND hWnd, UINT message, WPARAM w
 	}
 }
 
+LRESULT CDreamSkinWindow::OrgWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	CDreamSkinWindow *pHookedWindow = theSkinMain.GetHookedWindow(hWnd);
+	if (pHookedWindow != NULL)
+	{
+		WNDPROC OrgWndProc = pHookedWindow->m_OrgWndProc;
+
+		if (message == WM_NCDESTROY)
+			theSkinMain.DelHookedWindow(hWnd);
+
+		return CallWindowProc(OrgWndProc, hWnd, message, wParam, lParam);
+	}
+	else
+	{
+		return 0;
+	}
+}
+
 /***********************************************************************
  * This function applies an offset to the RGB components of a specified 
  * color.

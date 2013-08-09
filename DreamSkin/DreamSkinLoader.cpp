@@ -21,6 +21,7 @@ using namespace xercesc;
 #include "DreamSkinButton.h"
 #include "DreamSkinStatic.h"
 #include "DreamSkinTab.h"
+#include "DreamSkinListBox.h"
 
 #include "HexBin.h"
 
@@ -58,13 +59,15 @@ DOMNode * GetNamedChild(DOMNode* pParentNode, const WCHAR *wstrNodeName)
 	return pReturn;
 }
 
-WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
-WCHAR CDreamSkinLoader::wstrSkinFileNodeNameEdit[] = L"edit";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameButton[] = L"button";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameCheckBox[] = L"checkbox";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameEdit[] = L"edit";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameListBox[] = L"listbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRadio[] = L"radio";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameStatic[] = L"static";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameTab[] = L"tab";
+
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBackground[] = L"background";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBorder[] = L"border";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameColor[] = L"color";
@@ -72,6 +75,7 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameFont[] = L"font";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameText[] = L"text";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameIcon[] = L"icon";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameImage[] = L"image";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameItem[] = L"item";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameLeft[] = L"left";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameTop[] = L"top";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRight[] = L"right";
@@ -182,6 +186,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinTab::GetDefaultSkin(&m_SkinTab);
 		LoadSkinTab(parser);
 
+		//Load Skin ListBox
+		CDreamSkinListBox::GetDefaultSkin(&m_SkinListBox);
+		LoadSkinListBox(parser);
+
 		parser->setErrorHandler(NULL);
 	}
 	catch (const XMLException& ) 
@@ -247,6 +255,14 @@ void CDreamSkinLoader::GetSkinTab(SKINTAB *pSkinTab) const
 	if (pSkinTab)
 	{
 		memcpy(pSkinTab, &m_SkinTab, sizeof(SKINTAB));
+	}
+}
+
+void CDreamSkinLoader::GetSkinListBox(SKINLISTBOX *pSkinListBox) const
+{
+	if (pSkinListBox)
+	{
+		memcpy(pSkinListBox, &m_SkinListBox, sizeof(SKINLISTBOX));
 	}
 }
 
@@ -911,6 +927,126 @@ BOOL CDreamSkinLoader::LoadSkinEdit(void *parser)
 	return bResult;
 }
 
+BOOL CDreamSkinLoader::LoadSkinListBox(void *parser)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pListBoxNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameListBox);
+	const WCHAR *wstrNodeName;
+	SKINBORDER *pSkinBorderList[DRAWSTATUS_DISABLE + 1];
+	SKINITEM *pSkinItemList[DRAWSTATUS_MAXCOUNT];
+
+	if (pListBoxNode)
+	{
+		//loop to load all settings
+		pParentNode = pListBoxNode->getFirstChild();
+		while (pParentNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+			{//background
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//background draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinListBox.skinBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						m_SkinListBox.skinBkDisable.nDrawType = m_SkinListBox.skinBkNormal.nDrawType;
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadBackground(pChildNode, &(m_SkinListBox.skinBkNormal));
+					}//normal
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+					{//disable
+						LoadBackground(pChildNode, &(m_SkinListBox.skinBkDisable));
+					}//disable
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+
+				if (m_SkinListBox.skinBkDisable.nDefault)
+					m_SkinListBox.skinBkDisable = m_SkinListBox.skinBkNormal;
+			}//background
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBorder) == 0)
+			{//border
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+					{//left
+						pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinListBox.skinLBorderNormal;
+						pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinListBox.skinLBorderDisable;
+						LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+					}//left
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+					{//right
+						pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinListBox.skinRBorderNormal;
+						pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinListBox.skinRBorderDisable;
+						LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+					}//right
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+					{//top
+						pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinListBox.skinTBorderNormal;
+						pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinListBox.skinTBorderDisable;
+						LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+					}//top
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+					{//bottom
+						pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinListBox.skinBBorderNormal;
+						pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinListBox.skinBBorderDisable;
+						LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+					}//bottom
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+			}//border
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameItem) == 0)
+			{//item
+				pChildNode = pParentNode->getFirstChild();
+				while (pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameUnselected) == 0)
+					{//unselected
+						pSkinItemList[DRAWSTATUS_NORMAL] = &m_SkinListBox.skinItemNormalUnselected;
+						pSkinItemList[DRAWSTATUS_DISABLE] = &m_SkinListBox.skinItemDisableUnselected;
+						pSkinItemList[DRAWSTATUS_HOVER] = &m_SkinListBox.skinItemHoverUnselected;
+						LoadItem(pChildNode, pSkinItemList, DRAWSTATUS_HOVER + 1);
+					}//unselected
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameSelected) == 0)
+					{//selected
+						pSkinItemList[DRAWSTATUS_NORMAL] = &m_SkinListBox.skinItemNormalSelected;
+						pSkinItemList[DRAWSTATUS_DISABLE] = &m_SkinListBox.skinItemDisableSelected;
+						pSkinItemList[DRAWSTATUS_HOVER] = &m_SkinListBox.skinItemHoverSelected;
+						LoadItem(pChildNode, pSkinItemList, DRAWSTATUS_HOVER + 1);
+					}//selected
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+			}//item
+
+			pParentNode = pParentNode->getNextSibling();
+		}
+	}//listbox settings
+
+	return bResult;
+}
+
 BOOL CDreamSkinLoader::LoadSkinRadio(void *parser)
 {
 	BOOL bResult = TRUE;
@@ -1235,7 +1371,121 @@ BOOL CDreamSkinLoader::LoadSkinTab(void *parser)
 
 			pParentNode = pParentNode->getNextSibling();
 		}
-	}//static settings
+	}//tab settings
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadBackground(void *bkgnd, SKINBACKGROUND **pSkinBackgroundList, int nCount)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pBackgroundNode = (DOMNode*)bkgnd;
+	const WCHAR *wstrNodeName;
+	DOMNode *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	int nTemp;
+
+	if (nCount > 0 && pSkinBackgroundList)
+	{
+		pAttr = pBackgroundNode->getAttributes();
+
+		//draw type
+		pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+		if (pTempNode)
+		{
+			nTemp = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+			if (pSkinBackgroundList[DRAWSTATUS_NORMAL])
+				pSkinBackgroundList[DRAWSTATUS_NORMAL]->nDrawType = nTemp;
+
+			if (nCount > DRAWSTATUS_DISABLE && pSkinBackgroundList[DRAWSTATUS_DISABLE])
+				pSkinBackgroundList[DRAWSTATUS_DISABLE]->nDrawType = nTemp;
+
+			if (nCount > DRAWSTATUS_HOVER && pSkinBackgroundList[DRAWSTATUS_HOVER])
+				pSkinBackgroundList[DRAWSTATUS_HOVER]->nDrawType = nTemp;
+
+			if (nCount > DRAWSTATUS_PRESS && pSkinBackgroundList[DRAWSTATUS_PRESS])
+				pSkinBackgroundList[DRAWSTATUS_PRESS]->nDrawType = nTemp;
+
+			if (nCount > DRAWSTATUS_DEFAULT && pSkinBackgroundList[DRAWSTATUS_DEFAULT])
+				pSkinBackgroundList[DRAWSTATUS_DEFAULT]->nDrawType = nTemp;
+		}
+
+		pTempNode = pBackgroundNode->getFirstChild();
+		while (pTempNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pTempNode->getNodeName());
+
+			if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+			{//normal
+				if (pSkinBackgroundList[DRAWSTATUS_NORMAL])
+					LoadBackgrounditem(pTempNode, pSkinBackgroundList[DRAWSTATUS_NORMAL]);
+			}//normal
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+			{//disable
+				if (nCount > DRAWSTATUS_DISABLE && pSkinBackgroundList[DRAWSTATUS_DISABLE])
+					LoadBackgrounditem(pTempNode, pSkinBackgroundList[DRAWSTATUS_DISABLE]);
+			}//disable
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+			{//hover
+				if (nCount > DRAWSTATUS_HOVER && pSkinBackgroundList[DRAWSTATUS_HOVER])
+					LoadBackgrounditem(pTempNode, pSkinBackgroundList[DRAWSTATUS_HOVER]);
+			}//hover
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+			{//press
+				if (nCount > DRAWSTATUS_PRESS && pSkinBackgroundList[DRAWSTATUS_PRESS])
+					LoadBackgrounditem(pTempNode, pSkinBackgroundList[DRAWSTATUS_PRESS]);
+			}//press
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameDefault) == 0)
+			{//default
+				if (nCount > DRAWSTATUS_DEFAULT && pSkinBackgroundList[DRAWSTATUS_DEFAULT])
+					LoadBackgrounditem(pTempNode, pSkinBackgroundList[DRAWSTATUS_DEFAULT]);
+			}//default
+			pTempNode = pTempNode->getNextSibling();
+		}
+
+		if (nCount > DRAWSTATUS_DISABLE && pSkinBackgroundList[DRAWSTATUS_DISABLE] && pSkinBackgroundList[DRAWSTATUS_DISABLE]->nDefault && pSkinBackgroundList[DRAWSTATUS_NORMAL])
+			*(pSkinBackgroundList[DRAWSTATUS_DISABLE]) = *(pSkinBackgroundList[DRAWSTATUS_NORMAL]);
+
+		if (nCount > DRAWSTATUS_HOVER && pSkinBackgroundList[DRAWSTATUS_HOVER] && pSkinBackgroundList[DRAWSTATUS_HOVER]->nDefault && pSkinBackgroundList[DRAWSTATUS_NORMAL])
+			*(pSkinBackgroundList[DRAWSTATUS_HOVER]) = *(pSkinBackgroundList[DRAWSTATUS_NORMAL]);
+
+		if (nCount > DRAWSTATUS_DEFAULT && pSkinBackgroundList[DRAWSTATUS_DEFAULT] && pSkinBackgroundList[DRAWSTATUS_DEFAULT]->nDefault && pSkinBackgroundList[DRAWSTATUS_NORMAL])
+			*(pSkinBackgroundList[DRAWSTATUS_DEFAULT]) = *(pSkinBackgroundList[DRAWSTATUS_NORMAL]);
+
+		if (nCount > DRAWSTATUS_PRESS && pSkinBackgroundList[DRAWSTATUS_PRESS] && pSkinBackgroundList[DRAWSTATUS_PRESS]->nDefault)
+			if (pSkinBackgroundList[DRAWSTATUS_HOVER])
+				*(pSkinBackgroundList[DRAWSTATUS_PRESS]) = *(pSkinBackgroundList[DRAWSTATUS_HOVER]);
+			else if (pSkinBackgroundList[DRAWSTATUS_NORMAL])
+				*(pSkinBackgroundList[DRAWSTATUS_PRESS]) = *(pSkinBackgroundList[DRAWSTATUS_HOVER]);
+	}
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadBackgrounditem(void *bkitem, SKINBACKGROUND *pSkinBackground)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pNode;
+	const WCHAR *wstrNodeName;
+	
+	pSkinBackground->nDefault = 0;
+
+	pNode = ((DOMNode*)bkitem)->getFirstChild();
+	while(pNode != NULL)
+	{
+		wstrNodeName = XStringtoWString(pNode->getNodeName());
+
+		if(wcscmp(wstrNodeName, wstrSkinFileNodeNameColor) == 0)
+		{//color
+			bResult = LoadColor(pNode, &(pSkinBackground->clrDraw));
+		}//color
+		else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameImage) == 0)
+		{//image
+			bResult = LoadImage(pNode, &(pSkinBackground->imgDraw));
+		}//image
+
+		pNode = pNode->getNextSibling();
+	}
 
 	return bResult;
 }
@@ -1621,6 +1871,73 @@ BOOL CDreamSkinLoader::LoadImage(void *image, DRAWIMAGE *pDrawImage)
 		}
 
 		bResult = TRUE;
+	}
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadItem(void *item, SKINITEM **pSkinItemList, int nCount)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pItemNode = (DOMNode*)item;
+	const WCHAR *wstrNodeName;
+	DOMNode *pParentNode;
+	int i;
+	SKINBACKGROUND *pSkinBackgroundList[DRAWSTATUS_MAXCOUNT];
+	SKINTEXT *pSkinTextList[DRAWSTATUS_MAXCOUNT];
+
+	if (nCount > DRAWSTATUS_MAXCOUNT)
+		nCount = DRAWSTATUS_MAXCOUNT;
+
+	if (nCount > 0 && pSkinItemList)
+	{
+		//loop to load all settings for item
+		pParentNode = pItemNode->getFirstChild();
+		while (pParentNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+			{//background
+				for (i = 0; i < nCount; i++)
+				{
+					if (pSkinItemList[i])
+						pSkinBackgroundList[i] = &pSkinItemList[i]->skinBk;
+					else
+						pSkinBackgroundList[i] = NULL;
+				}
+
+				for (i = nCount; i < DRAWSTATUS_MAXCOUNT; i++)
+					pSkinBackgroundList[i] = NULL;
+
+				LoadBackground(pParentNode, pSkinBackgroundList, nCount);
+				
+			}//background
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+			{//text
+				for (i = 0; i < nCount; i++)
+				{
+					if (pSkinItemList[i])
+						pSkinTextList[i] = &pSkinItemList[i]->skinTxt;
+					else
+						pSkinTextList[i] = NULL;
+				}
+
+				for (i = nCount; i < DRAWSTATUS_MAXCOUNT; i++)
+					pSkinTextList[i] = NULL;
+
+				LoadText(pParentNode, pSkinTextList, nCount);
+			}//text
+					/*else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIcon) == 0)
+					{//icon
+						pSkinIconList[DRAWSTATUS_NORMAL] = &m_SkinRadio.iconNormalUnchecked;
+						pSkinIconList[DRAWSTATUS_DISABLE] = &m_SkinRadio.iconDisableUnchecked;
+						pSkinIconList[DRAWSTATUS_HOVER] = &m_SkinRadio.iconHoverUnchecked;
+						pSkinIconList[DRAWSTATUS_PRESS] = &m_SkinRadio.iconPressUnchecked;
+						LoadIcon(pParentNode, pSkinIconList, DRAWSTATUS_PRESS + 1);
+					}//icon*/
+
+			pParentNode = pParentNode->getNextSibling();
+		}//end of loop to load all settings for item
 	}
 
 	return bResult;
