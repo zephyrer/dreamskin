@@ -6,6 +6,13 @@
 #define DEFAULT_LISTBOX_CLASSNAME_A ("ListBox")
 #define DEFAULT_LISTBOX_CLASSNAME_W (L"ListBox")
 
+#define SBHT_NOWHERE          0
+#define SBHT_ARROW_TOP        1
+#define SBHT_ARROW_BOTTOM     2
+#define SBHT_REGION_UP        3
+#define SBHT_REGION_DOWN      4
+#define SBHT_THUMB            5
+
 class CDreamSkinListBox : public CDreamSkinWindow
 {
 //Contrustor and Destructor
@@ -28,6 +35,9 @@ public:
 	static void DestroyClass();
 	//Get the default skin for static
 	static BOOL GetDefaultSkin(SKINLISTBOX *pSkinListBox);
+
+	//
+	static VOID CALLBACK OnTrackingScrollBarTimer(HWND hwnd, UINT uMsg, UINT_PTR idEvent,DWORD dwTime);
 
 public:
 	static WNDPROC          s_DefaultWindowProc;      //Default static window proc
@@ -62,6 +72,7 @@ protected:
 	//Draw the border
 	void    DrawBorder(HDC hDC, RECT rcWindow);
 	void    DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw);
+	void    DrawScrollBar(HDC hDC, LPSCROLLINFO lpsi, PSCROLLBARINFO psbi);
 	//Draw the title
 	void    DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle);
 	//Draw one item
@@ -72,10 +83,17 @@ protected:
 	//Get current button status
 	int     GetCurrentStatus(DWORD dwStyle) const;
 
+	//Get the position of mouse point on scroll bar
+	int     ScrollBarDragPos(int fnBar, LPSCROLLINFO lpsi, LPSCROLLBARINFO psbi, POINT point);
+	int     ScrollBarHitTest(int fnBar, POINT point);
+	int     ScrollBarHitTest(int fnBar, POINTS point);
+	void    TrackScrollBar(int fnBar, int nSBHitTest);
+
 protected:
 	SKINLISTBOX     *m_pSkinListBox;                  //Instance Related List Box Skin Settings
 	int              m_nOwnerDraw;                    //Whether the listbox is owner draw
 	int              m_nCurHover;                     //Current hover item
+	BOOL             m_bTrackingScorllBar;            //Whether is tracking scroll bar now
 };
 
 

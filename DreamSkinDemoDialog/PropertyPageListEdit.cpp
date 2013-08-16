@@ -45,7 +45,7 @@ BOOL CPropertyPageListEdit::OnInitDialog()
 
 	CString strMessage;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 100; i++)
 	{
 		strMessage.Format(_T("List Box Item %d"), i);
 		m_lsDemoListBox.AddString((LPCTSTR)strMessage);

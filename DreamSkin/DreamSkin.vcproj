@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="xerces-c_3D.lib"
+				AdditionalDependencies="xerces-c_3D.lib Dbghelp.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)ThirdParty\xerces-c-3.1.1\Build\Win32\VC9\$(ConfigurationName)"
 				GenerateDebugInformation="true"
