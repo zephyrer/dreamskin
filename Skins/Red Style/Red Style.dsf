@@ -579,4 +579,182 @@
 			</selected>
 		</item>
 	</listbox>
+	<scrollbar>
+		<horizontal>
+			<background type="0">
+				<normal>
+					<color start="0x00FFFFFF"/>
+				</normal>
+				<disable>
+					<color start="0x00F6E9E9"/>
+				</disable>
+			</background>
+			<border type="0">
+				<left width="0">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</left>
+				<right width="0">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</right>
+				<top width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</top>
+				<bottom width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</bottom>
+			</border>
+			<left type="99" incborder="1">
+				<normal>
+					<color start="0x00F8E6E6" text="0x00C14848" border="0x00E5C5C5"/>
+				</normal>
+				<hover>
+					<color start="0x00993838" text="0x00FFFFFF" border="0x00E5C5C5" />
+				</hover>
+				<press>
+					<color start="0x00993838" text="0x00C14848" border="0x00E5C5C5" />
+				</press>
+				<disable>
+					<color start="0x00F6E9E9" text="0x00ACA899" border="0x00ACA899"/>
+				</disable>
+			</left>
+			<right type="99" incborder="1">
+				<normal>
+					<color start="0x00F8E6E6" text="0x00C14848" border="0x00E5C5C5"/>
+				</normal>
+				<hover>
+					<color start="0x00993838" text="0x00FFFFFF" border="0x00E5C5C5" />
+				</hover>
+				<press>
+					<color start="0x00993838" text="0x00C14848" border="0x00E5C5C5" />
+				</press>
+				<disable>
+					<color start="0x00F6E9E9" text="0x00ACA899" border="0x00ACA899"/>
+				</disable>
+			</right>
+			<thumb>
+				<background type="0">
+					<normal>
+						<color start="0x00F2D6D6"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+					<hover>
+						<color start="0x00993838" />
+					</hover>
+					<press>
+						<color start="0x00993838" />
+					</press>
+				</background>
+			</thumb>
+		</horizontal>
+		<vertical>
+			<background type="0">
+				<normal>
+					<color start="0x00FFFFFF"/>
+				</normal>
+				<disable>
+					<color start="0x00F6E9E9"/>
+				</disable>
+			</background>
+			<border type="0">
+				<left width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</left>
+				<right width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</right>
+				<top width="0">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</top>
+				<bottom width="0">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</bottom>
+			</border>
+			<top type="99" incborder="1">
+				<normal>
+					<color start="0x00F8E6E6" text="0x00C14848" border="0x00E5C5C5"/>
+				</normal>
+				<hover>
+					<color start="0x00993838" text="0x00FFFFFF" border="0x00E5C5C5" />
+				</hover>
+				<press>
+					<color start="0x00993838" text="0x00C14848" border="0x00E5C5C5" />
+				</press>
+				<disable>
+					<color start="0x00F6E9E9" text="0x00ACA899" border="0x00ACA899"/>
+				</disable>
+			</top>
+			<bottom type="99" incborder="1">
+				<normal>
+					<color start="0x00F8E6E6" text="0x00C14848" border="0x00E5C5C5"/>
+				</normal>
+				<hover>
+					<color start="0x00993838" text="0x00FFFFFF" border="0x00E5C5C5" />
+				</hover>
+				<press>
+					<color start="0x00993838" text="0x00C14848" border="0x00E5C5C5" />
+				</press>
+				<disable>
+					<color start="0x00F6E9E9" text="0x00ACA899" border="0x00ACA899"/>
+				</disable>
+			</bottom>
+			<thumb>
+				<background type="0">
+					<normal>
+						<color start="0x00F2D6D6"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+					<hover>
+						<color start="0x00993838" />
+					</hover>
+					<press>
+						<color start="0x00993838" />
+					</press>
+				</background>
+			</thumb>
+		</vertical>
+	</scrollbar>
 </dreamskin>

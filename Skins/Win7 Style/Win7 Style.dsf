@@ -646,4 +646,302 @@
 			</selected>
 		</item>
 	</listbox>
+	<scrollbar>
+		<horizontal>
+			<background type="1">
+				<normal>
+					<image source="Images/scrollbar.bmp" x="64" y="32" width="68" height="16" />
+				</normal>
+				<disable>
+					<image source="Images/scrollbar.bmp" x="64" y="48" width="68" height="16" />
+				</disable>
+			</background>
+			<border type="0">
+				<left width="0">
+					<normal>
+						<color start="0x00E7E3E7"/>
+					</normal>
+				</left>
+				<right width="0">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</right>
+				<top width="0">
+					<normal>
+						<color start="0x00E7E3E7"/>
+					</normal>
+				</top>
+				<bottom width="1">
+					<normal>
+						<color start="0x00EFEBEF"/>
+					</normal>
+				</bottom>
+			</border>
+			<left type="1" incborder="0">
+				<normal>
+					<image source="Images/scrollbar.bmp" x="64" y="0" width="17" height="16" />
+				</normal>
+				<disable>
+					<image source="Images/scrollbar.bmp" x="81" y="0" width="17" height="16" />
+				</disable>
+				<hover>
+					<image source="Images/scrollbar.bmp" x="98" y="0" width="17" height="16" />
+				</hover>
+				<press>
+					<image source="Images/scrollbar.bmp" x="115" y="0" width="17" height="16" />
+				</press>
+			</left>
+			<right type="1" incborder="0">
+				<normal>
+					<image source="Images/scrollbar.bmp" x="64" y="16" width="17" height="16" />
+				</normal>
+				<disable>
+					<image source="Images/scrollbar.bmp" x="81" y="16" width="17" height="16" />
+				</disable>
+				<hover>
+					<image source="Images/scrollbar.bmp" x="98" y="16" width="17" height="16" />
+				</hover>
+				<press>
+					<image source="Images/scrollbar.bmp" x="115" y="16" width="17" height="16" />
+				</press>
+			</right>
+			<thumb>
+				<background type="1">
+					<normal>
+						<image source="Images/scrollbar.bmp" x="66" y="66" width="64" height="11" />
+					</normal>
+					<disable>
+						<image source="Images/scrollbar.bmp" x="66" y="82" width="64" height="11" />
+					</disable>
+					<hover>
+						<image source="Images/scrollbar.bmp" x="66" y="98" width="64" height="11" />
+					</hover>
+					<press>
+						<image source="Images/scrollbar.bmp" x="66" y="114" width="64" height="11" />
+					</press>
+				</background>
+				<border type="1">
+					<left width="2" type="1">
+						<normal>
+							<image source="Images/scrollbar.bmp" x="64" y="66" width="2" height="11" />
+						</normal>
+						<disable>
+							<image source="Images/scrollbar.bmp" x="64" y="82" width="2" height="11" />
+						</disable>
+						<hover>
+							<image source="Images/scrollbar.bmp" x="64" y="98" width="2" height="11" />
+						</hover>
+						<press>
+							<image source="Images/scrollbar.bmp" x="64" y="114" width="2" height="11" />
+						</press>
+					</left>
+					<right width="2" type="1">
+						<normal>
+							<image source="Images/scrollbar.bmp" x="130" y="66" width="2" height="11" />
+						</normal>
+						<disable>
+							<image source="Images/scrollbar.bmp" x="130" y="82" width="2" height="11" />
+						</disable>
+						<hover>
+							<image source="Images/scrollbar.bmp" x="130" y="98" width="2" height="11" />
+						</hover>
+						<press>
+							<image source="Images/scrollbar.bmp" x="130" y="114" width="2" height="11" />
+						</press>
+					</right>
+					<top width="2" start="2" end="2" type="1">
+						<normal>
+							<image source="Images/scrollbar.bmp" x="64" y="64" width="68" height="2" />
+						</normal>
+						<disable>
+							<image source="Images/scrollbar.bmp" x="64" y="80" width="68" height="2" />
+						</disable>
+						<hover>
+							<image source="Images/scrollbar.bmp" x="64" y="96" width="68" height="2" />
+						</hover>
+						<press>
+							<image source="Images/scrollbar.bmp" x="64" y="112" width="68" height="2" />
+						</press>
+					</top>
+					<bottom width="3" start="2" end="2" type="1">
+						<normal>
+							<image source="Images/scrollbar.bmp" x="64" y="77" width="68" height="3" />
+						</normal>
+						<disable>
+							<image source="Images/scrollbar.bmp" x="64" y="93" width="68" height="3" />
+						</disable>
+						<hover>
+							<image source="Images/scrollbar.bmp" x="64" y="109" width="68" height="3" />
+						</hover>
+						<press>
+							<image source="Images/scrollbar.bmp" x="64" y="125" width="68" height="3" />
+						</press>
+					</bottom>
+				</border>
+				<icon type="1" width="10" height="9">
+					<normal>
+						<image source="Images/scrollbar.bmp" x="33" y="102" width="10" height="9" />
+					</normal>
+					<disable>
+						<image source="Images/scrollbar.bmp" x="43" y="102" width="10" height="9" />
+					</disable>
+					<hover>
+						<image source="Images/scrollbar.bmp" x="53" y="102" width="10" height="9" />
+					</hover>
+					<press>
+						<image source="Images/scrollbar.bmp" x="53" y="91" width="10" height="9" />
+					</press>
+				</icon>
+			</thumb>
+		</horizontal>
+		<vertical>
+			<background type="1">
+				<normal>
+					<image source="Images/scrollbar.bmp" x="0" y="80" width="16" height="48" />
+				</normal>
+				<disable>
+					<image source="Images/scrollbar.bmp" x="16" y="80" width="16" height="48" />
+				</disable>
+			</background>
+			<border type="0">
+				<left width="0">
+					<normal>
+						<color start="0x00E7E3E7"/>
+					</normal>
+				</left>
+				<right width="1">
+					<normal>
+						<color start="0x00EFEBEF"/>
+					</normal>
+				</right>
+				<top width="0">
+					<normal>
+						<color start="0x00E7E3E7"/>
+					</normal>
+				</top>
+				<bottom width="0">
+					<normal>
+						<color start="0x00E7E3E7"/>
+					</normal>
+				</bottom>
+			</border>
+			<top type="1" incborder="0">
+				<normal>
+					<image source="Images/scrollbar.bmp" x="0" y="0" width="16" height="17" />
+				</normal>
+				<disable>
+					<image source="Images/scrollbar.bmp" x="16" y="0" width="16" height="17" />
+				</disable>
+				<hover>
+					<image source="Images/scrollbar.bmp" x="32" y="0" width="16" height="17" />
+				</hover>
+				<press>
+					<image source="Images/scrollbar.bmp" x="48" y="0" width="16" height="17" />
+				</press>
+			</top>
+			<bottom type="1" incborder="0">
+				<normal>
+					<image source="Images/scrollbar.bmp" x="0" y="17" width="16" height="17" />
+				</normal>
+				<disable>
+					<image source="Images/scrollbar.bmp" x="16" y="17" width="16" height="17" />
+				</disable>
+				<hover>
+					<image source="Images/scrollbar.bmp" x="32" y="17" width="16" height="17" />
+				</hover>
+				<press>
+					<image source="Images/scrollbar.bmp" x="48" y="17" width="16" height="17" />
+				</press>
+			</bottom>
+			<thumb>
+				<background type="1">
+					<normal>
+						<image source="Images/scrollbar.bmp" x="2" y="36" width="11" height="42" />
+					</normal>
+					<disable>
+						<image source="Images/scrollbar.bmp" x="18" y="36" width="11" height="42" />
+					</disable>
+					<hover>
+						<image source="Images/scrollbar.bmp" x="34" y="36" width="11" height="42" />
+					</hover>
+					<press>
+						<image source="Images/scrollbar.bmp" x="50" y="36" width="11" height="42" />
+					</press>
+				</background>
+				<border type="1">
+					<left width="2" type="1">
+						<normal>
+							<image source="Images/scrollbar.bmp" x="0" y="36" width="2" height="42" />
+						</normal>
+						<disable>
+							<image source="Images/scrollbar.bmp" x="16" y="36" width="2" height="42" />
+						</disable>
+						<hover>
+							<image source="Images/scrollbar.bmp" x="32" y="36" width="2" height="42" />
+						</hover>
+						<press>
+							<image source="Images/scrollbar.bmp" x="48" y="36" width="2" height="42" />
+						</press>
+					</left>
+					<right width="3" type="1">
+						<normal>
+							<image source="Images/scrollbar.bmp" x="13" y="36" width="3" height="42" />
+						</normal>
+						<disable>
+							<image source="Images/scrollbar.bmp" x="29" y="36" width="3" height="42" />
+						</disable>
+						<hover>
+							<image source="Images/scrollbar.bmp" x="45" y="36" width="3" height="42" />
+						</hover>
+						<press>
+							<image source="Images/scrollbar.bmp" x="61" y="36" width="3" height="42" />
+						</press>
+					</right>
+					<top width="2" start="2" end="2" type="1">
+						<normal>
+							<image source="Images/scrollbar.bmp" x="0" y="34" width="16" height="2" />
+						</normal>
+						<disable>
+							<image source="Images/scrollbar.bmp" x="16" y="34" width="16" height="2" />
+						</disable>
+						<hover>
+							<image source="Images/scrollbar.bmp" x="32" y="34" width="16" height="2" />
+						</hover>
+						<press>
+							<image source="Images/scrollbar.bmp" x="48" y="34" width="16" height="2" />
+						</press>
+					</top>
+					<bottom width="2" start="2" end="2" type="1">
+						<normal>
+							<image source="Images/scrollbar.bmp" x="0" y="78" width="16" height="3" />
+						</normal>
+						<disable>
+							<image source="Images/scrollbar.bmp" x="16" y="78" width="16" height="3" />
+						</disable>
+						<hover>
+							<image source="Images/scrollbar.bmp" x="32" y="78" width="16" height="3" />
+						</hover>
+						<press>
+							<image source="Images/scrollbar.bmp" x="48" y="78" width="16" height="3" />
+						</press>
+					</bottom>
+				</border>
+				<icon type="1" width="9" height="10">
+					<normal>
+						<image source="Images/scrollbar.bmp" x="33" y="80" width="9" height="10" />
+					</normal>
+					<disable>
+						<image source="Images/scrollbar.bmp" x="43" y="80" width="9" height="10" />
+					</disable>
+					<hover>
+						<image source="Images/scrollbar.bmp" x="53" y="80" width="9" height="10" />
+					</hover>
+					<press>
+						<image source="Images/scrollbar.bmp" x="33" y="91" width="9" height="10" />
+					</press>
+				</icon>
+			</thumb>
+		</vertical>
+	</scrollbar>
 </dreamskin>

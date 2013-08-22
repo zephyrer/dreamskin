@@ -267,50 +267,6 @@ BOOL CDreamSkinButton::GetDefaultRadioSkin(SKINRADIO* pSkinRadio)
 	return TRUE;
 }
 
-void CDreamSkinButton::GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk)
-{
-	pBackground->nDefault = 1;
-	pBackground->nDrawType = DRAWTYPE_FILLCOLOR;
-	pBackground->clrDraw.clrStart = clrBk;
-	memset(&(pBackground->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinButton::GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth)
-{
-	pBorder->nDefault = 1;
-	pBorder->nDrawType = DRAWTYPE_FILLCOLOR;
-	pBorder->nWidth = nWidth;
-	pBorder->nStart = 0;
-	pBorder->nEnd = 0;
-	pBorder->clrDraw.clrStart = clrBk;
-	memset(&(pBorder->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinButton::GetDefaultIcon(SKINICON *pIcon, COLORREF clrDraw)
-{
-	pIcon->nDefault = 1;
-	pIcon->nDrawType = DRAWTYPE_CUSTOMIZE;
-	
-	pIcon->nHeight = 13;
-	pIcon->nWidth = 13;
-	pIcon->nPadding = 2;
-
-	pIcon->clrDraw.clrStart = clrDraw;
-	memset(&(pIcon->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinButton::GetDefaultText(SKINTEXT *pText, COLORREF clrTxt)
-{
-	pText->nDefault = 1;
-	pText->clrDraw = clrTxt;
-	pText->bDrawShadow = FALSE;
-	pText->clrShadow = RGB(255, 255, 255);
-
-	pText->skinFont.nFontSize = 8;
-	pText->skinFont.nBold = 0;
-	wcscpy_s(pText->skinFont.wstrFontName, LF_FACESIZE, L"Microsoft Sans Serif");
-}
-
 LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT nResult = ERROR_SUCCESS;

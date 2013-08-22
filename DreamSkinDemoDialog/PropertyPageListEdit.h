@@ -26,4 +26,12 @@ public:
 	BOOL m_bEnableListBox;
 	afx_msg void OnBnClickedChkListboxEnable();
 	afx_msg void OnLbnSelchangeListboxDemo();
+	CString m_strListBoxAdd;
+	afx_msg void OnEnChangeEditListboxAdd();
+
+	void UpdateListBoxWindows();
+	afx_msg void OnBnClickedBtnListboxAdd();
+	afx_msg void OnBnClickedBtnListboxDel();
+	CListBox m_lsMultiColListBox;
+	afx_msg void OnLbnSelchangeListboxDemoMulticol();
 };

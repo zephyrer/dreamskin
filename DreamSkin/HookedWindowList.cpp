@@ -5,6 +5,7 @@
 using namespace std;
 
 #include "DreamSkinMain.h"
+#include "DreamSkinLoader.h"
 #include "DreamSkinWindow.h"
 #include "HookedWindowList.h"
 #include "HookWindowClassList.h"

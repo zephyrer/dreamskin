@@ -45,12 +45,6 @@ public:
 	static SKINCHECKBOX     s_SkinCheckBox;           //Check Box Skin Settings
 	static SKINRADIO        s_SkinRadio;              //Radio Skin Settings
 
-protected:
-	static void GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk);
-	static void GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth);
-	static void GetDefaultText(SKINTEXT *pText, COLORREF clrTxt);
-	static void GetDefaultIcon(SKINICON *pIcon, COLORREF clrDraw);
-
 public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//process the WM_LBUTTONDOWN message

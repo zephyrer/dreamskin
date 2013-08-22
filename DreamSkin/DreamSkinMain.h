@@ -11,6 +11,14 @@ class CDreamSkinWindow;
 class CImageHandleList;
 class CHookedThreadList;
 
+typedef struct _tag_APIHOOKITEM
+{
+	WCHAR *wstrModuleName;         //Module path
+	char  *strFunctionName;        //API name
+	DWORD  OrgAddr;                //Original address
+	DWORD  NewAddr;                //New address
+}APIHOOKITEM;
+
 class CDreamSkinMain
 {
 public:
@@ -31,16 +39,22 @@ public:
 
 protected:
 	static LRESULT CALLBACK DreamSkinCallWndProc(int nCode, WPARAM wParam, LPARAM lParam);
+	static BOOL HookAPILocal(APIHOOKITEM *pAPIHookItem);
+	static void HookAPIByImportTable(DWORD OrgAddr,DWORD NewAddr, const WCHAR *wstrLoadedModuleName, const char *strHookModuleName);
+	static void HookAPIByExportTable(DWORD OrgAddr,DWORD NewAddr, HMODULE hModule);
 
-	LRESULT CallWndProc(int nCode, WPARAM wParam, LPARAM lParam);
-
-	BOOL    InitDefaultHookWindowClassList();
 
 protected:
+	LRESULT CallWndProc(int nCode, WPARAM wParam, LPARAM lParam);
+	BOOL    InitDefaultHookWindowClassList();
+
 	CHookWindowClassList *m_pDefaultHookWindowClasses;
 	CHookedThreadList    *m_pHookedThreads;
 	CHookedWindowList    *m_pHookedWindows;
 	CImageHandleList     *m_pImageHandleList;
+
+public:
+	APIHOOKITEM           m_HookSetScrollInfo;
 };
 
 extern CDreamSkinMain theSkinMain;

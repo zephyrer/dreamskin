@@ -169,34 +169,6 @@ LRESULT WINAPI CDreamSkinDialog::DefWindowProc(HWND hWnd, UINT message, WPARAM w
 	}
 }
 
-void CDreamSkinDialog::GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk)
-{
-	pBackground->nDefault = 1;
-	pBackground->nDrawType = DRAWTYPE_FILLCOLOR;
-	pBackground->clrDraw.clrStart = clrBk;
-	memset(&(pBackground->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinDialog::GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth)
-{
-	pBorder->nDefault = 1;
-	pBorder->nDrawType = DRAWTYPE_FILLCOLOR;
-	pBorder->nWidth = nWidth;
-	pBorder->nStart = 0;
-	pBorder->nEnd = 0;
-	pBorder->clrDraw.clrStart = clrBk;
-	memset(&(pBorder->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinDialog::GetDefaultSysButton(SKINSYSBUTTON *pSysButton, COLORREF clrBk, COLORREF clrText)
-{
-	pSysButton->nDefault = 1;
-	pSysButton->nDrawType = DRAWTYPE_FILLCOLOR;
-	pSysButton->clrBk.clrStart = clrBk;
-	pSysButton->clrTxt = clrText;
-	memset(&(pSysButton->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
 void CDreamSkinDialog::GetDefaultTitleBar(SKINTITLEBAR *pTitleBar)
 {
 	pTitleBar->nDefault = 1;
@@ -213,32 +185,32 @@ void CDreamSkinDialog::GetDefaultTitleBar(SKINTITLEBAR *pTitleBar)
 	pTitleBar->nWidthClose = 16;
 	pTitleBar->nXMarginClose = 4;
 	pTitleBar->nYMarginClose = 4;
-	GetDefaultSysButton(&(pTitleBar->skinCloseNormal), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinCloseHover), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinClosePress), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_BTNSHADOW));
-	GetDefaultSysButton(&(pTitleBar->skinCloseDisable), ::GetSysColor(COLOR_INACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinCloseNormal), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT), ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinCloseHover), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_HIGHLIGHTTEXT), ::GetSysColor(COLOR_HIGHLIGHTTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinClosePress), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_BTNSHADOW), ::GetSysColor(COLOR_BTNSHADOW));
+	GetDefaultSysButton(&(pTitleBar->skinCloseDisable), ::GetSysColor(COLOR_INACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT), ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
 
 	pTitleBar->nHeightMax = 16;
 	pTitleBar->nWidthMax = 16;
 	pTitleBar->nXMarginMax = 4;
 	pTitleBar->nYMarginMax = 4;
-	GetDefaultSysButton(&(pTitleBar->skinMaxNormal), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinMaxHover), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinMaxPress), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_BTNSHADOW));
-	GetDefaultSysButton(&(pTitleBar->skinMaxDisable), ::GetSysColor(COLOR_INACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinRestoreNormal), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinRestoreHover), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinRestorePress), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_BTNSHADOW));
-	GetDefaultSysButton(&(pTitleBar->skinRestoreDisable), ::GetSysColor(COLOR_INACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinMaxNormal), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT), ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinMaxHover), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_HIGHLIGHTTEXT), ::GetSysColor(COLOR_HIGHLIGHTTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinMaxPress), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_BTNSHADOW), ::GetSysColor(COLOR_BTNSHADOW));
+	GetDefaultSysButton(&(pTitleBar->skinMaxDisable), ::GetSysColor(COLOR_INACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT), ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinRestoreNormal), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT), ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinRestoreHover), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_HIGHLIGHTTEXT), ::GetSysColor(COLOR_HIGHLIGHTTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinRestorePress), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_BTNSHADOW), ::GetSysColor(COLOR_BTNSHADOW));
+	GetDefaultSysButton(&(pTitleBar->skinRestoreDisable), ::GetSysColor(COLOR_INACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT), ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
 
 	pTitleBar->nHeightMin = 16;
 	pTitleBar->nWidthMin = 16;
 	pTitleBar->nXMarginMin = 4;
 	pTitleBar->nYMarginMin = 4;
-	GetDefaultSysButton(&(pTitleBar->skinMinNormal), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinMinHover), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_HIGHLIGHTTEXT));
-	GetDefaultSysButton(&(pTitleBar->skinMinPress), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_BTNSHADOW));
-	GetDefaultSysButton(&(pTitleBar->skinMinDisable), ::GetSysColor(COLOR_INACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinMinNormal), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT), ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinMinHover), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_HIGHLIGHTTEXT), ::GetSysColor(COLOR_HIGHLIGHTTEXT));
+	GetDefaultSysButton(&(pTitleBar->skinMinPress), ::GetSysColor(COLOR_ACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_BTNSHADOW), ::GetSysColor(COLOR_BTNSHADOW));
+	GetDefaultSysButton(&(pTitleBar->skinMinDisable), ::GetSysColor(COLOR_INACTIVECAPTION) & 0xFF000000, ::GetSysColor(COLOR_INACTIVECAPTIONTEXT), ::GetSysColor(COLOR_INACTIVECAPTIONTEXT));
 }
 
 LRESULT CDreamSkinDialog::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)

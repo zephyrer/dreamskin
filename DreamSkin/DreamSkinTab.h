@@ -34,10 +34,7 @@ public:
 	static SKINTAB          s_SkinTab;                //Tab Skin Settings
 
 protected:
-	static void GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk);
-	static void GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth, int nDrawType = DRAWTYPE_FILLCOLOR);
 	static void GetDefaultButton(SKINBUTTON *pSkinButton);
-	static void GetDefaultText(SKINTEXT *pText, COLORREF clrTxt);
 
 public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);

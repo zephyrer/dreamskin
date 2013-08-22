@@ -33,10 +33,6 @@ public:
 	static WNDPROC          s_DefaultWindowProc;      //Default static window proc
 	static SKINSTATIC       s_SkinStatic;             //Static Skin Settings
 
-protected:
-	static void GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk);
-	static void GetDefaultText(SKINTEXT *pText, COLORREF clrTxt);
-
 public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//process the WM_PAINT message

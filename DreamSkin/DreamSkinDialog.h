@@ -35,9 +35,6 @@ public:
 	static SKINDIALOG       s_SkinDialog;             //Dialog Skin Settings
 
 protected:
-	static void GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk);
-	static void GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth);
-	static void GetDefaultSysButton(SKINSYSBUTTON *pSysButton, COLORREF clrBk, COLORREF clrText);
 	static void GetDefaultTitleBar(SKINTITLEBAR *pTitleBar);
 
 public:

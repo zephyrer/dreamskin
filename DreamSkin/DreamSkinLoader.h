@@ -75,6 +75,7 @@ typedef struct _tag_SKINSYSBUTTON
 	DRAWIMAGE        imgDraw;                         //Button image
 	DRAWCOLOR        clrBk;                           //Button background
 	COLORREF         clrTxt;                          //Button text color;
+	COLORREF         clrBd;                           //Button border
 }SKINSYSBUTTON;
 
 typedef struct _tag_SKINTEXTFONT
@@ -412,6 +413,72 @@ typedef struct _tag_SKINLISTBOX
 	SKINITEM         skinItemHoverSelected;           //Selected item in hover status
 }SKINLISTBOX;
 
+typedef struct _tag_SKINSCROLLBAR
+{
+	SKINBACKGROUND   skinHBkNormal;                   //Background in normal status for horizontal scroll bar
+	SKINBACKGROUND   skinHBkDisable;                  //Background in disable status for horizontal scroll bar
+
+	SKINBACKGROUND   skinVBkNormal;                   //Background in normal status for vertical scroll bar
+	SKINBACKGROUND   skinVBkDisable;                  //Background in disable status for vertical scroll bar
+
+	SKINSYSBUTTON    skinBtnLeftNormal;               //Left button in normal status
+	SKINSYSBUTTON    skinBtnLeftDisable;              //Left button in disable status
+	SKINSYSBUTTON    skinBtnLeftHover;                //Left button in hover status
+	SKINSYSBUTTON    skinBtnLeftPress;                //Left button in press status
+
+	SKINSYSBUTTON    skinBtnRightNormal;              //Right button in normal status
+	SKINSYSBUTTON    skinBtnRightDisable;             //Right button in disable status
+	SKINSYSBUTTON    skinBtnRightHover;               //Right button in hover status
+	SKINSYSBUTTON    skinBtnRightPress;               //Right button in press status
+
+	SKINSYSBUTTON    skinBtnTopNormal;                //Top button in normal status
+	SKINSYSBUTTON    skinBtnTopDisable;               //Top button in disable status
+	SKINSYSBUTTON    skinBtnTopHover;                 //Top button in hover status
+	SKINSYSBUTTON    skinBtnTopPress;                 //Top button in press status
+
+	SKINSYSBUTTON    skinBtnBottomNormal;             //Bottom button in normal status
+	SKINSYSBUTTON    skinBtnBottomDisable;            //Bottom button in disable status
+	SKINSYSBUTTON    skinBtnBottomHover;              //Bottom button in hover status
+	SKINSYSBUTTON    skinBtnBottomPress;              //Bottom button in press status
+
+	SKINITEM         skinHItemNormal;                 //Item in normal status for horizontal scroll bar
+	SKINITEM         skinHItemDisabled;               //Item in disable status for horizontal scroll bar
+	SKINITEM         skinHItemHover;                  //Item in hover status for horizontal scroll bar
+	SKINITEM         skinHItemPress;                  //Item in press status for horizontal scroll bar
+
+	SKINITEM         skinVItemNormal;                 //Item in normal status for vertical scroll bar
+	SKINITEM         skinVItemDisabled;               //Item in disable status for vertical scroll bar
+	SKINITEM         skinVItemHover;                  //Item in hover status for vertical scroll bar
+	SKINITEM         skinVItemPress;                  //Item in press status for vertical scroll bar
+
+	SKINBORDER       skinHLBorderNormal;              //Left border in normal status for horizontal scroll bar
+	SKINBORDER       skinHRBorderNormal;              //Right border in normal status for horizontal scroll bar
+	SKINBORDER       skinHTBorderNormal;              //Top border in normal status for horizontal scroll bar
+	SKINBORDER       skinHBBorderNormal;              //Bottom border in normal status for horizontal scroll bar
+
+	SKINBORDER       skinHLBorderDisable;             //Left border in disable status for horizontal scroll bar
+	SKINBORDER       skinHRBorderDisable;             //Right border in disable status for horizontal scroll bar
+	SKINBORDER       skinHTBorderDisable;             //Top border in disable status for horizontal scroll bar
+	SKINBORDER       skinHBBorderDisable;             //Bottom border in disable status for horizontal scroll bar
+
+	SKINBORDER       skinVLBorderNormal;              //Left border in normal status for vertical scroll bar
+	SKINBORDER       skinVRBorderNormal;              //Right border in normal status for vertical scroll bar
+	SKINBORDER       skinVTBorderNormal;              //Top border in normal status for vertical scroll bar
+	SKINBORDER       skinVBBorderNormal;              //Bottom border in normal status for vertical scroll bar
+
+	SKINBORDER       skinVLBorderDisable;             //Left border in disable status for vertical scroll bar
+	SKINBORDER       skinVRBorderDisable;             //Right border in disable status for vertical scroll bar
+	SKINBORDER       skinVTBorderDisable;             //Top border in disable status for vertical scroll bar
+	SKINBORDER       skinVBBorderDisable;             //Bottom border in disable status for vertical scroll bar
+
+	int              nBtnLeftIncludeBorder;           //Whether left button include border       
+	int              nBtnRightIncludeBorder;          //Whether right button include border
+	int              nBtnTopIncludeBorder;            //Whether top button include border
+	int              nBtnBottomIncludeBorder;         //Whether bottom button include border
+	int              nHThumbIncludeBorder;            //Whether thumb include border
+	int              nVThumbIncludeBorder;            //Whether thumb include border
+}SKINSCROLLBAR;
+
 class CDreamSkinLoader
 {
 public:
@@ -425,6 +492,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameEdit[];
 	static WCHAR wstrSkinFileNodeNameListBox[];
 	static WCHAR wstrSkinFileNodeNameRadio[];
+	static WCHAR wstrSkinFileNodeNameScrollBar[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameTab[];
 
@@ -436,6 +504,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameIcon[];
 	static WCHAR wstrSkinFileNodeNameImage[];
 	static WCHAR wstrSkinFileNodeNameItem[];
+	static WCHAR wstrSkinFileNodeNameThumb[];
 	static WCHAR wstrSkinFileNodeNameLeft[];
 	static WCHAR wstrSkinFileNodeNameRight[];
 	static WCHAR wstrSkinFileNodeNameTop[];
@@ -455,6 +524,8 @@ protected:
 	static WCHAR wstrSkinFileNodeNameMaximize[];
 	static WCHAR wstrSkinFileNodeNameRestore[];
 	static WCHAR wstrSkinFileNodeNameMinimize[];
+	static WCHAR wstrSkinFileNodeNameHorizontal[];
+	static WCHAR wstrSkinFileNodeNameVertical[];
 
 	static WCHAR wstrSkinFileAttrNameWidth[];
 	static WCHAR wstrSkinFileAttrNameHeight[];
@@ -464,6 +535,8 @@ protected:
 	static WCHAR wstrSkinFileAttrNameSource[];
 	static WCHAR wstrSkinFileAttrNameStart[];
 	static WCHAR wstrSkinFileAttrNameEnd[];
+	static WCHAR wstrSkinFileAttrNameText[];
+	static WCHAR wstrSkinFileAttrNameBorder[];
 	static WCHAR wstrSkinFileAttrNameBold[];
 	static WCHAR wstrSkinFileAttrNameX[];
 	static WCHAR wstrSkinFileAttrNameY[];
@@ -485,6 +558,7 @@ public:
 	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
 	void GetSkinListBox(SKINLISTBOX *pSkinListBox) const;
 	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
+	void GetSkinScrollBar(SKINSCROLLBAR *pSkinScrollBar) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
 	void GetSkinTab(SKINTAB *pSkinTab) const;
 
@@ -495,6 +569,7 @@ protected:
 	BOOL LoadSkinCheckBox(void *parser);
 	BOOL LoadSkinListBox(void *parser);
 	BOOL LoadSkinRadio(void *parser);
+	BOOL LoadSkinScrollBar(void *parser);
 	BOOL LoadSkinStatic(void *parser);
 	BOOL LoadSkinTab(void *parser);
 
@@ -511,20 +586,22 @@ protected:
 	BOOL LoadBackground(void *bkitem, SKINBACKGROUND *pSkinBackground);
 	BOOL LoadBorder(void *border, SKINBORDER **pSkinBorderList, int nCount);
 	BOOL LoadBorderItem(void *bditem, SKINBORDER *pSkinBorder);
-	BOOL LoadSysButton(void *sysbtn, SKINSYSBUTTON *pSkinSysButton);
+	//BOOL LoadSysButton(void *sysbtn, SKINSYSBUTTON *pSkinSysButton);
+	BOOL LoadSysButtonItem(void *sysbtn, SKINSYSBUTTON *pSkinSysButton);
 	BOOL LoadText(void *text, SKINTEXT **pSkinTextList, int nCount);
 	BOOL LoadTextItem(void *txtitem, SKINTEXT *pSkinText);
 	BOOL LoadTitleBar(void *titlebar, SKINTITLEBAR *pSkinTitleBar);
 
 protected:
-	SKINDIALOG   m_SkinDialog;
-	SKINBUTTON   m_SkinButton;
-	SKINCHECKBOX m_SkinCheckBox;
-	SKINEDIT     m_SkinEdit;
-	SKINLISTBOX  m_SkinListBox;
-	SKINRADIO    m_SkinRadio;
-	SKINSTATIC   m_SkinStatic;
-	SKINTAB      m_SkinTab;
+	SKINDIALOG      m_SkinDialog;
+	SKINBUTTON      m_SkinButton;
+	SKINCHECKBOX    m_SkinCheckBox;
+	SKINEDIT        m_SkinEdit;
+	SKINLISTBOX     m_SkinListBox;
+	SKINRADIO       m_SkinRadio;
+	SKINSCROLLBAR   m_SkinScrollBar;
+	SKINSTATIC      m_SkinStatic;
+	SKINTAB         m_SkinTab;
 	
 	CImageHandleList *m_pImageHandleList;
 };

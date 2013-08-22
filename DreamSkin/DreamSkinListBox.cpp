@@ -6,6 +6,7 @@
 #include "DreamSkinLoader.h"
 #include "DreamSkinWindow.h"
 #include "DreamSkinListBox.h"
+#include "DreamSkinScrollBar.h"
 
 //static member declaration
 WNDPROC         CDreamSkinListBox::s_DefaultWindowProc = NULL;
@@ -17,7 +18,9 @@ CDreamSkinListBox::CDreamSkinListBox(HWND hWnd, WNDPROC OrgWndProc)
 	m_pSkinListBox = &s_SkinListBox;
 	m_nOwnerDraw = -1;
 	m_nCurHover = -1;
-	m_bTrackingScorllBar = FALSE;
+
+	m_nSBLButtonDown = 0;
+	m_nSBHover = 0;
 }
 
 CDreamSkinListBox::~CDreamSkinListBox()
@@ -116,80 +119,16 @@ BOOL CDreamSkinListBox::GetDefaultSkin(SKINLISTBOX *pSkinListBox)
 		GetDefaultBorder(&pSkinListBox->skinTBorderDisable, RGB(172, 168, 153), 1);
 		GetDefaultBorder(&pSkinListBox->skinBBorderDisable, RGB(172, 168, 153), 1);
 
-		GetDefaultItem(&pSkinListBox->skinItemNormalSelected, RGB(0, 0, 128), RGB(255, 255, 255));
-		GetDefaultItem(&pSkinListBox->skinItemDisableSelected, RGB(128, 128, 128), RGB(255, 255, 255));
-		GetDefaultItem(&pSkinListBox->skinItemHoverSelected, RGB(0, 0, 128), RGB(255, 255, 255));
+		GetDefaultItem(&pSkinListBox->skinItemNormalSelected, RGB(0, 0, 128), RGB(255, 255, 255), RGB(0, 0, 0), 0);
+		GetDefaultItem(&pSkinListBox->skinItemDisableSelected, RGB(128, 128, 128), RGB(255, 255, 255), RGB(0, 0, 0), 0);
+		GetDefaultItem(&pSkinListBox->skinItemHoverSelected, RGB(0, 0, 128), RGB(255, 255, 255), RGB(0, 0, 0), 0);
 
-		GetDefaultItem(&pSkinListBox->skinItemNormalUnselected, RGB(255, 255, 255), RGB(0, 0, 0));
-		GetDefaultItem(&pSkinListBox->skinItemDisableUnselected, RGB(236, 233, 216), RGB(0, 0, 0));
-		GetDefaultItem(&pSkinListBox->skinItemHoverUnselected, RGB(0, 0, 255), RGB(255, 255, 255));
+		GetDefaultItem(&pSkinListBox->skinItemNormalUnselected, RGB(255, 255, 255), RGB(0, 0, 0), RGB(0, 0, 0), 0);
+		GetDefaultItem(&pSkinListBox->skinItemDisableUnselected, RGB(236, 233, 216), RGB(0, 0, 0), RGB(0, 0, 0), 0);
+		GetDefaultItem(&pSkinListBox->skinItemHoverUnselected, RGB(0, 0, 255), RGB(255, 255, 255), RGB(0, 0, 0), 0);
 	}
 
 	return TRUE;
-}
-
-VOID CALLBACK CDreamSkinListBox::OnTrackingScrollBarTimer(HWND hwnd, UINT uMsg, UINT_PTR idEvent,DWORD dwTime)
-{
-	KillTimer(hwnd, idEvent);
-	PostThreadMessage(::GetCurrentThreadId(), WM_TIMER, idEvent, 0);
-}
-
-void CDreamSkinListBox::GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk)
-{
-	pBackground->nDefault = 1;
-	pBackground->nDrawType = DRAWTYPE_FILLCOLOR;
-	pBackground->clrDraw.clrStart = clrBk;
-	memset(&(pBackground->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinListBox::GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth)
-{
-	pBorder->nDefault = 1;
-	pBorder->nDrawType = DRAWTYPE_FILLCOLOR;
-	pBorder->nWidth = nWidth;
-	pBorder->nStart = 0;
-	pBorder->nEnd = 0;
-	pBorder->clrDraw.clrStart = clrBk;
-	memset(&(pBorder->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinListBox::GetDefaultIcon(SKINICON *pIcon, COLORREF clrDraw)
-{
-	pIcon->nDefault = 1;
-	pIcon->nDrawType = DRAWTYPE_CUSTOMIZE;
-	
-	pIcon->nHeight = 13;
-	pIcon->nWidth = 13;
-	pIcon->nPadding = 2;
-
-	pIcon->clrDraw.clrStart = clrDraw;
-	memset(&(pIcon->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinListBox::GetDefaultItem(SKINITEM *pItem, COLORREF clrBk, COLORREF clrTxt)
-{
-	pItem->nDefault = 1;
-	GetDefaultBackground(&pItem->skinBk, clrBk);
-
-	GetDefaultBorder(&pItem->skinLBorder, RGB(0, 0, 0), 0);
-	GetDefaultBorder(&pItem->skinRBorder, RGB(0, 0, 0), 0);
-	GetDefaultBorder(&pItem->skinTBorder, RGB(0, 0, 0), 0);
-	GetDefaultBorder(&pItem->skinBBorder, RGB(0, 0, 0), 0);
-
-	GetDefaultText(&pItem->skinTxt, clrTxt);
-	GetDefaultIcon(&pItem->skinIcon, clrTxt);
-}
-
-void CDreamSkinListBox::GetDefaultText(SKINTEXT *pText, COLORREF clrTxt)
-{
-	pText->nDefault = 1;
-	pText->clrDraw = clrTxt;
-	pText->bDrawShadow = FALSE;
-	pText->clrShadow = RGB(255, 255, 255);
-
-	pText->skinFont.nFontSize = 8;
-	pText->skinFont.nBold = 0;
-	wcscpy_s(pText->skinFont.wstrFontName, LF_FACESIZE, L"Microsoft Sans Serif");
 }
 
 LRESULT CDreamSkinListBox::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
@@ -200,7 +139,7 @@ LRESULT CDreamSkinListBox::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPa
 	switch(message)
 	{
 	case WM_COMPAREITEM:
-		//nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
 		break;
 	case WM_CREATE:
 		nResult = OnCreate((LPCREATESTRUCT)lParam);
@@ -217,7 +156,7 @@ LRESULT CDreamSkinListBox::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPa
 		break;
 	case WM_LBUTTONUP:
 		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-		m_bTrackingScorllBar = FALSE;
+		m_nSBLButtonDown = 0;
 		break;
 	case WM_MEASUREITEM:
 		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
@@ -229,67 +168,20 @@ LRESULT CDreamSkinListBox::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPa
 	case WM_MOUSEMOVE:
 		nResult = OnMouseMove(wParam, MAKEPOINTS(lParam));
 		break;
+	case WM_NCHITTEST:
+		nResult = OnNcHitTest(MAKEPOINTS(lParam));
+		break;
 	case WM_NCLBUTTONDBLCLK:
-		if (wParam == HTVSCROLL || wParam == HTHSCROLL)
-		{
-			switch(ScrollBarHitTest(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, MAKEPOINTS(lParam)))
-			{
-			case SBHT_THUMB:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_THUMB);
-				break;
-			case SBHT_REGION_UP:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_REGION_UP);
-				break;
-			case SBHT_REGION_DOWN:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_REGION_DOWN);
-				break;
-			case SBHT_ARROW_TOP:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_ARROW_TOP);
-				break;
-			case SBHT_ARROW_BOTTOM:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_ARROW_BOTTOM);
-				break;
-			default:
-				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-				OnNcPaint(NULL);
-				break;
-			}
-		}
-		else
-		{
-			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-		}
+		nResult = OnNcLButtonDbClick(wParam, MAKEPOINTS(lParam));
 		break;
 	case WM_NCLBUTTONDOWN:
-		if (wParam == HTVSCROLL || wParam == HTHSCROLL)
-		{
-			switch(ScrollBarHitTest(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, MAKEPOINTS(lParam)))
-			{
-			case SBHT_THUMB:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_THUMB);
-				break;
-			case SBHT_REGION_UP:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_REGION_UP);
-				break;
-			case SBHT_REGION_DOWN:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_REGION_DOWN);
-				break;
-			case SBHT_ARROW_TOP:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_ARROW_TOP);
-				break;
-			case SBHT_ARROW_BOTTOM:
-				TrackScrollBar(wParam == HTVSCROLL ? SB_VERT : SB_HORZ, SBHT_ARROW_BOTTOM);
-				break;
-			default:
-				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-				OnNcPaint(NULL);
-				break;
-			}
-		}
-		else
-		{
-			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-		}
+		nResult = OnNcLButtonDown(wParam,  MAKEPOINTS(lParam));
+		break;
+	case WM_NCMOUSELEAVE:
+		nResult = OnNcMouseLeave();
+		break;
+	case WM_NCMOUSEMOVE:
+		nResult = OnNcMouseMove((UINT)wParam, MAKEPOINTS(lParam));
 		break;
 	case WM_NCPAINT:
 		nResult = OnNcPaint((HRGN)wParam);
@@ -400,6 +292,34 @@ LRESULT CDreamSkinListBox::OnMouseLeave()
 		::InvalidateRect(m_hWnd, &rcItem, FALSE);
 	}
 
+	if (m_nSBHover > 0)
+	{
+		POINT point;
+		::GetCursorPos(&point);
+
+		int nSBHover = 0;
+		DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+		if (dwStyle & WS_VSCROLL)
+		{
+			nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_VERT, point);
+			if (nSBHover > 0)
+				nSBHover = SB_VERT << 16 | nSBHover;
+		}
+		
+		if (dwStyle & WS_HSCROLL && nSBHover == 0)
+		{
+			nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_HORZ, point);
+			if (nSBHover > 0)
+				nSBHover = SB_HORZ << 16 | nSBHover;
+		}
+
+		if (nSBHover != m_nSBHover)
+		{
+			m_nSBHover = nSBHover;
+			OnNcPaint(NULL);
+		}
+	}
+
 	return 0;
 }
 
@@ -412,6 +332,28 @@ LRESULT CDreamSkinListBox::OnMouseMove(UINT nFlags, POINTS point)
 	EventTrack.dwHoverTime = 0;
 
 	TrackMouseEvent(&EventTrack);
+
+	int nSBHover = 0;
+	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+	if (dwStyle & WS_VSCROLL)
+	{
+		nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_VERT, point);
+		if (nSBHover > 0)
+			nSBHover = SB_VERT << 16 | nSBHover;
+	}
+	
+	if (dwStyle & WS_HSCROLL && nSBHover == 0)
+	{
+		nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_HORZ, point);
+		if (nSBHover > 0)
+			nSBHover = SB_HORZ << 16 | nSBHover;
+	}
+
+	if (nSBHover != m_nSBHover)
+	{
+		m_nSBHover = nSBHover;
+		OnNcPaint(NULL);
+	}
 
 	DWORD dwResult = (DWORD)::SendMessage(m_hWnd, LB_ITEMFROMPOINT, 0, MAKELPARAM(point.x, point.y));
 	int nIndex = -1;
@@ -440,6 +382,215 @@ LRESULT CDreamSkinListBox::OnMouseMove(UINT nFlags, POINTS point)
 	return CDreamSkinWindow::DefWindowProc(WM_MOUSEMOVE, nFlags, MAKELPARAM(point.x, point.y));
 }
 
+LRESULT CDreamSkinListBox::OnNcHitTest(POINTS point)
+{
+	RECT rcWindow;
+	::GetWindowRect(m_hWnd, &rcWindow);
+	
+	POINT ptTemp;
+
+	ptTemp.x = point.x;
+	ptTemp.y = point.y;
+
+	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+
+	if (::PtInRect(&rcWindow, ptTemp))
+	{
+		RECT rcClient = rcWindow;
+
+		SKINBORDER *pLBorder, *pRBorder, *pTBorder, *pBBorder;
+		DWORD dwExStyle = ::GetWindowLong(m_hWnd, GWL_EXSTYLE);
+		if (dwExStyle & WS_EX_CLIENTEDGE)
+		{
+			int nStatus = GetCurrentStatus(dwStyle);
+			switch(nStatus)
+			{
+			case DRAWSTATUS_DISABLE:
+				pLBorder = &m_pSkinListBox->skinLBorderDisable;
+				pRBorder = &m_pSkinListBox->skinRBorderDisable;
+				pTBorder = &m_pSkinListBox->skinTBorderDisable;
+				pBBorder = &m_pSkinListBox->skinBBorderDisable;
+				break;
+			default:
+				pLBorder = &m_pSkinListBox->skinLBorderNormal;
+				pRBorder = &m_pSkinListBox->skinRBorderNormal;
+				pTBorder = &m_pSkinListBox->skinTBorderNormal;
+				pBBorder = &m_pSkinListBox->skinBBorderNormal;
+				break;
+			}
+
+			rcClient.left += pLBorder->nWidth;
+			rcClient.top += pTBorder->nWidth;
+			rcClient.right -= pRBorder->nWidth;
+			rcClient.bottom -= pBBorder->nWidth;
+		}
+
+		SCROLLBARINFO ScrollBarInfo;
+		if (dwStyle & WS_VSCROLL)
+		{
+			ScrollBarInfo.cbSize = sizeof(SCROLLBARINFO);
+			::GetScrollBarInfo(m_hWnd, OBJID_VSCROLL, &ScrollBarInfo);
+			rcClient.right = ScrollBarInfo.rcScrollBar.left;
+			if (::PtInRect(&ScrollBarInfo.rcScrollBar, ptTemp))
+				return HTVSCROLL;
+		}
+
+		if (dwStyle & WS_HSCROLL)
+		{
+			ScrollBarInfo.cbSize = sizeof(SCROLLBARINFO);
+			::GetScrollBarInfo(m_hWnd, OBJID_HSCROLL, &ScrollBarInfo);
+			rcClient.bottom = ScrollBarInfo.rcScrollBar.top;
+			if (::PtInRect(&ScrollBarInfo.rcScrollBar, ptTemp))
+				return HTHSCROLL;
+		}
+
+		if (::PtInRect(&rcClient, ptTemp))
+			return HTCLIENT;
+		else
+			return HTBORDER;
+	}
+	else
+	{
+		return HTNOWHERE;
+	}
+}
+
+LRESULT CDreamSkinListBox::OnNcLButtonDbClick(UINT nHitTest, POINTS point)
+{
+	LRESULT nResult = 0;
+
+	if (nHitTest == HTVSCROLL || nHitTest == HTHSCROLL)
+	{
+		int fnBar = nHitTest == HTVSCROLL ? SB_VERT : SB_HORZ;
+		switch(CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, fnBar, point))
+		{
+		case SBHT_THUMB:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_THUMB;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_THUMB, &m_nSBLButtonDown);
+			break;
+		case SBHT_REGION_UP:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_REGION_UP;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_REGION_UP, &m_nSBLButtonDown);
+			break;
+		case SBHT_REGION_DOWN:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_REGION_DOWN;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_REGION_DOWN, &m_nSBLButtonDown);
+			break;
+		case SBHT_ARROW_TOP:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_ARROW_TOP;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_ARROW_TOP, &m_nSBLButtonDown);
+			break;
+		case SBHT_ARROW_BOTTOM:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_ARROW_BOTTOM;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_ARROW_BOTTOM, &m_nSBLButtonDown);
+			break;
+		default:
+			m_nSBLButtonDown = 0;
+			nResult = CDreamSkinWindow::DefWindowProc(WM_NCLBUTTONDBLCLK, nHitTest, MAKELPARAM(point.x, point.y));
+			OnNcPaint(NULL);
+			break;
+		}
+	}
+	else
+	{
+		m_nSBLButtonDown = 0;
+		nResult = CDreamSkinWindow::DefWindowProc(WM_NCLBUTTONDBLCLK, nHitTest, MAKELPARAM(point.x, point.y));
+	}
+
+	return nResult;
+}
+
+LRESULT CDreamSkinListBox::OnNcLButtonDown(UINT nHitTest, POINTS point)
+{
+	LRESULT nResult = 0;
+
+	if (nHitTest == HTVSCROLL || nHitTest == HTHSCROLL)
+	{
+		int fnBar = nHitTest == HTVSCROLL ? SB_VERT : SB_HORZ;
+		switch(CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, fnBar, point))
+		{
+		case SBHT_THUMB:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_THUMB;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_THUMB, &m_nSBLButtonDown);
+			break;
+		case SBHT_REGION_UP:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_REGION_UP;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_REGION_UP, &m_nSBLButtonDown);
+			break;
+		case SBHT_REGION_DOWN:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_REGION_DOWN;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_REGION_DOWN, &m_nSBLButtonDown);
+			break;
+		case SBHT_ARROW_TOP:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_ARROW_TOP;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_ARROW_TOP, &m_nSBLButtonDown);
+			break;
+		case SBHT_ARROW_BOTTOM:
+			m_nSBLButtonDown = fnBar << 16 | SBHT_ARROW_BOTTOM;
+			CDreamSkinScrollBar::TrackScrollBar(m_hWnd, fnBar, SBHT_ARROW_BOTTOM, &m_nSBLButtonDown);
+			break;
+		default:
+			m_nSBLButtonDown = 0;
+			nResult = CDreamSkinWindow::DefWindowProc(WM_NCLBUTTONDOWN, nHitTest, MAKELPARAM(point.x, point.y));
+			OnNcPaint(NULL);
+			break;
+		}
+	}
+	else
+	{
+		m_nSBLButtonDown = 0;
+		nResult = CDreamSkinWindow::DefWindowProc(WM_NCLBUTTONDOWN, nHitTest, MAKELPARAM(point.x, point.y));
+	}
+
+	return nResult;
+}
+
+LRESULT CDreamSkinListBox::OnNcMouseLeave()
+{
+	if (m_nSBHover != 0)
+	{
+		m_nSBHover = 0;
+		OnNcPaint(NULL);
+	}
+
+	return 0;
+}
+
+LRESULT CDreamSkinListBox::OnNcMouseMove(UINT nHitTest, POINTS point)
+{
+	TRACKMOUSEEVENT EventTrack;
+	EventTrack.cbSize = sizeof(TRACKMOUSEEVENT);
+	EventTrack.dwFlags = TME_NONCLIENT | TME_LEAVE;
+	EventTrack.hwndTrack = m_hWnd;
+	EventTrack.dwHoverTime = 1;
+
+	TrackMouseEvent(&EventTrack);
+
+	int nSBHover = 0;
+	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+	if (dwStyle & WS_VSCROLL)
+	{
+		nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_VERT, point);
+		if (nSBHover > 0)
+			nSBHover = SB_VERT << 16 | nSBHover;
+	}
+	
+	if (dwStyle & WS_HSCROLL && nSBHover == 0)
+	{
+		nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_HORZ, point);
+		if (nSBHover > 0)
+			nSBHover = SB_HORZ << 16 | nSBHover;
+	}
+
+	if (nSBHover != m_nSBHover)
+	{
+		m_nSBHover = nSBHover;
+		OnNcPaint(NULL);
+	}
+
+	return 0; 
+}
+
 LRESULT CDreamSkinListBox::OnNcPaint(HRGN hRGN)
 {
 	HDC hWindowDC;
@@ -448,28 +599,15 @@ LRESULT CDreamSkinListBox::OnNcPaint(HRGN hRGN)
 
 	RECT rcWindow;
 	::GetWindowRect(m_hWnd, &rcWindow);
-
-	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
-	SCROLLINFO ScrollInfo;
-	SCROLLBARINFO ScrollBarInfo;
-	if (dwStyle & WS_VSCROLL)
-	{
-		ScrollInfo.cbSize = sizeof(SCROLLINFO);
-		ScrollInfo.fMask = SIF_ALL;
-		::GetScrollInfo(m_hWnd, SB_VERT, &ScrollInfo);
-
-		ScrollBarInfo.cbSize = sizeof(SCROLLBARINFO);
-		::GetScrollBarInfo(m_hWnd, OBJID_VSCROLL, &ScrollBarInfo);
-
-		::OffsetRect(&ScrollBarInfo.rcScrollBar, 0 - rcWindow.left, 0 - rcWindow.top);
-		DrawScrollBar(hWindowDC, &ScrollInfo, &ScrollBarInfo);
-	}
-
 	::OffsetRect(&rcWindow, 0 - rcWindow.left, 0 - rcWindow.top);
 
 	DWORD dwExStyle = ::GetWindowLong(m_hWnd, GWL_EXSTYLE);
 	if (dwExStyle & WS_EX_CLIENTEDGE)
 		DrawBorder(hWindowDC, rcWindow);
+
+	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+	if (dwStyle & WS_VSCROLL || dwStyle & WS_HSCROLL)
+		CDreamSkinScrollBar::DrawWindowScrollBar(m_hWnd, hWindowDC, m_nSBLButtonDown, m_nSBHover);
 
 	::ReleaseDC(m_hWnd, hWindowDC);
 
@@ -642,37 +780,6 @@ void CDreamSkinListBox::DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pR
 	}
 }
 
-void CDreamSkinListBox::DrawScrollBar(HDC hDC, LPSCROLLINFO lpsi, PSCROLLBARINFO psbi)
-{
-	RECT rcTop, rcBottom, rcClient, rcItem;
-	rcTop.left = psbi->rcScrollBar.left;
-	rcTop.top = psbi->rcScrollBar.top;
-	rcTop.bottom = psbi->dxyLineButton;
-	rcTop.right = psbi->rcScrollBar.right;
-
-	rcBottom.left = psbi->rcScrollBar.left;
-	rcBottom.top = psbi->rcScrollBar.bottom - psbi->dxyLineButton;
-	rcBottom.bottom = psbi->rcScrollBar.bottom;
-	rcBottom.right = psbi->rcScrollBar.right;
-
-	::FillSolidRect(hDC, &rcTop, RGB(0, 255, 0));
-	::FillSolidRect(hDC, &rcBottom, RGB(0, 255, 0));
-
-	rcClient.left = psbi->rcScrollBar.left;
-	rcClient.top  = psbi->dxyLineButton;
-	rcClient.bottom = psbi->rcScrollBar.bottom - psbi->dxyLineButton;
-	rcClient.right = psbi->rcScrollBar.right;
-	::FillSolidRect(hDC, &rcClient, RGB(0, 0, 255));
-
-	rcItem.left = psbi->rcScrollBar.left + 1;
-	rcItem.right = psbi->rcScrollBar.right -1;
-	rcItem.top = psbi->xyThumbTop;
-	rcItem.bottom = psbi->xyThumbBottom;
-	::FillSolidRect(hDC, &rcItem, RGB(0, 0, 128));
-
-	::Draw3dRect(hDC, &psbi->rcScrollBar, RGB(255, 0, 0), RGB(255, 0, 0));
-}
-
 void CDreamSkinListBox::DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle)
 {
 	LOGFONTW fnText;
@@ -732,19 +839,6 @@ void CDreamSkinListBox::DrawItem(HDC hDC, SKINITEM *pItem, RECT rcItem, WCHAR *w
 		DrawTitle(hDC, &pItem->skinTxt, rcClient, wstrTitle);
 }
 
-RECT CDreamSkinListBox::GetItemRectClient(SKINITEM *pItem, RECT rcItem) const
-{
-	RECT rcClient;
-
-	rcClient = rcItem;
-	rcClient.left = rcClient.left + pItem->skinLBorder.nWidth;
-	rcClient.right = rcClient.right - pItem->skinRBorder.nWidth;
-	rcClient.top = rcClient.top + pItem->skinTBorder.nWidth;
-	rcClient.bottom = rcClient.bottom - pItem->skinBBorder.nWidth;
-
-	return rcClient;
-}
-
 int CDreamSkinListBox::GetCurrentStatus(DWORD dwStyle) const
 {
 	int nStatus;
@@ -755,271 +849,4 @@ int CDreamSkinListBox::GetCurrentStatus(DWORD dwStyle) const
 		nStatus = DRAWSTATUS_NORMAL;        //Normal
 
 	return nStatus;
-}
-
-int CDreamSkinListBox::ScrollBarDragPos(int fnBar, LPSCROLLINFO lpsi, LPSCROLLBARINFO psbi, POINT point)
-{
-	BOOL bIsDrag = TRUE;
-	int nPos;
-
-	if (fnBar == SB_HORZ)
-	{
-		if (abs(point.y - (psbi->rcScrollBar.bottom + psbi->rcScrollBar.top) / 2) >= 150)
-			bIsDrag = FALSE;
-		else if ((psbi->rcScrollBar.left - point.x >= 10) || (point.x - psbi->rcScrollBar.right) >= 10)
-			bIsDrag = FALSE;
-	}
-	else
-	{
-		if (abs(point.x - (psbi->rcScrollBar.right + psbi->rcScrollBar.left) / 2) >= 150)
-			bIsDrag = FALSE;
-		else if ((psbi->rcScrollBar.top - point.y >= 10) || (point.y - psbi->rcScrollBar.bottom) >= 10)
-			bIsDrag = FALSE;
-	}
-
-	if (bIsDrag)
-	{
-		int nTop, nBottom;
-		if (fnBar == SB_HORZ)
-		{
-			nTop = psbi->rcScrollBar.left + psbi->dxyLineButton;
-			nBottom = psbi->rcScrollBar.right - psbi->dxyLineButton;
-			if (point.x <= nTop)
-				nPos = lpsi->nMin;
-			else if (point.x >= nBottom)
-				nPos = lpsi->nMax;
-			else
-				nPos = (nBottom * lpsi->nMin - nTop * lpsi->nMax + lpsi->nMax * point.x - lpsi->nMin * point.x) / (nBottom - nTop);
-		}
-		else
-		{
-			nTop = psbi->rcScrollBar.top + psbi->dxyLineButton;
-			nBottom = psbi->rcScrollBar.bottom - psbi->dxyLineButton;
-			if (point.y <= nTop)
-				nPos = lpsi->nMin;
-			else if (point.y >= nBottom)
-				nPos = lpsi->nMax;
-			else
-				nPos = (nBottom * lpsi->nMin - nTop * lpsi->nMax + lpsi->nMax * point.y - lpsi->nMin * point.y) / (nBottom - nTop);
-		}
-	}
-	else
-	{
-		nPos = lpsi->nPos;
-	}
-
-	return nPos;
-}
-
-int CDreamSkinListBox::ScrollBarHitTest(int fnBar, POINTS point)
-{
-	POINT pt;
-	pt.x = point.x;
-	pt.y = point.y;
-
-	return ScrollBarHitTest(fnBar, pt);
-}
-
-int CDreamSkinListBox::ScrollBarHitTest(int fnBar, POINT point)
-{
-	int nResult = SBHT_NOWHERE;
-
-	SCROLLBARINFO ScrollBarInfo;
-	ScrollBarInfo.cbSize = sizeof(SCROLLBARINFO);
-	
-	if (fnBar == SB_HORZ)
-	{
-		::GetScrollBarInfo(m_hWnd, OBJID_HSCROLL, &ScrollBarInfo);
-		if (::PtInRect(&ScrollBarInfo.rcScrollBar, point))
-		{
-			point.x = point.x - ScrollBarInfo.rcScrollBar.left;
-			point.y = point.y - ScrollBarInfo.rcScrollBar.top;
-			if (point.x < ScrollBarInfo.dxyLineButton)
-				nResult = SBHT_ARROW_TOP;
-			else if (point.x < ScrollBarInfo.xyThumbTop)
-				nResult = SBHT_REGION_UP;
-			else if (point.x < ScrollBarInfo.xyThumbBottom)
-				nResult = SBHT_THUMB;
-			else if (point.x < (ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.rcScrollBar.left - ScrollBarInfo.dxyLineButton))
-				nResult = SBHT_REGION_DOWN;
-			else
-				nResult = SBHT_ARROW_BOTTOM;
-		}
-	}
-	else if (fnBar == SB_VERT)
-	{
-		::GetScrollBarInfo(m_hWnd, OBJID_VSCROLL, &ScrollBarInfo);
-		if (::PtInRect(&ScrollBarInfo.rcScrollBar, point))
-		{
-			point.x = point.x - ScrollBarInfo.rcScrollBar.left;
-			point.y = point.y - ScrollBarInfo.rcScrollBar.top;
-
-			if (point.y < ScrollBarInfo.dxyLineButton)
-				nResult = SBHT_ARROW_TOP;
-			else if (point.y < ScrollBarInfo.xyThumbTop)
-				nResult = SBHT_REGION_UP;
-			else if (point.y < ScrollBarInfo.xyThumbBottom)
-				nResult = SBHT_THUMB;
-			else if (point.y < (ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.rcScrollBar.top - ScrollBarInfo.dxyLineButton))
-				nResult = SBHT_REGION_DOWN;
-			else
-				nResult = SBHT_ARROW_BOTTOM;
-		}
-	}
-
-	return nResult;
-}
-
-void CDreamSkinListBox::TrackScrollBar(int fnBar, int nSBHitTest)
-{
-	SCROLLINFO ScrollInfo;
-	ScrollInfo.cbSize = sizeof(SCROLLINFO);
-	ScrollInfo.fMask = SIF_ALL;
-	::GetScrollInfo(m_hWnd, fnBar, &ScrollInfo);
-
-	UINT nScrollMsg;
-	int nMsgCode;
-
-	if (fnBar == SB_HORZ)
-	{
-		nScrollMsg = WM_HSCROLL;
-		switch(nSBHitTest)
-		{
-		case SBHT_REGION_DOWN:
-			nMsgCode = SB_PAGERIGHT;
-			break;
-		case SBHT_REGION_UP:
-			nMsgCode = SB_PAGELEFT;
-			break;
-		case SBHT_ARROW_TOP:
-			nMsgCode = SB_LINELEFT;
-			break;
-		case SBHT_ARROW_BOTTOM:
-			nMsgCode = SB_LINERIGHT;
-			break;
-		default:
-			nMsgCode = SB_THUMBTRACK;
-			break;
-		}
-	}
-	else if (fnBar == SB_VERT)
-	{
-		nScrollMsg = WM_VSCROLL;
-		switch(nSBHitTest)
-		{
-		case SBHT_REGION_DOWN:
-			nMsgCode = SB_PAGEDOWN;
-			break;
-		case SBHT_REGION_UP:
-			nMsgCode = SB_PAGEUP;
-			break;
-		case SBHT_ARROW_TOP:
-			nMsgCode = SB_LINEUP;
-			break;
-		case SBHT_ARROW_BOTTOM:
-			nMsgCode = SB_LINEDOWN;
-			break;
-		default:
-			nMsgCode = SB_THUMBTRACK;
-			break;
-		}
-	}
-
-	MSG Msg;
-	POINT point;
-	int nNewSBHitTest;
-
-	m_bTrackingScorllBar = TRUE;
-	::SetCapture(m_hWnd);
-
-	if (nSBHitTest == SBHT_REGION_DOWN || nSBHitTest == SBHT_REGION_UP || nSBHitTest == SBHT_ARROW_TOP || nSBHitTest == SBHT_ARROW_BOTTOM)
-	{
-		::SendMessage(m_hWnd, nScrollMsg, nMsgCode, 0);
-		int nTimer1 = ::SetTimer(0, 0, 500, NULL);
-		int nTimer2 = 0;
-		while (::GetCapture() == m_hWnd && m_bTrackingScorllBar)
-		{
-			if (!::GetMessage(&Msg, NULL, 0, 0))
-				break;
-
-			switch(Msg.message)
-			{
-			case WM_LBUTTONUP:
-				if (nTimer2 > 0)
-					KillTimer(0, nTimer2);
-				m_bTrackingScorllBar = FALSE;
-				::SendMessage(m_hWnd, nScrollMsg, SB_ENDSCROLL, 0);
-				break;
-			case WM_TIMER:
-				if (Msg.wParam == nTimer1)
-				{
-					::KillTimer(0, nTimer1);
-
-					::GetCursorPos(&point);
-					nNewSBHitTest = ScrollBarHitTest(fnBar, point);
-					if (nNewSBHitTest == nSBHitTest)
-						::SendMessage(m_hWnd, nScrollMsg, nMsgCode, 0);
-					nTimer2 = ::SetTimer(0, 0, 100, NULL);
-				}
-				else if (Msg.wParam == nTimer2)
-				{
-					::GetCursorPos(&point);
-					nNewSBHitTest = ScrollBarHitTest(fnBar, point);
-					if (nNewSBHitTest == nSBHitTest)
-						::SendMessage(m_hWnd, nScrollMsg, nMsgCode, 0);
-				}
-				else
-				{
-					DispatchMessage(&Msg);
-				}
-				break;
-			default:
-				DispatchMessage(&Msg);
-				break;
-			}
-		}
-	}
-	else
-	{
-		int nPos;
-
-		SCROLLBARINFO ScrollBarInfo;
-		ScrollBarInfo.cbSize = sizeof(SCROLLBARINFO);
-		
-		if (fnBar == SB_HORZ)
-		{
-			::GetScrollBarInfo(m_hWnd, OBJID_HSCROLL, &ScrollBarInfo);
-		}
-		else
-		{
-			::GetScrollBarInfo(m_hWnd, OBJID_VSCROLL, &ScrollBarInfo);
-		}
-
-		while (::GetCapture() == m_hWnd && m_bTrackingScorllBar)
-		{
-			if (!::GetMessage(&Msg, NULL, 0, 0))
-				break;
-
-			switch(Msg.message)
-			{
-			case WM_LBUTTONUP:
-				m_bTrackingScorllBar = FALSE;
-				nPos = ScrollBarDragPos(fnBar, &ScrollInfo, &ScrollBarInfo, point);
-				::SendMessage(m_hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBPOSITION, (unsigned short)nPos), 0);
-				break;
-			case WM_MOUSEMOVE:
-				::GetCursorPos(&point);
-				nPos = ScrollBarDragPos(fnBar, &ScrollInfo, &ScrollBarInfo, point);
-				::SendMessage(m_hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBTRACK, (unsigned short)nPos), 0);
-				break;
-			default:
-				DispatchMessage(&Msg);
-				break;
-			}
-		}
-	}
-
-	m_bTrackingScorllBar = FALSE;
-	if (::IsWindow(m_hWnd) && ::GetCapture() == m_hWnd)
-		::ReleaseCapture();
 }

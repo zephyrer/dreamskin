@@ -107,26 +107,6 @@ BOOL CDreamSkinStatic::GetDefaultSkin(SKINSTATIC *pSkinStatic)
 	return TRUE;
 }
 
-void CDreamSkinStatic::GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk)
-{
-	pBackground->nDefault = 1;
-	pBackground->nDrawType = DRAWTYPE_FILLCOLOR;
-	pBackground->clrDraw.clrStart = clrBk;
-	memset(&(pBackground->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinStatic::GetDefaultText(SKINTEXT *pText, COLORREF clrTxt)
-{
-	pText->nDefault = 1;
-	pText->clrDraw = clrTxt;
-	pText->bDrawShadow = FALSE;
-	pText->clrShadow = RGB(255, 255, 255);
-
-	pText->skinFont.nFontSize = 8;
-	pText->skinFont.nBold = 0;
-	wcscpy_s(pText->skinFont.wstrFontName, LF_FACESIZE, L"Microsoft Sans Serif");
-}
-
 LRESULT CDreamSkinStatic::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT nResult = ERROR_SUCCESS;

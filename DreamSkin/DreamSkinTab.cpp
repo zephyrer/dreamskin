@@ -122,25 +122,6 @@ BOOL CDreamSkinTab::GetDefaultSkin(SKINTAB *pSkinTab)
 	return TRUE;
 }
 
-void CDreamSkinTab::GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk)
-{
-	pBackground->nDefault = 1;
-	pBackground->nDrawType = DRAWTYPE_FILLCOLOR;
-	pBackground->clrDraw.clrStart = clrBk;
-	memset(&(pBackground->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
-void CDreamSkinTab::GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth, int nDrawType)
-{
-	pBorder->nDefault = 1;
-	pBorder->nDrawType = nDrawType;
-	pBorder->nWidth = nWidth;
-	pBorder->nStart = 0;
-	pBorder->nEnd = 0;
-	pBorder->clrDraw.clrStart = clrBk;
-	memset(&(pBorder->imgDraw), 0, sizeof(DRAWIMAGE));
-}
-
 void CDreamSkinTab::GetDefaultButton(SKINBUTTON *pSkinButton)
 {
 	pSkinButton->nRgnType = RGN_RECT;
@@ -182,18 +163,6 @@ void CDreamSkinTab::GetDefaultButton(SKINBUTTON *pSkinButton)
 	GetDefaultBorder(&pSkinButton->skinRBorderDefault, ::GetSysColor(COLOR_BTNTEXT), 1);
 	GetDefaultBorder(&pSkinButton->skinTBorderDefault, ::GetSysColor(COLOR_BTNTEXT), 1);
 	GetDefaultBorder(&pSkinButton->skinBBorderDefault, ::GetSysColor(COLOR_BTNTEXT), 1, DRAWTYPE_TRANSPARENT);
-}
-
-void CDreamSkinTab::GetDefaultText(SKINTEXT *pText, COLORREF clrTxt)
-{
-	pText->nDefault = 1;
-	pText->clrDraw = clrTxt;
-	pText->bDrawShadow = FALSE;
-	pText->clrShadow = RGB(255, 255, 255);
-
-	pText->skinFont.nFontSize = 8;
-	pText->skinFont.nBold = 0;
-	wcscpy_s(pText->skinFont.wstrFontName, LF_FACESIZE, L"Microsoft Sans Serif");
 }
 
 LRESULT CDreamSkinTab::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)

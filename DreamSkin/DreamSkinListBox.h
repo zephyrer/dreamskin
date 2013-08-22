@@ -6,13 +6,6 @@
 #define DEFAULT_LISTBOX_CLASSNAME_A ("ListBox")
 #define DEFAULT_LISTBOX_CLASSNAME_W (L"ListBox")
 
-#define SBHT_NOWHERE          0
-#define SBHT_ARROW_TOP        1
-#define SBHT_ARROW_BOTTOM     2
-#define SBHT_REGION_UP        3
-#define SBHT_REGION_DOWN      4
-#define SBHT_THUMB            5
-
 class CDreamSkinListBox : public CDreamSkinWindow
 {
 //Contrustor and Destructor
@@ -43,13 +36,6 @@ public:
 	static WNDPROC          s_DefaultWindowProc;      //Default static window proc
 	static SKINLISTBOX      s_SkinListBox;            //List Box Skin Settings
 
-protected:
-	static void GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk);
-	static void GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth);
-	static void GetDefaultIcon(SKINICON *pIcon, COLORREF clrDraw);
-	static void GetDefaultItem(SKINITEM *pItem, COLORREF clrBk, COLORREF clrTxt);
-	static void GetDefaultText(SKINTEXT *pText, COLORREF clrTxt);
-
 public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//process the WM_CREATE message
@@ -62,6 +48,16 @@ public:
 	virtual LRESULT OnMouseLeave();
 	//process the WM_MOUSEMOVE message
 	virtual LRESULT OnMouseMove(UINT nFlags, POINTS point);
+	//process the WM_NCHITTEST message
+	virtual LRESULT OnNcHitTest(POINTS point);
+	//process the WM_NCLBUTTONDBLCLK message
+	virtual LRESULT OnNcLButtonDbClick(UINT nHitTest, POINTS point);
+	//process the WM_NCLBUTTONDOWN message
+	virtual LRESULT OnNcLButtonDown(UINT nHitTest, POINTS point);
+	//process the WM_NCMOUSELEAVE
+	virtual LRESULT OnNcMouseLeave();
+	//process the WM_NCMOUSEMOVE message
+	virtual LRESULT OnNcMouseMove(UINT nHitTest, POINTS point);
 	//process the WM_NCPAINT message
 	virtual LRESULT OnNcPaint(HRGN hRGN);
 
@@ -72,28 +68,20 @@ protected:
 	//Draw the border
 	void    DrawBorder(HDC hDC, RECT rcWindow);
 	void    DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw);
-	void    DrawScrollBar(HDC hDC, LPSCROLLINFO lpsi, PSCROLLBARINFO psbi);
 	//Draw the title
 	void    DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle);
 	//Draw one item
 	void    DrawItem(HDC hDC, SKINITEM *pItem, RECT rcItem, WCHAR *wstrTitle);
 
-	//Get the rect of item client area
-	RECT    GetItemRectClient(SKINITEM *pItem, RECT rcItem) const;
 	//Get current button status
 	int     GetCurrentStatus(DWORD dwStyle) const;
-
-	//Get the position of mouse point on scroll bar
-	int     ScrollBarDragPos(int fnBar, LPSCROLLINFO lpsi, LPSCROLLBARINFO psbi, POINT point);
-	int     ScrollBarHitTest(int fnBar, POINT point);
-	int     ScrollBarHitTest(int fnBar, POINTS point);
-	void    TrackScrollBar(int fnBar, int nSBHitTest);
 
 protected:
 	SKINLISTBOX     *m_pSkinListBox;                  //Instance Related List Box Skin Settings
 	int              m_nOwnerDraw;                    //Whether the listbox is owner draw
 	int              m_nCurHover;                     //Current hover item
-	BOOL             m_bTrackingScorllBar;            //Whether is tracking scroll bar now
+	UINT             m_nSBLButtonDown;                //Store the last scroll bar left button down value to check if need to invoke any event
+	UINT             m_nSBHover;                      //Current scroll bar hover item
 };
 
 

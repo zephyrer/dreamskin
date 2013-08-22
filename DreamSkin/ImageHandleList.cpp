@@ -56,7 +56,7 @@ HANDLE CImageHandleList::LoadImage(const WCHAR *wstrImageFilePath)
 	HANDLE hResult = GetImageHandleByPath(wstrImageFilePath);
 	if (!hResult)
 	{
-		hResult = ::LoadImageW(NULL, wstrImageFilePath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+		hResult = ::LoadImageW(NULL, wstrImageFilePath, IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION | LR_LOADFROMFILE);
 		if (hResult)
 		{
 			((IMAGEHANDLELIST*)m_pImageHandleList)->insert(IMAGEPATHHANDLEPAIR(wstring(wstrImageFilePath), hResult));

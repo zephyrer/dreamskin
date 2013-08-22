@@ -22,6 +22,7 @@ using namespace xercesc;
 #include "DreamSkinStatic.h"
 #include "DreamSkinTab.h"
 #include "DreamSkinListBox.h"
+#include "DreamSkinScrollBar.h"
 
 #include "HexBin.h"
 
@@ -65,6 +66,7 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameEdit[] = L"edit";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameListBox[] = L"listbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRadio[] = L"radio";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameScrollBar[] = L"scrollbar";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameStatic[] = L"static";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameTab[] = L"tab";
 
@@ -76,6 +78,7 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameText[] = L"text";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameIcon[] = L"icon";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameImage[] = L"image";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameItem[] = L"item";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameThumb[] = L"thumb";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameLeft[] = L"left";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameTop[] = L"top";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRight[] = L"right";
@@ -95,6 +98,8 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameClose[] = L"close";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameMaximize[] = L"maximize";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRestore[] = L"restore";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameMinimize[] = L"minimize";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameHorizontal[] = L"horizontal";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameVertical[] = L"vertical";
 
 WCHAR CDreamSkinLoader::wstrSkinFileAttrNameWidth[] = L"width";
 WCHAR CDreamSkinLoader::wstrSkinFileAttrNameHeight[] = L"height";
@@ -104,6 +109,8 @@ WCHAR CDreamSkinLoader::wstrSkinFileAttrNameTransparent[] = L"transparent";
 WCHAR CDreamSkinLoader::wstrSkinFileAttrNameSource[] = L"source";
 WCHAR CDreamSkinLoader::wstrSkinFileAttrNameStart[] = L"start";
 WCHAR CDreamSkinLoader::wstrSkinFileAttrNameEnd[] = L"end";
+WCHAR CDreamSkinLoader::wstrSkinFileAttrNameText[] = L"text";
+WCHAR CDreamSkinLoader::wstrSkinFileAttrNameBorder[] = L"border";
 WCHAR CDreamSkinLoader::wstrSkinFileAttrNameBold[] = L"bold";
 WCHAR CDreamSkinLoader::wstrSkinFileAttrNameX[] = L"x";
 WCHAR CDreamSkinLoader::wstrSkinFileAttrNameY[] = L"y";
@@ -177,6 +184,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		//Load Skin Edit
 		CDreamSkinEdit::GetDefaultSkin(&m_SkinEdit);
 		LoadSkinEdit(parser);
+
+		//Load Skin ScrollBar
+		CDreamSkinScrollBar::GetDefaultSkin(&m_SkinScrollBar);
+		LoadSkinScrollBar(parser);
 
 		//Load Skin Static
 		CDreamSkinStatic::GetDefaultSkin(&m_SkinStatic);
@@ -271,6 +282,14 @@ void CDreamSkinLoader::GetSkinRadio(SKINRADIO *pSkinRadio) const
 	if (pSkinRadio)
 	{
 		memcpy(pSkinRadio, &m_SkinRadio, sizeof(SKINRADIO));
+	}
+}
+
+void CDreamSkinLoader::GetSkinScrollBar(SKINSCROLLBAR *pSkinScrollBar) const
+{
+	if (pSkinScrollBar)
+	{
+		memcpy(pSkinScrollBar, &m_SkinScrollBar, sizeof(SKINSCROLLBAR));
 	}
 }
 
@@ -1232,6 +1251,454 @@ BOOL CDreamSkinLoader::LoadSkinRadio(void *parser)
 	return bResult;
 }
 
+BOOL CDreamSkinLoader::LoadSkinScrollBar(void *parser)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pTypeNode, *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pScrollBarNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameScrollBar);
+	const WCHAR *wstrNodeName;
+	SKINBORDER *pSkinBorderList[DRAWSTATUS_DISABLE + 1];
+	SKINITEM *pSkinItemList[DRAWSTATUS_MAXCOUNT];
+
+	if (pScrollBarNode)
+	{
+		//loop to load all settings
+		pTypeNode = pScrollBarNode->getFirstChild();
+		while (pTypeNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pTypeNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameHorizontal) == 0)
+			{//horizontal
+				pParentNode = pTypeNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinScrollBar.skinHBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinScrollBar.skinHBkDisable.nDrawType = m_SkinScrollBar.skinHBkNormal.nDrawType;
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinScrollBar.skinHBkNormal));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadBackground(pChildNode, &(m_SkinScrollBar.skinHBkDisable));
+							}//disable
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+
+						if (m_SkinScrollBar.skinHBkDisable.nDefault)
+							m_SkinScrollBar.skinHBkDisable = m_SkinScrollBar.skinHBkNormal;
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBorder) == 0)
+					{//border
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+							{//left
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinHLBorderNormal;
+								pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinHLBorderDisable;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+							}//left
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+							{//right
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinHRBorderNormal;
+								pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinHRBorderDisable;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+							}//right
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+							{//top
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinHTBorderNormal;
+								pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinHTBorderDisable;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+							}//top
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+							{//bottom
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinHBBorderNormal;
+								pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinHBBorderDisable;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+							}//bottom
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//border
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+					{//left button
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//left button draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinScrollBar.skinBtnLeftNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinScrollBar.skinBtnLeftDisable.nDrawType = m_SkinScrollBar.skinBtnLeftNormal.nDrawType;
+								m_SkinScrollBar.skinBtnLeftHover.nDrawType = m_SkinScrollBar.skinBtnLeftNormal.nDrawType;
+								m_SkinScrollBar.skinBtnLeftPress.nDrawType = m_SkinScrollBar.skinBtnLeftNormal.nDrawType;
+							}
+
+							//whether include border
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameIncludeBorder));
+							if (pTempNode)
+								m_SkinScrollBar.nBtnLeftIncludeBorder = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnLeftNormal));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnLeftHover));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnLeftPress));
+							}//press
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnLeftDisable));
+							}//disable
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+
+						if (m_SkinScrollBar.skinBtnLeftHover.nDefault)
+							m_SkinScrollBar.skinBtnLeftHover = m_SkinScrollBar.skinBtnLeftNormal;
+
+						if (m_SkinScrollBar.skinBtnLeftDisable.nDefault)
+							m_SkinScrollBar.skinBtnLeftDisable = m_SkinScrollBar.skinBtnLeftNormal;
+
+						if (m_SkinScrollBar.skinBtnLeftPress.nDefault)
+							m_SkinScrollBar.skinBtnLeftPress = m_SkinScrollBar.skinBtnLeftHover;
+					}//left button
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+					{//right button
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//left button draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinScrollBar.skinBtnRightNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinScrollBar.skinBtnRightDisable.nDrawType = m_SkinScrollBar.skinBtnRightNormal.nDrawType;
+								m_SkinScrollBar.skinBtnRightHover.nDrawType = m_SkinScrollBar.skinBtnRightNormal.nDrawType;
+								m_SkinScrollBar.skinBtnRightPress.nDrawType = m_SkinScrollBar.skinBtnRightNormal.nDrawType;
+							}
+
+							//whether include border
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameIncludeBorder));
+							if (pTempNode)
+								m_SkinScrollBar.nBtnRightIncludeBorder = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnRightNormal));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnRightHover));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnRightPress));
+							}//press
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnRightDisable));
+							}//disable
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+
+						if (m_SkinScrollBar.skinBtnRightHover.nDefault)
+							m_SkinScrollBar.skinBtnRightHover = m_SkinScrollBar.skinBtnRightNormal;
+
+						if (m_SkinScrollBar.skinBtnRightDisable.nDefault)
+							m_SkinScrollBar.skinBtnRightDisable = m_SkinScrollBar.skinBtnRightNormal;
+
+						if (m_SkinScrollBar.skinBtnRightPress.nDefault)
+							m_SkinScrollBar.skinBtnRightPress = m_SkinScrollBar.skinBtnRightHover;
+					}//right button
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameThumb) == 0)
+					{//thumb
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//whether include border
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameIncludeBorder));
+							if (pTempNode)
+							{
+								m_SkinScrollBar.nHThumbIncludeBorder = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+							}
+						}
+
+						pSkinItemList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinHItemNormal;
+						pSkinItemList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinHItemDisabled;
+						pSkinItemList[DRAWSTATUS_HOVER] = &m_SkinScrollBar.skinHItemHover;
+						pSkinItemList[DRAWSTATUS_PRESS] = &m_SkinScrollBar.skinHItemPress;
+						LoadItem(pParentNode, pSkinItemList, DRAWSTATUS_PRESS + 1);
+					}//thumb
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//horizontal
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameVertical) == 0)
+			{//vertical
+				pParentNode = pTypeNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinScrollBar.skinVBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinScrollBar.skinVBkDisable.nDrawType = m_SkinScrollBar.skinVBkNormal.nDrawType;
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinScrollBar.skinVBkNormal));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadBackground(pChildNode, &(m_SkinScrollBar.skinVBkDisable));
+							}//disable
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+
+						if (m_SkinScrollBar.skinVBkDisable.nDefault)
+							m_SkinScrollBar.skinVBkDisable = m_SkinScrollBar.skinVBkNormal;
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBorder) == 0)
+					{//border
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+							{//left
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinVLBorderNormal;
+								pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinVLBorderDisable;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+							}//left
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+							{//right
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinVRBorderNormal;
+								pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinVRBorderDisable;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+							}//right
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+							{//top
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinVTBorderNormal;
+								pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinVTBorderDisable;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+							}//top
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+							{//bottom
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinVBBorderNormal;
+								pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinVBBorderDisable;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_DISABLE + 1);
+							}//bottom
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//border
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+					{//top button
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//left button draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinScrollBar.skinBtnTopNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinScrollBar.skinBtnTopDisable.nDrawType = m_SkinScrollBar.skinBtnTopNormal.nDrawType;
+								m_SkinScrollBar.skinBtnTopHover.nDrawType = m_SkinScrollBar.skinBtnTopNormal.nDrawType;
+								m_SkinScrollBar.skinBtnTopPress.nDrawType = m_SkinScrollBar.skinBtnTopNormal.nDrawType;
+							}
+
+							//whether include border
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameIncludeBorder));
+							if (pTempNode)
+								m_SkinScrollBar.nBtnTopIncludeBorder = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnTopNormal));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnTopHover));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnTopPress));
+							}//press
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnTopDisable));
+							}//disable
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+
+						if (m_SkinScrollBar.skinBtnTopHover.nDefault)
+							m_SkinScrollBar.skinBtnTopHover = m_SkinScrollBar.skinBtnTopNormal;
+
+						if (m_SkinScrollBar.skinBtnTopDisable.nDefault)
+							m_SkinScrollBar.skinBtnTopDisable = m_SkinScrollBar.skinBtnTopNormal;
+
+						if (m_SkinScrollBar.skinBtnTopPress.nDefault)
+							m_SkinScrollBar.skinBtnTopPress = m_SkinScrollBar.skinBtnTopHover;
+					}//top button
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+					{//bottom button
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//left button draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinScrollBar.skinBtnBottomNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+								m_SkinScrollBar.skinBtnBottomDisable.nDrawType = m_SkinScrollBar.skinBtnBottomNormal.nDrawType;
+								m_SkinScrollBar.skinBtnBottomHover.nDrawType = m_SkinScrollBar.skinBtnBottomNormal.nDrawType;
+								m_SkinScrollBar.skinBtnBottomPress.nDrawType = m_SkinScrollBar.skinBtnBottomNormal.nDrawType;
+							}
+
+							//whether include border
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameIncludeBorder));
+							if (pTempNode)
+								m_SkinScrollBar.nBtnBottomIncludeBorder = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnBottomNormal));
+							}//normal
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+							{//hover
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnBottomHover));
+							}//hover
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+							{//press
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnBottomPress));
+							}//press
+							else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+							{//disable
+								LoadSysButtonItem(pChildNode, &(m_SkinScrollBar.skinBtnBottomDisable));
+							}//disable
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+
+						if (m_SkinScrollBar.skinBtnBottomHover.nDefault)
+							m_SkinScrollBar.skinBtnBottomHover = m_SkinScrollBar.skinBtnBottomNormal;
+
+						if (m_SkinScrollBar.skinBtnBottomDisable.nDefault)
+							m_SkinScrollBar.skinBtnBottomDisable = m_SkinScrollBar.skinBtnBottomNormal;
+
+						if (m_SkinScrollBar.skinBtnBottomPress.nDefault)
+							m_SkinScrollBar.skinBtnBottomPress = m_SkinScrollBar.skinBtnBottomHover;
+					}//bottom button
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameThumb) == 0)
+					{//thumb
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//whether include border
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameIncludeBorder));
+							if (pTempNode)
+							{
+								m_SkinScrollBar.nVThumbIncludeBorder = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+							}
+						}
+
+						pSkinItemList[DRAWSTATUS_NORMAL] = &m_SkinScrollBar.skinVItemNormal;
+						pSkinItemList[DRAWSTATUS_DISABLE] = &m_SkinScrollBar.skinVItemDisabled;
+						pSkinItemList[DRAWSTATUS_HOVER] = &m_SkinScrollBar.skinVItemHover;
+						pSkinItemList[DRAWSTATUS_PRESS] = &m_SkinScrollBar.skinVItemPress;
+						LoadItem(pParentNode, pSkinItemList, DRAWSTATUS_PRESS + 1);
+					}//thumb
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//vertical
+
+			pTypeNode = pTypeNode->getNextSibling();
+		}
+	} //end load scrollbar
+
+	return bResult;
+}
+
 BOOL CDreamSkinLoader::LoadSkinStatic(void *parser)
 {
 	BOOL bResult = TRUE;
@@ -1881,10 +2348,12 @@ BOOL CDreamSkinLoader::LoadItem(void *item, SKINITEM **pSkinItemList, int nCount
 	BOOL bResult = TRUE;
 	DOMNode *pItemNode = (DOMNode*)item;
 	const WCHAR *wstrNodeName;
-	DOMNode *pParentNode;
+	DOMNode *pParentNode, *pChildNode;
 	int i;
 	SKINBACKGROUND *pSkinBackgroundList[DRAWSTATUS_MAXCOUNT];
 	SKINTEXT *pSkinTextList[DRAWSTATUS_MAXCOUNT];
+	SKINBORDER *pSkinBorderList[DRAWSTATUS_MAXCOUNT];
+	SKINICON *pSkinIconList[DRAWSTATUS_MAXCOUNT];
 
 	if (nCount > DRAWSTATUS_MAXCOUNT)
 		nCount = DRAWSTATUS_MAXCOUNT;
@@ -1927,14 +2396,92 @@ BOOL CDreamSkinLoader::LoadItem(void *item, SKINITEM **pSkinItemList, int nCount
 
 				LoadText(pParentNode, pSkinTextList, nCount);
 			}//text
-					/*else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIcon) == 0)
-					{//icon
-						pSkinIconList[DRAWSTATUS_NORMAL] = &m_SkinRadio.iconNormalUnchecked;
-						pSkinIconList[DRAWSTATUS_DISABLE] = &m_SkinRadio.iconDisableUnchecked;
-						pSkinIconList[DRAWSTATUS_HOVER] = &m_SkinRadio.iconHoverUnchecked;
-						pSkinIconList[DRAWSTATUS_PRESS] = &m_SkinRadio.iconPressUnchecked;
-						LoadIcon(pParentNode, pSkinIconList, DRAWSTATUS_PRESS + 1);
-					}//icon*/
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBorder) == 0)
+			{//border
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+					{//left
+						for (i = 0; i < nCount; i++)
+						{
+							if (pSkinItemList[i])
+								pSkinBorderList[i] = &pSkinItemList[i]->skinLBorder;
+							else
+								pSkinBorderList[i] = NULL;
+						}
+
+						for (i = nCount; i < DRAWSTATUS_MAXCOUNT; i++)
+							pSkinBorderList[i] = NULL;
+
+						LoadBorder(pChildNode, pSkinBorderList, nCount);
+					}//left
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+					{//right
+						for (i = 0; i < nCount; i++)
+						{
+							if (pSkinItemList[i])
+								pSkinBorderList[i] = &pSkinItemList[i]->skinRBorder;
+							else
+								pSkinBorderList[i] = NULL;
+						}
+
+						for (i = nCount; i < DRAWSTATUS_MAXCOUNT; i++)
+							pSkinBorderList[i] = NULL;
+
+						LoadBorder(pChildNode, pSkinBorderList, nCount);
+					}//right
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+					{//top
+						for (i = 0; i < nCount; i++)
+						{
+							if (pSkinItemList[i])
+								pSkinBorderList[i] = &pSkinItemList[i]->skinTBorder;
+							else
+								pSkinBorderList[i] = NULL;
+						}
+
+						for (i = nCount; i < DRAWSTATUS_MAXCOUNT; i++)
+							pSkinBorderList[i] = NULL;
+
+						LoadBorder(pChildNode, pSkinBorderList, nCount);
+					}//top
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+					{//bottom
+						for (i = 0; i < nCount; i++)
+						{
+							if (pSkinItemList[i])
+								pSkinBorderList[i] = &pSkinItemList[i]->skinBBorder;
+							else
+								pSkinBorderList[i] = NULL;
+						}
+
+						for (i = nCount; i < DRAWSTATUS_MAXCOUNT; i++)
+							pSkinBorderList[i] = NULL;
+
+						LoadBorder(pChildNode, pSkinBorderList, nCount);
+					}//bottom
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+			}//border
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameIcon) == 0)
+			{//icon
+				for (i = 0; i < nCount; i++)
+				{
+					if (pSkinItemList[i])
+						pSkinIconList[i] = &pSkinItemList[i]->skinIcon;
+					else
+						pSkinIconList[i] = NULL;
+				}
+
+				for (i = nCount; i < DRAWSTATUS_MAXCOUNT; i++)
+					pSkinIconList[i] = NULL;
+
+				LoadIcon(pParentNode, pSkinIconList, nCount);
+			}//icon
 
 			pParentNode = pParentNode->getNextSibling();
 		}//end of loop to load all settings for item
@@ -2148,7 +2695,7 @@ BOOL CDreamSkinLoader::LoadBorderItem(void *bditem, SKINBORDER *pSkinBorder)
 	return bResult;
 }
 
-BOOL CDreamSkinLoader::LoadSysButton(void *sysbtn, SKINSYSBUTTON *pSkinSysButton)
+BOOL CDreamSkinLoader::LoadSysButtonItem(void *sysbtn, SKINSYSBUTTON *pSkinSysButton)
 {
 	BOOL bResult = TRUE;
 	DOMNode *pNode;
@@ -2163,6 +2710,8 @@ BOOL CDreamSkinLoader::LoadSysButton(void *sysbtn, SKINSYSBUTTON *pSkinSysButton
 
 		if(wcscmp(wstrNodeName, wstrSkinFileNodeNameColor) == 0)
 		{//color
+			bResult = LoadColorItem(pNode, wstrSkinFileAttrNameText, &(pSkinSysButton->clrTxt));
+			bResult = LoadColorItem(pNode, wstrSkinFileAttrNameBorder, &(pSkinSysButton->clrBd));
 			bResult = LoadColor(pNode, &(pSkinSysButton->clrBk));
 		}//color
 		else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameImage) == 0)
@@ -2379,19 +2928,19 @@ BOOL CDreamSkinLoader::LoadTitleBar(void *titlebar, SKINTITLEBAR *pSkinTitleBar)
 
 				if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
 				{//normal
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinCloseNormal));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinCloseNormal));
 				}//normal
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
 				{//hover
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinCloseHover));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinCloseHover));
 				}//hover
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
 				{//hover
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinClosePress));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinClosePress));
 				}//hover
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
 				{//disable
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinCloseDisable));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinCloseDisable));
 				}//disable
 
 				pTempNode = pTempNode->getNextSibling();
@@ -2450,19 +2999,19 @@ BOOL CDreamSkinLoader::LoadTitleBar(void *titlebar, SKINTITLEBAR *pSkinTitleBar)
 
 				if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
 				{//normal
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinMaxNormal));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinMaxNormal));
 				}//normal
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
 				{//hover
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinMaxHover));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinMaxHover));
 				}//hover
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
 				{//hover
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinMaxPress));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinMaxPress));
 				}//hover
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
 				{//disable
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinMaxDisable));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinMaxDisable));
 				}//disable
 
 				pTempNode = pTempNode->getNextSibling();
@@ -2521,19 +3070,19 @@ BOOL CDreamSkinLoader::LoadTitleBar(void *titlebar, SKINTITLEBAR *pSkinTitleBar)
 
 				if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
 				{//normal
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinRestoreNormal));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinRestoreNormal));
 				}//normal
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
 				{//hover
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinRestoreHover));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinRestoreHover));
 				}//hover
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
 				{//hover
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinRestorePress));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinRestorePress));
 				}//hover
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
 				{//disable
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinRestoreDisable));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinRestoreDisable));
 				}//disable
 
 				pTempNode = pTempNode->getNextSibling();
@@ -2592,19 +3141,19 @@ BOOL CDreamSkinLoader::LoadTitleBar(void *titlebar, SKINTITLEBAR *pSkinTitleBar)
 
 				if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
 				{//normal
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinMinNormal));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinMinNormal));
 				}//normal
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
 				{//hover
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinMinHover));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinMinHover));
 				}//hover
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
 				{//hover
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinMinPress));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinMinPress));
 				}//hover
 				else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
 				{//disable
-					LoadSysButton(pTempNode, &(pSkinTitleBar->skinMinDisable));
+					LoadSysButtonItem(pTempNode, &(pSkinTitleBar->skinMinDisable));
 				}//disable
 
 				pTempNode = pTempNode->getNextSibling();

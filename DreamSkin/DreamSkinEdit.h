@@ -36,9 +36,6 @@ public:
 protected:
 	//Create background brush
 	static HBRUSH  CreateBackgroundBrush(SKINBACKGROUND *pSkinBackground);
-	static void GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk);
-	static void GetDefaultText(SKINTEXT *pText, COLORREF clrTxt);
-	static void GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth);
 
 public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);

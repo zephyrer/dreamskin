@@ -3,13 +3,11 @@
 #ifndef DREAMSKIN_WINDOW_INCLUDE
 #define DREAMSKIN_WINDOW_INCLUDE
 
-//typedef struct _RGNFROMBITMAPDATA
-//{
-//	HBITMAP  hBitmap;
-//	COLORREF clrTansColor;
-//	RECT     rcWndRect;
-//}RGNFROMBITMAPDATA, *RGNFROMBITMAPDATA_PTR;
-class CHookedWindowList;
+//icon aligh left
+#define DRAW_ITEM_ICON_HALIGN_LEFT            0x00000001
+#define DRAW_ITEM_ICON_HALIGN_RIGHT           0x00000002
+#define DRAW_ITEM_ICON_VALIGN_TOP             0x00000004
+#define DRAW_ITEM_ICON_VALIGN_BOTTOM          0x00000008
 
 class CDreamSkinWindow
 {
@@ -22,6 +20,20 @@ public:
 
 	//Applies an offset to the RGB components of the specified color.
 	static COLORREF OffsetColor(COLORREF clrOld, short shOffset);
+
+	static void GetDefaultBackground(SKINBACKGROUND *pBackground, COLORREF clrBk);
+	static void GetDefaultBorder(SKINBORDER *pBorder, COLORREF clrBk, int nWidth, int nDrawType = DRAWTYPE_FILLCOLOR);
+	static void GetDefaultIcon(SKINICON *pIcon, COLORREF clrDraw);
+	static void GetDefaultItem(SKINITEM *pItem, COLORREF clrBk, COLORREF clrTxt, COLORREF clrBd, int nWidthBd);
+	static void GetDefaultSysButton(SKINSYSBUTTON *pSysButton, COLORREF clrBk, COLORREF clrText, COLORREF clrBd);
+	static void GetDefaultText(SKINTEXT *pText, COLORREF clrTxt);
+
+	//Get the rect of item client area
+	static RECT GetItemRectClient(SKINITEM *pItem, RECT rcItem);
+	//Get the rect of icon in specified item
+	static RECT GetItemRectIcon(SKINITEM *pItem, RECT rcDraw, DWORD dwDrawOption);
+
+	static void DrawIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon);
 
 public:
 	CDreamSkinWindow(HWND hWnd, WNDPROC OrgWndProc);
