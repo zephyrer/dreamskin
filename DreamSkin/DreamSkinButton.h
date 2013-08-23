@@ -11,6 +11,7 @@
 #define BUTTON_TYPE_PUSHBUTTON          0
 #define BUTTON_TYPE_CHECKBOX            1
 #define BUTTON_TYPE_RADIO               2
+#define BUTTON_TYPE_GROUPBOX            3
 
 class CDreamSkinButton : public CDreamSkinWindow
 {
@@ -38,12 +39,15 @@ public:
 	static BOOL GetDefaultCheckBoxSkin(SKINCHECKBOX *pSkinCheckBox);
 	//Get the default skin for radio
 	static BOOL GetDefaultRadioSkin(SKINRADIO* pSkinRadio);
+	//Get the default skin for group box
+	static BOOL GetDefaultGroupBoxSkin(SKINGROUPBOX *pSkinGroupBox);
 
 public:
 	static WNDPROC          s_DefaultWindowProc;      //Default button window proc
 	static SKINBUTTON       s_SkinButton;             //Button Skin Settings
 	static SKINCHECKBOX     s_SkinCheckBox;           //Check Box Skin Settings
 	static SKINRADIO        s_SkinRadio;              //Radio Skin Settings
+	static SKINGROUPBOX     s_SkinGroupBox;           //Group Box Skin Settings
 
 public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
@@ -69,6 +73,8 @@ protected:
 	void    DrawCheckBox(HDC hDC, RECT rcWindow);
 	//Draw radio
 	void    DrawRadio(HDC hDC, RECT rcWindow);
+	//Draw group box
+	void    DrawGroupBox(HDC hDC, RECT rcWindow);
 	//Draw the background of the button
 	void    DrawPushButtonBackground(HDC hDC, RECT rcClient);
 	//Draw the border of the button
@@ -91,12 +97,15 @@ protected:
 	void    DrawRadioIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon, int nCheckStatus);
 	//Draw the title of the radio
 	void    DrawRadioTitle(HDC hDC, RECT rcClient, SKINTEXT *pSkinText);
+	//Draw the title of group box
+	void    DrawGroupBoxTitle(HDC hDC, RECT rcDraw, SKINTEXT *pSkinText);
 
 	//Get current button status
 	int     GetCurrentStatus() const;
 
 	//Get rect of client
 	RECT    GetPushButtonRectClient(RECT rcWindow);
+	RECT    GetGroupBoxRectClient(HDC hDC, RECT rcWindow);
 	//Get rect of icon
 	RECT    GetCheckBoxRectIcon(RECT rcWindow, SKINICON *pSkinIcon);
 	//Get rect of icon
@@ -107,6 +116,7 @@ protected:
 	SKINBUTTON      *m_pSkinButton;                   //Instance Related Button Skin Settings
 	SKINCHECKBOX    *m_pSkinCheckBox;                 //Instance Related CheckBox Skin Settings
 	SKINRADIO       *m_pSkinRadio;                    //Instance Related Radio Skin Settings
+	SKINGROUPBOX    *m_pSkinGroupBox;                 //Instance Related GroupBox Skin Settings
 
 	int              m_nBtnType;                      //The button type
 	BOOL             m_bMouseIn;                      //Whether the mouse over the button

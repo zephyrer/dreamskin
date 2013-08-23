@@ -64,6 +64,7 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameButton[] = L"button";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameCheckBox[] = L"checkbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameEdit[] = L"edit";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameGroupBox[] = L"groupbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameListBox[] = L"listbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRadio[] = L"radio";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameScrollBar[] = L"scrollbar";
@@ -181,6 +182,9 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinButton::GetDefaultRadioSkin(&m_SkinRadio);
 		LoadSkinRadio(parser);
 
+		CDreamSkinButton::GetDefaultGroupBoxSkin(&m_SkinGroupBox);
+		LoadSkinGroupBox(parser);
+
 		//Load Skin Edit
 		CDreamSkinEdit::GetDefaultSkin(&m_SkinEdit);
 		LoadSkinEdit(parser);
@@ -266,6 +270,14 @@ void CDreamSkinLoader::GetSkinTab(SKINTAB *pSkinTab) const
 	if (pSkinTab)
 	{
 		memcpy(pSkinTab, &m_SkinTab, sizeof(SKINTAB));
+	}
+}
+
+void CDreamSkinLoader::GetSkinGroupBox(SKINGROUPBOX *pSkinGroupBox) const
+{
+	if (pSkinGroupBox)
+	{
+		memcpy(pSkinGroupBox, &m_SkinGroupBox, sizeof(SKINGROUPBOX));
 	}
 }
 
@@ -941,7 +953,96 @@ BOOL CDreamSkinLoader::LoadSkinEdit(void *parser)
 
 		if (m_SkinEdit.skinBkPressReadOnly.nDefault)
 			m_SkinEdit.skinBkPressReadOnly = m_SkinEdit.skinBkHoverReadOnly;
-	} //end load checkbox
+	} //end load edit
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadSkinGroupBox(void *parser)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pGroupBoxNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameGroupBox);
+	const WCHAR *wstrNodeName;
+	SKINTEXT *pSkinText;
+	SKINBORDER *pSkinBorder;
+
+	if (pGroupBoxNode)
+	{
+		//loop to load all settings
+		pParentNode = pGroupBoxNode->getFirstChild();
+		while (pParentNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+			{//background
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//background draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinGroupBox.skinBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadBackground(pChildNode, &(m_SkinGroupBox.skinBkNormal));
+					}//normal
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+			}//background
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+			{//text
+				pSkinText = &m_SkinGroupBox.skinTxtNormal;
+				LoadText(pParentNode, &pSkinText, 1);
+			}//text
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBorder) == 0)
+			{//border
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+					{//left
+						pSkinBorder = &m_SkinGroupBox.skinLBorderNormal;
+						LoadBorder(pChildNode, &pSkinBorder, 1);
+					}//left
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+					{//right
+						pSkinBorder = &m_SkinGroupBox.skinRBorderNormal;
+						LoadBorder(pChildNode, &pSkinBorder, 1);
+					}//right
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+					{//top
+						pSkinBorder = &m_SkinGroupBox.skinTBorderNormal;
+						LoadBorder(pChildNode, &pSkinBorder, 1);
+					}//top
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+					{//bottom
+						pSkinBorder = &m_SkinGroupBox.skinBBorderNormal;
+						LoadBorder(pChildNode, &pSkinBorder, 1);
+					}//bottom
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+			}//border
+
+			pParentNode = pParentNode->getNextSibling();
+		}
+	} //end load groupbox
 
 	return bResult;
 }

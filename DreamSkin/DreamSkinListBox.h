@@ -67,7 +67,6 @@ protected:
 	void    DrawBackground(HDC hDC, SKINBACKGROUND* pBackGround, RECT rcDraw);
 	//Draw the border
 	void    DrawBorder(HDC hDC, RECT rcWindow);
-	void    DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw);
 	//Draw the title
 	void    DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle);
 	//Draw one item

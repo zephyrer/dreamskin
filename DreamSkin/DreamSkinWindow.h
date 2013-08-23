@@ -33,6 +33,8 @@ public:
 	//Get the rect of icon in specified item
 	static RECT GetItemRectIcon(SKINITEM *pItem, RECT rcDraw, DWORD dwDrawOption);
 
+	static void DrawBackground(HDC hDC, RECT rcDraw, SKINBACKGROUND *pSkinBackground);
+	static void DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw);
 	static void DrawIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon);
 
 public:

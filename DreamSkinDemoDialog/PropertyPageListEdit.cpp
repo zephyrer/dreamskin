@@ -15,8 +15,9 @@ CPropertyPageListEdit::CPropertyPageListEdit()
 	, m_strResultListBox(_T(""))
 	, m_bEnableListBox(TRUE)
 	, m_strListBoxAdd(_T(""))
+	, m_bEnableListCtrl(TRUE)
 {
-
+	m_nListCtrlItemID = 0;
 }
 
 CPropertyPageListEdit::~CPropertyPageListEdit()
@@ -31,6 +32,8 @@ void CPropertyPageListEdit::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHK_LISTBOX_ENABLE, m_bEnableListBox);
 	DDX_Text(pDX, IDC_EDIT_LISTBOX_ADD, m_strListBoxAdd);
 	DDX_Control(pDX, IDC_LISTBOX_DEMO_MULTICOL, m_lsMultiColListBox);
+	DDX_Control(pDX, IDC_LISTCTRL_DEMO, m_lsDemoListCtrl);
+	DDX_Check(pDX, IDC_CHK_LISTCTRL_ENABLE, m_bEnableListCtrl);
 }
 
 
@@ -41,6 +44,7 @@ BEGIN_MESSAGE_MAP(CPropertyPageListEdit, CPropertyPage)
 	ON_BN_CLICKED(IDC_BTN_LISTBOX_ADD, &CPropertyPageListEdit::OnBnClickedBtnListboxAdd)
 	ON_BN_CLICKED(IDC_BTN_LISTBOX_DEL, &CPropertyPageListEdit::OnBnClickedBtnListboxDel)
 	ON_LBN_SELCHANGE(IDC_LISTBOX_DEMO_MULTICOL, &CPropertyPageListEdit::OnLbnSelchangeListboxDemoMulticol)
+	ON_BN_CLICKED(IDC_CHK_LISTCTRL_ENABLE, &CPropertyPageListEdit::OnBnClickedChkListctrlEnable)
 END_MESSAGE_MAP()
 
 
@@ -52,11 +56,28 @@ BOOL CPropertyPageListEdit::OnInitDialog()
 
 	CString strMessage;
 
+	m_lsDemoListCtrl.InsertColumn(0, _T("ID"), LVCFMT_LEFT, 30);
+	m_lsDemoListCtrl.InsertColumn(1, _T("Name"), LVCFMT_CENTER, 120);
+	m_lsDemoListCtrl.InsertColumn(2, _T("Time"), LVCFMT_RIGHT, 150);
+	m_lsDemoListCtrl.InsertColumn(3, _T("Description"), LVCFMT_LEFT, 250);
+
+	m_nListCtrlItemID = 0;
+	int nRow;
 	for (int i = 0; i < 100; i++)
 	{
 		strMessage.Format(_T("List Box Item %d"), i);
 		m_lsDemoListBox.AddString((LPCTSTR)strMessage);
 		m_lsMultiColListBox.AddString((LPCTSTR)strMessage);
+
+		strMessage.Format(_T("%d"), m_nListCtrlItemID);
+		nRow = m_lsDemoListCtrl.InsertItem(m_nListCtrlItemID, (LPCTSTR)strMessage);
+		strMessage.Format(_T("List Control Item %d"), m_nListCtrlItemID);
+		m_lsDemoListCtrl.SetItemText(nRow, 1, (LPCTSTR)strMessage);
+		m_lsDemoListCtrl.SetItemText(nRow, 3, (LPCTSTR)strMessage);
+		CTime curTime = CTime::GetCurrentTime();
+		strMessage = curTime.Format(_T("%Y-%m-%d %H:%M:%S"));
+		m_lsDemoListCtrl.SetItemText(nRow, 2, (LPCTSTR)strMessage);
+		m_nListCtrlItemID++;
 	}
 
 	UpdateListBoxWindows();
@@ -190,6 +211,15 @@ void CPropertyPageListEdit::OnLbnSelchangeListboxDemoMulticol()
 	}
 
 	UpdateListBoxWindows();
+
+	UpdateData(FALSE);
+}
+
+void CPropertyPageListEdit::OnBnClickedChkListctrlEnable()
+{
+	UpdateData(TRUE);
+
+	m_lsDemoListCtrl.EnableWindow(m_bEnableListCtrl);
 
 	UpdateData(FALSE);
 }

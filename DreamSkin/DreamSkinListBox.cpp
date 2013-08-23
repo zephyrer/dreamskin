@@ -721,7 +721,7 @@ void CDreamSkinListBox::DrawBorder(HDC hDC, RECT rcWindow)
 	}
 }
 
-void CDreamSkinListBox::DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw)
+/*void CDreamSkinListBox::DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw)
 {
 	RECT rcBorder;
 
@@ -778,7 +778,7 @@ void CDreamSkinListBox::DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pR
 		else
 			::FillSolidRect(hDC, &rcBorder, pBBorder->clrDraw.clrStart);
 	}
-}
+}*/
 
 void CDreamSkinListBox::DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle)
 {
@@ -833,7 +833,7 @@ void CDreamSkinListBox::DrawItem(HDC hDC, SKINITEM *pItem, RECT rcItem, WCHAR *w
 	RECT rcClient = GetItemRectClient(pItem, rcItem);
 	DrawBackground(hDC, &pItem->skinBk, rcItem);
 
-	DrawBorder(hDC, &pItem->skinLBorder, &pItem->skinRBorder, &pItem->skinTBorder, &pItem->skinBBorder, rcItem);
+	CDreamSkinWindow::DrawBorder(hDC, &pItem->skinLBorder, &pItem->skinRBorder, &pItem->skinTBorder, &pItem->skinBBorder, rcItem);
 
 	if (wstrTitle)
 		DrawTitle(hDC, &pItem->skinTxt, rcClient, wstrTitle);

@@ -289,6 +289,40 @@
 			</icon>
 		</selected>
 	</radio>
+	<groupbox>
+		<background type="0">
+			<normal>
+				<color start="0x00F6E9E9"/>
+			</normal>
+		</background>
+		<text>
+			<normal>
+				<color start="0x00BF4D4D" />
+			</normal>
+		</text>
+		<border type="0">
+			<left width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+			</left>
+			<right width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+			</right>
+			<top width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+			</top>
+			<bottom width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+			</bottom>
+		</border>
+	</groupbox>
 	<static>
 		<background type="0">
 			<normal>

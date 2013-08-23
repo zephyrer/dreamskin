@@ -311,6 +311,19 @@ typedef struct _tag_SKINRADIO
 	SKINICON         iconPressChecked;                //Icon in press and checked status
 }SKINRADIO;
 
+typedef struct _tag_SKINGROUPBOX
+{
+	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
+
+	SKINBORDER       skinLBorderNormal;               //Left border in normal status
+	SKINBORDER       skinRBorderNormal;               //Right border in normal status
+	SKINBORDER       skinTBorderNormal;               //Top border in normal status
+	SKINBORDER       skinBBorderNormal;               //Bottom border in normal status
+
+	SKINTEXT         skinTxtNormal;                   //Text in normal status
+	int              nMarginTxt;                      //Text margin
+}SKINGROUPBOX;
+
 typedef struct _tag_SKINSTATIC
 {
 	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
@@ -490,6 +503,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameCheckBox[];
 	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameEdit[];
+	static WCHAR wstrSkinFileNodeNameGroupBox[];
 	static WCHAR wstrSkinFileNodeNameListBox[];
 	static WCHAR wstrSkinFileNodeNameRadio[];
 	static WCHAR wstrSkinFileNodeNameScrollBar[];
@@ -556,6 +570,7 @@ public:
 	void GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const;
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
 	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
+	void GetSkinGroupBox(SKINGROUPBOX *pSkinGroupBox) const;
 	void GetSkinListBox(SKINLISTBOX *pSkinListBox) const;
 	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
 	void GetSkinScrollBar(SKINSCROLLBAR *pSkinScrollBar) const;
@@ -564,9 +579,10 @@ public:
 
 protected:
 	BOOL LoadSkinDialog(void *parser);
-	BOOL LoadSkinEdit(void *parser);
 	BOOL LoadSkinButton(void *parser);
 	BOOL LoadSkinCheckBox(void *parser);
+	BOOL LoadSkinEdit(void *parser);
+	BOOL LoadSkinGroupBox(void *parser);
 	BOOL LoadSkinListBox(void *parser);
 	BOOL LoadSkinRadio(void *parser);
 	BOOL LoadSkinScrollBar(void *parser);
@@ -597,6 +613,7 @@ protected:
 	SKINBUTTON      m_SkinButton;
 	SKINCHECKBOX    m_SkinCheckBox;
 	SKINEDIT        m_SkinEdit;
+	SKINGROUPBOX    m_SkinGroupBox;
 	SKINLISTBOX     m_SkinListBox;
 	SKINRADIO       m_SkinRadio;
 	SKINSCROLLBAR   m_SkinScrollBar;

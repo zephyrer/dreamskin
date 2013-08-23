@@ -1,5 +1,6 @@
 #pragma once
 #include "afxwin.h"
+#include "afxcmn.h"
 
 
 // CPropertyPageListEdit dialog
@@ -34,4 +35,8 @@ public:
 	afx_msg void OnBnClickedBtnListboxDel();
 	CListBox m_lsMultiColListBox;
 	afx_msg void OnLbnSelchangeListboxDemoMulticol();
+	CListCtrl m_lsDemoListCtrl;
+	BOOL m_bEnableListCtrl;
+	UINT     m_nListCtrlItemID;
+	afx_msg void OnBnClickedChkListctrlEnable();
 };

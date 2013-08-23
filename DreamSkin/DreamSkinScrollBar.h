@@ -53,7 +53,6 @@ protected:
 	static void DrawBackground(HDC hDC, SKINBACKGROUND* pBackGround, RECT rcDraw);
 	//Draw the border
 	static void DrawBorder(HDC hDC, RECT rcWindow, int fnBar, int nStatus);
-	static void DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw);
 	static void DrawButton(HDC hDC, RECT rcDraw, int fnBar, int nType, int nStatus);
 	static void DrawThumb(HDC hDC, RECT rcDraw, int fnBar, int nStatus);
 

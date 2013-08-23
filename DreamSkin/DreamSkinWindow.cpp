@@ -231,6 +231,73 @@ RECT CDreamSkinWindow::GetItemRectIcon(SKINITEM *pItem, RECT rcDraw, DWORD dwDra
 	return rcIcon;
 }
 
+void CDreamSkinWindow::DrawBackground(HDC hDC, RECT rcDraw, SKINBACKGROUND *pSkinBackground)
+{
+	if (pSkinBackground->nDrawType == DRAWTYPE_STRETCHBITMAP && pSkinBackground->imgDraw.hImage)
+		::DrawStretchBitmap(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pSkinBackground->imgDraw.hImage, pSkinBackground->imgDraw.x, pSkinBackground->imgDraw.y, pSkinBackground->imgDraw.nWidth, pSkinBackground->imgDraw.nHeight);
+	else
+		::FillSolidRect(hDC, &rcDraw, pSkinBackground->clrDraw.clrStart);
+}
+
+void CDreamSkinWindow::DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw)
+{
+	RECT rcBorder;
+
+	//top border
+	if (pTBorder->nWidth > 0)
+	{
+		rcBorder.left = rcDraw.left;
+		rcBorder.top = rcDraw.top;
+		rcBorder.right = rcDraw.right;
+		rcBorder.bottom = rcBorder.top + pTBorder->nWidth;
+		if (pTBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pTBorder->imgDraw.hImage)
+			::DrawStretchBitmapEx(hDC, rcBorder.left, rcBorder.top, rcBorder.right - rcBorder.left, rcBorder.bottom - rcBorder.top, pTBorder->imgDraw.hImage, pTBorder->imgDraw.x, pTBorder->imgDraw.y, pTBorder->imgDraw.nWidth, pTBorder->imgDraw.nHeight, pTBorder->nStart, pTBorder->nEnd, 0);
+		else
+			::FillSolidRect(hDC, &rcBorder, pTBorder->clrDraw.clrStart);
+	}
+
+	//left border
+	if (pLBorder->nWidth > 0)
+	{
+		rcBorder.left = rcDraw.left;
+		rcBorder.top = rcDraw.top + pTBorder->nWidth;
+		rcBorder.right = rcBorder.left + pLBorder->nWidth;
+		rcBorder.bottom = rcDraw.bottom - pBBorder->nWidth;
+
+		if (pLBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pLBorder->imgDraw.hImage)
+			::DrawStretchBitmapEx(hDC, rcBorder.left, rcBorder.top, rcBorder.right - rcBorder.left, rcBorder.bottom - rcBorder.top, pLBorder->imgDraw.hImage, pLBorder->imgDraw.x, pLBorder->imgDraw.y, pLBorder->imgDraw.nWidth, pLBorder->imgDraw.nHeight, pLBorder->nStart, pLBorder->nEnd, 1);
+		else
+			::FillSolidRect(hDC, &rcBorder, pLBorder->clrDraw.clrStart);
+	}
+
+	//right border
+	if (pRBorder->nWidth > 0)
+	{
+		rcBorder.left = rcDraw.right - pRBorder->nWidth;
+		rcBorder.top = rcDraw.top + pTBorder->nWidth;
+		rcBorder.right = rcDraw.right;
+		rcBorder.bottom = rcDraw.bottom - pBBorder->nWidth;
+
+		if (pRBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pRBorder->imgDraw.hImage)
+			::DrawStretchBitmapEx(hDC, rcBorder.left, rcBorder.top, rcBorder.right - rcBorder.left, rcBorder.bottom - rcBorder.top, pRBorder->imgDraw.hImage, pRBorder->imgDraw.x, pRBorder->imgDraw.y, pRBorder->imgDraw.nWidth, pRBorder->imgDraw.nHeight, pRBorder->nStart, pRBorder->nEnd, 1);
+		else
+			::FillSolidRect(hDC, &rcBorder, pRBorder->clrDraw.clrStart);
+	}
+
+	//bottom border
+	if (pBBorder->nWidth > 0)
+	{
+		rcBorder.left = rcDraw.left;
+		rcBorder.top = rcDraw.bottom - pBBorder->nWidth;
+		rcBorder.right = rcDraw.right;
+		rcBorder.bottom = rcDraw.bottom;
+		if (pBBorder->nDrawType == DRAWTYPE_STRETCHBITMAP && pBBorder->imgDraw.hImage)
+			::DrawStretchBitmapEx(hDC, rcBorder.left, rcBorder.top, rcBorder.right - rcBorder.left, rcBorder.bottom - rcBorder.top, pBBorder->imgDraw.hImage, pBBorder->imgDraw.x, pBBorder->imgDraw.y, pBBorder->imgDraw.nWidth, pBBorder->imgDraw.nHeight, pBBorder->nStart, pBBorder->nEnd, 0);
+		else
+			::FillSolidRect(hDC, &rcBorder, pBBorder->clrDraw.clrStart);
+	}
+}
+
 void CDreamSkinWindow::DrawIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon)
 {
 	if (pSkinIcon->nDrawType == DRAWTYPE_STRETCHBITMAP && pSkinIcon->imgDraw.hImage)

@@ -356,6 +356,40 @@
 			</icon>
 		</selected>
 	</radio>
+	<groupbox>
+		<background type="0">
+			<normal>
+				<color start="0x00F7F3F7"/>
+			</normal>
+		</background>
+		<text>
+			<normal>
+				<color start="0x00000000" />
+			</normal>
+		</text>
+		<border type="1">
+			<left width="2" type="1">
+				<normal>
+					<image source="Images/groupbox.bmp" x="1" y="4" width="2" height="66" />
+				</normal>
+			</left>
+			<right width="2" type="1">
+				<normal>
+					<image source="Images/groupbox.bmp" x="73" y="4" width="2" height="66" />
+				</normal>
+			</right>
+			<top width="3" start="3" end="3" type="1">
+				<normal>
+					<image source="Images/groupbox.bmp" x="1" y="1" width="74" height="3" />
+				</normal>
+			</top>
+			<bottom width="3" start="3" end="3" type="1">
+				<normal>
+					<image source="Images/groupbox.bmp" x="1" y="72" width="74" height="3" />
+				</normal>
+			</bottom>
+		</border>
+	</groupbox>
 	<static>
 		<background type="0">
 			<normal>

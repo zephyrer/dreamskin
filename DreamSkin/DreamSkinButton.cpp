@@ -12,6 +12,7 @@ WNDPROC         CDreamSkinButton::s_DefaultWindowProc = NULL;
 SKINBUTTON      CDreamSkinButton::s_SkinButton;
 SKINCHECKBOX    CDreamSkinButton::s_SkinCheckBox;
 SKINRADIO       CDreamSkinButton::s_SkinRadio;
+SKINGROUPBOX    CDreamSkinButton::s_SkinGroupBox;
 
 CDreamSkinButton::CDreamSkinButton(HWND hWnd, WNDPROC OrgWndProc)
 	: CDreamSkinWindow(hWnd, OrgWndProc)
@@ -19,6 +20,7 @@ CDreamSkinButton::CDreamSkinButton(HWND hWnd, WNDPROC OrgWndProc)
 	m_pSkinButton = &s_SkinButton;
 	m_pSkinCheckBox = &s_SkinCheckBox;
 	m_pSkinRadio = &s_SkinRadio;
+	m_pSkinGroupBox = &s_SkinGroupBox;
 
 	m_bMouseIn = FALSE;
 	m_bLBtnDown = FALSE;
@@ -34,6 +36,9 @@ CDreamSkinButton::~CDreamSkinButton()
 
 	if (m_pSkinRadio != &s_SkinRadio)
 		delete m_pSkinRadio;
+
+	if (m_pSkinGroupBox != &s_SkinGroupBox)
+		delete m_pSkinGroupBox;
 }
 
 void CDreamSkinButton::Reload()
@@ -65,6 +70,10 @@ BOOL CDreamSkinButton::ApplySkin(CDreamSkinLoader *pLoader)
 	SKINRADIO SkinRadio;
 	pLoader->GetSkinRadio(&SkinRadio);
 	s_SkinRadio = SkinRadio;
+
+	SKINGROUPBOX SkinGroupBox;
+	pLoader->GetSkinGroupBox(&SkinGroupBox);
+	s_SkinGroupBox = SkinGroupBox;
 
 	return bResult;
 }
@@ -110,6 +119,7 @@ BOOL CDreamSkinButton::InitialClass()
 	GetDefaultButtonSkin(&s_SkinButton);
 	GetDefaultCheckBoxSkin(&s_SkinCheckBox);
 	GetDefaultRadioSkin(&s_SkinRadio);
+	GetDefaultGroupBoxSkin(&s_SkinGroupBox);
 
 	return TRUE;
 }
@@ -267,6 +277,25 @@ BOOL CDreamSkinButton::GetDefaultRadioSkin(SKINRADIO* pSkinRadio)
 	return TRUE;
 }
 
+BOOL CDreamSkinButton::GetDefaultGroupBoxSkin(SKINGROUPBOX *pSkinGroupBox)
+{
+	if (pSkinGroupBox)
+	{
+		GetDefaultBackground(&pSkinGroupBox->skinBkNormal, ::GetSysColor(COLOR_BTNFACE));
+
+		GetDefaultText(&pSkinGroupBox->skinTxtNormal, ::GetSysColor(COLOR_BTNTEXT));
+
+		GetDefaultBorder(&pSkinGroupBox->skinLBorderNormal, ::GetSysColor(COLOR_GRAYTEXT), 1);
+		GetDefaultBorder(&pSkinGroupBox->skinRBorderNormal, ::GetSysColor(COLOR_GRAYTEXT), 1);
+		GetDefaultBorder(&pSkinGroupBox->skinTBorderNormal, ::GetSysColor(COLOR_GRAYTEXT), 1);
+		GetDefaultBorder(&pSkinGroupBox->skinBBorderNormal, ::GetSysColor(COLOR_GRAYTEXT), 1);
+
+		pSkinGroupBox->nMarginTxt = 10;
+	}
+
+	return TRUE;
+}
+
 LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
 	LRESULT nResult = ERROR_SUCCESS;
@@ -279,55 +308,77 @@ LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 		m_nBtnType = BUTTON_TYPE_CHECKBOX;
 	else if (dwButtonStyle == BS_RADIOBUTTON || dwButtonStyle == BS_AUTORADIOBUTTON)
 		m_nBtnType = BUTTON_TYPE_RADIO;
+	else if (dwButtonStyle == BS_GROUPBOX)
+		m_nBtnType = BUTTON_TYPE_GROUPBOX;
 	else
 		m_nBtnType = BUTTON_TYPE_UNSUPPORTED;
 
 	if(m_nBtnType >= 0)
 	{
-		switch(message)
+		if (m_nBtnType == BUTTON_TYPE_GROUPBOX)
 		{
-		case WM_ENABLE:
-			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-			UpdateWindow();
-			break;
-		case WM_ERASEBKGND:
-			break;
-		case WM_LBUTTONDOWN:
-			nResult = OnLButtonDown(wParam, MAKEPOINTS(lParam));
-			break;
-		case WM_LBUTTONDBLCLK:
-			nResult = ::SendMessageW(m_hWnd, WM_LBUTTONDOWN, wParam, lParam);
-			break;
-		case WM_LBUTTONUP:
-			nResult = OnLButtonUp(wParam, MAKEPOINTS(lParam));
-			break;
-		case WM_MOUSELEAVE:
-			nResult = OnMouseLeave();
-			break;
-		case WM_MOUSEMOVE:
-			nResult = OnMouseMove(wParam, MAKEPOINTS(lParam));
-			break;
-		case WM_NCHITTEST:
-			nResult = OnNcHitTest(MAKEPOINTS(lParam));
-			break;
-		case WM_NCPAINT:
-			break;
-		case WM_PAINT:
-			nResult = OnPaint();
-			break;
-		case WM_SETFOCUS:
-			break;
-		//case BM_SETSTATE:
-		//case BM_SETCHECK:
-		case BM_SETSTYLE:
-			nResult = OnSetButtonStyle(wParam & 0x0000FFFF);
-			break;
-		case WM_SETTEXT:
-			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-			UpdateWindow();
-			break;
-		default:
-			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+			switch(message)
+			{
+			case WM_ERASEBKGND:
+				break;
+			case WM_NCPAINT:
+				break;
+			case WM_PAINT:
+				nResult = OnPaint();
+				break;
+			default:
+				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+				break;
+			}
+		}
+		else
+		{
+			switch(message)
+			{
+			case WM_ENABLE:
+				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+				UpdateWindow();
+				break;
+			case WM_ERASEBKGND:
+				break;
+			case WM_LBUTTONDOWN:
+				nResult = OnLButtonDown(wParam, MAKEPOINTS(lParam));
+				break;
+			case WM_LBUTTONDBLCLK:
+				nResult = ::SendMessageW(m_hWnd, WM_LBUTTONDOWN, wParam, lParam);
+				break;
+			case WM_LBUTTONUP:
+				nResult = OnLButtonUp(wParam, MAKEPOINTS(lParam));
+				break;
+			case WM_MOUSELEAVE:
+				nResult = OnMouseLeave();
+				break;
+			case WM_MOUSEMOVE:
+				nResult = OnMouseMove(wParam, MAKEPOINTS(lParam));
+				break;
+			case WM_NCHITTEST:
+				nResult = OnNcHitTest(MAKEPOINTS(lParam));
+				break;
+			case WM_NCPAINT:
+				break;
+			case WM_PAINT:
+				nResult = OnPaint();
+				break;
+			case WM_SETFOCUS:
+				break;
+			//case BM_SETSTATE:
+			//case BM_SETCHECK:
+			case BM_SETSTYLE:
+				nResult = OnSetButtonStyle(wParam & 0x0000FFFF);
+				break;
+			case WM_SETTEXT:
+				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+				UpdateWindow();
+				break;
+			default:
+				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+				break;
+			}
 		}
 	}
 	else
@@ -556,6 +607,9 @@ LRESULT CDreamSkinButton::OnPaint()
 	case BUTTON_TYPE_RADIO:
 		DrawRadio(hPaintDC, rcClient);
 		break;
+	case BUTTON_TYPE_GROUPBOX:
+		DrawGroupBox(hPaintDC, rcClient);
+		break;
 	default:
 		DrawPushButton(hPaintDC, rcClient);
 		break;
@@ -602,6 +656,38 @@ void CDreamSkinButton::DrawRadio(HDC hDC, RECT rcWindow)
 	DrawRadioBackground(hDC, rcWindow, nCheckStatus);
 
 	DrawRadioForeground(hDC, rcWindow, nCheckStatus);
+}
+
+void CDreamSkinButton::DrawGroupBox(HDC hDC, RECT rcWindow)
+{
+	HRGN hRgn = ::CreateRectRgn(rcWindow.left, rcWindow.top, rcWindow.right, rcWindow.bottom);
+	RECT rcClient = GetGroupBoxRectClient(hDC, rcWindow);
+	HRGN hRgnTemp = ::CreateRectRgn(rcClient.left, rcClient.top, rcClient.right, rcClient.bottom);
+	::CombineRgn(hRgn, hRgn, hRgnTemp, RGN_XOR);
+	::DeleteObject(hRgnTemp);
+
+	::SelectClipRgn(hDC, hRgn);
+	::DeleteObject(hRgn);
+
+	DrawBackground(hDC, rcWindow, &m_pSkinGroupBox->skinBkNormal);
+
+	SKINBORDER *pLBorder, *pRBorder, *pTBorder, *pBBorder;
+	pLBorder = &m_pSkinGroupBox->skinLBorderNormal;
+	pRBorder = &m_pSkinGroupBox->skinRBorderNormal;
+	pTBorder = &m_pSkinGroupBox->skinTBorderNormal;
+	pBBorder = &m_pSkinGroupBox->skinBBorderNormal;
+
+	RECT rcDraw = rcWindow;
+	rcDraw.top = (rcWindow.top + rcClient.top - pTBorder->nWidth) / 2;
+	CDreamSkinWindow::DrawBorder(hDC, pLBorder, pRBorder, pTBorder, pBBorder, rcDraw);
+
+	rcDraw = rcWindow;
+	rcDraw.bottom = rcClient.top;
+	rcDraw.left += m_pSkinGroupBox->nMarginTxt;
+	rcDraw.right -= m_pSkinGroupBox->nMarginTxt;
+	::SetBkMode(hDC, OPAQUE);
+	::SetBkColor(hDC, m_pSkinGroupBox->skinBkNormal.clrDraw.clrStart);
+	DrawGroupBoxTitle(hDC, rcDraw, &m_pSkinGroupBox->skinTxtNormal);
 }
 
 void CDreamSkinButton::DrawPushButtonBackground(HDC hDC, RECT rcClient)
@@ -1281,6 +1367,59 @@ void CDreamSkinButton::DrawRadioTitle(HDC hDC, RECT rcClient, SKINTEXT *pSkinTex
 	delete wstrTitle;
 }
 
+void CDreamSkinButton::DrawGroupBoxTitle(HDC hDC, RECT rcDraw, SKINTEXT *pSkinText)
+{
+	HFONT hFnText, hFnOld = NULL;
+
+	//Get the group box title
+	int nLen = ::GetWindowTextLengthW(m_hWnd);
+	WCHAR *wstrTitle = new WCHAR[nLen + 1];
+	::GetWindowTextW(m_hWnd, wstrTitle, nLen + 1);
+
+	if(wstrTitle[0] != 0)
+	{
+		//Create font
+		LOGFONTW fnText;
+		memset(&fnText, 0, sizeof(LOGFONTW));
+		fnText.lfHeight = -MulDiv(pSkinText->skinFont.nFontSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+		fnText.lfWeight = 0;
+		fnText.lfEscapement = 0;
+		fnText.lfOrientation = 0;
+		if (pSkinText->skinFont.nBold)
+			fnText.lfWeight = FW_BOLD;
+		else
+			fnText.lfWeight = FW_NORMAL;
+		fnText.lfItalic = 0;
+		fnText.lfUnderline = 0;
+		fnText.lfStrikeOut = 0;
+		fnText.lfCharSet = DEFAULT_CHARSET;
+		fnText.lfOutPrecision = OUT_DEFAULT_PRECIS;
+		fnText.lfClipPrecision = OUT_DEFAULT_PRECIS; 
+		fnText.lfQuality = DEFAULT_QUALITY;
+		fnText.lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;
+		wcscpy_s(fnText.lfFaceName, LF_FACESIZE, pSkinText->skinFont.wstrFontName);
+
+		hFnText = ::CreateFontIndirectW(&fnText);
+		hFnOld = (HFONT)::SelectObject(hDC, hFnText);
+
+		//we need to draw the shadow of text
+		if(pSkinText->bDrawShadow)
+		{
+			::OffsetRect(&rcDraw, 1, 1);
+			::SetTextColor(hDC, pSkinText->clrShadow);
+			::DrawTextW(hDC, wstrTitle, nLen, &rcDraw,  DT_WORDBREAK | DT_LEFT);
+			::OffsetRect(&rcDraw, -1, -1);
+		}
+		::SetTextColor(hDC, pSkinText->clrDraw);
+		::DrawTextW(hDC, wstrTitle, nLen, &rcDraw,  DT_WORDBREAK | DT_LEFT);
+
+		::SelectObject(hDC, hFnOld);
+		::DeleteObject(hFnText);
+	}
+
+	delete wstrTitle;
+}
+
 int CDreamSkinButton::GetCurrentStatus() const
 {
 	int nStatus;
@@ -1347,6 +1486,46 @@ RECT CDreamSkinButton::GetPushButtonRectClient(RECT rcWindow)
 	rcClient.right = rcClient.right - pRBorder->nWidth;
 	rcClient.top = rcClient.top + pTBorder->nWidth;
 	rcClient.bottom = rcClient.bottom - pBBorder->nWidth;
+
+	return rcClient;
+}
+
+RECT CDreamSkinButton::GetGroupBoxRectClient(HDC hDC, RECT rcWindow)
+{
+	SKINTEXT *pText = &m_pSkinGroupBox->skinTxtNormal;
+	HFONT hFnText, hFnOld = NULL;
+
+	//Create font
+	LOGFONTW fnText;
+	memset(&fnText, 0, sizeof(LOGFONTW));
+	fnText.lfHeight = -MulDiv(pText->skinFont.nFontSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+	if (pText->skinFont.nBold)
+		fnText.lfWeight = FW_BOLD;
+	else
+		fnText.lfWeight = FW_NORMAL;
+	fnText.lfCharSet = DEFAULT_CHARSET;
+	fnText.lfOutPrecision = OUT_DEFAULT_PRECIS;
+	fnText.lfClipPrecision = OUT_DEFAULT_PRECIS; 
+	fnText.lfQuality = DEFAULT_QUALITY;
+	fnText.lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;
+	wcscpy_s(fnText.lfFaceName, LF_FACESIZE, pText->skinFont.wstrFontName);
+
+	hFnText = ::CreateFontIndirectW(&fnText);
+	hFnOld = (HFONT)::SelectObject(hDC, hFnText);
+
+	SIZE szText;
+	szText.cx = 0;
+	szText.cy = 0;
+	::GetTextExtentPoint32W(hDC, L"ABC", 3, &szText);
+
+	::SelectObject(hDC, hFnOld);
+	::DeleteObject(hFnText);
+
+	RECT rcClient = rcWindow;
+	rcClient.left += m_pSkinGroupBox->skinLBorderNormal.nWidth;
+	rcClient.right -= m_pSkinGroupBox->skinRBorderNormal.nWidth;
+	rcClient.bottom -= m_pSkinGroupBox->skinBBorderNormal.nWidth;
+	rcClient.top += max(m_pSkinGroupBox->skinTBorderNormal.nWidth, szText.cy);
 
 	return rcClient;
 }
