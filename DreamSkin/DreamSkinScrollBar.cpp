@@ -11,18 +11,49 @@
 WNDPROC         CDreamSkinScrollBar::s_DefaultWindowProc = NULL;
 SKINSCROLLBAR   CDreamSkinScrollBar::s_SkinScrollBar;
 
-typedef int (WINAPI *SETSCROLLINFO)(HWND hwnd, int fnBar, LPCSCROLLINFO lpsi, BOOL fRedraw);
+typedef int (WINAPI *SETSCROLLINFO)(HWND hWnd, int fnBar, LPCSCROLLINFO lpsi, BOOL fRedraw);
+typedef BOOL (WINAPI *GETSCROLLINFO)(HWND hWnd, int fnBar, LPSCROLLINFO lpsi);
 
 int WINAPI CDreamSkinScrollBar::SetScrollInfo(HWND hWnd, int fnBar, LPCSCROLLINFO lpsi, BOOL fRedraw)
 {
 	int nResult = 0;
 	if (theSkinMain.m_HookSetScrollInfo.OrgAddr)
 	{
-		nResult = ((SETSCROLLINFO)theSkinMain.m_HookSetScrollInfo.OrgAddr)(hWnd, fnBar, lpsi, fRedraw);
+		//send this message only when we hooked this window
+		if (theSkinMain.GetHookedWindow(hWnd))
+		{
+			nResult = ((SETSCROLLINFO)theSkinMain.m_HookSetScrollInfo.OrgAddr)(hWnd, fnBar, lpsi, FALSE);
+			if (fRedraw)
+				::SendMessage(hWnd, WM_NCPAINT, 1, 0);
+		}
+		else
+		{
+			nResult = ((SETSCROLLINFO)theSkinMain.m_HookSetScrollInfo.OrgAddr)(hWnd, fnBar, lpsi, fRedraw);
+		}
+	}
+
+	return nResult;
+}
+
+BOOL WINAPI CDreamSkinScrollBar::GetScrollInfo(HWND hWnd, int fnBar, LPSCROLLINFO lpsi)
+{
+	int nResult = 0;
+	if (theSkinMain.m_HookGetScrollInfo.OrgAddr)
+	{
+		nResult = ((GETSCROLLINFO)theSkinMain.m_HookGetScrollInfo.OrgAddr)(hWnd, fnBar, lpsi);
 		
 		//send this message only when we hooked this window
 		if (theSkinMain.GetHookedWindow(hWnd))
-			::SendMessage(hWnd, WM_NCPAINT, 1, 0);
+		{
+			if (lpsi->fMask & SIF_TRACKPOS)
+			{
+				SCROLLINFO ScrollInfo;
+				ScrollInfo.cbSize = sizeof(SCROLLINFO);
+				ScrollInfo.fMask = SIF_TRACKPOS;
+				if (::SendMessage(hWnd, SBM_GETSCROLLINFO, (WPARAM)fnBar, (LPARAM)&ScrollInfo))
+					lpsi->nTrackPos = ScrollInfo.nTrackPos;
+			}
+		}
 	}
 
 	return nResult;
@@ -246,7 +277,7 @@ int CDreamSkinScrollBar::ScrollBarHitTest(HWND hWnd, int fnBar, POINT point)
 	return nResult;
 }
 
-void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, UINT *pSBLButtonDown)
+void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, SCROLLBARTRACKINFO *psbti)
 {
 	SCROLLINFO ScrollInfo;
 	ScrollInfo.cbSize = sizeof(SCROLLINFO);
@@ -304,7 +335,7 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, U
 	MSG Msg;
 	POINT point;
 
-	BOOL bTrackingScorllBar = TRUE;
+	psbti->bIsTracking = TRUE;
 	::SetCapture(hWnd);
 
 	if (nSBHitTest == SBHT_REGION_DOWN || nSBHitTest == SBHT_REGION_UP || nSBHitTest == SBHT_ARROW_TOP || nSBHitTest == SBHT_ARROW_BOTTOM)
@@ -315,7 +346,7 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, U
 		int nTimer2 = 0;
 		int nNewSBHitTest;
 
-		while (::GetCapture() == hWnd && bTrackingScorllBar)
+		while (::GetCapture() == hWnd && psbti->bIsTracking)
 		{
 			if (!::GetMessage(&Msg, NULL, 0, 0))
 				break;
@@ -325,9 +356,9 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, U
 			case WM_LBUTTONUP:
 				if (nTimer2 > 0)
 					KillTimer(0, nTimer2);
-				bTrackingScorllBar = FALSE;
-				if (pSBLButtonDown)
-					*pSBLButtonDown = 0;
+				psbti->bIsTracking = FALSE;
+				if (psbti->nSBLButtonDown)
+					psbti->nSBLButtonDown = 0;
 				::SendMessage(hWnd, nScrollMsg, SB_ENDSCROLL, 0);
 				::SendMessage(hWnd, WM_NCPAINT, 1, 0);
 				break;
@@ -362,7 +393,6 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, U
 	}
 	else
 	{
-		int nPos;
 		::SendMessage(hWnd, WM_NCPAINT, 1, 0);
 
 		SCROLLBARINFO ScrollBarInfo;
@@ -377,7 +407,7 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, U
 			::GetScrollBarInfo(hWnd, OBJID_VSCROLL, &ScrollBarInfo);
 		}
 
-		while (::GetCapture() == hWnd && bTrackingScorllBar)
+		while (::GetCapture() == hWnd && psbti->bIsTracking)
 		{
 			if (!::GetMessage(&Msg, NULL, 0, 0))
 				break;
@@ -385,18 +415,18 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, U
 			switch(Msg.message)
 			{
 			case WM_LBUTTONUP:
-				bTrackingScorllBar = FALSE;
+				psbti->bIsTracking = FALSE;
 				::GetCursorPos(&point);
-				nPos = ScrollBarDragPos(fnBar, &ScrollInfo, &ScrollBarInfo, point, pSBLButtonDown);
-				if (pSBLButtonDown)
-					*pSBLButtonDown = 0;
-				::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBPOSITION, (unsigned short)nPos), 0);
+				psbti->nTrackPos = ScrollBarDragPos(fnBar, &ScrollInfo, &ScrollBarInfo, point, &psbti->nSBLButtonDown);
+				if (psbti->nSBLButtonDown)
+					psbti->nSBLButtonDown = 0;
+				::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBPOSITION, (unsigned short)psbti->nTrackPos), 0);
 				::SendMessage(hWnd, WM_NCPAINT, 1, 0);
 				break;
 			case WM_MOUSEMOVE:
 				::GetCursorPos(&point);
-				nPos = ScrollBarDragPos(fnBar, &ScrollInfo, &ScrollBarInfo, point, pSBLButtonDown);
-				::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBTRACK, (unsigned short)nPos), 0);
+				psbti->nTrackPos = ScrollBarDragPos(fnBar, &ScrollInfo, &ScrollBarInfo, point, &psbti->nSBLButtonDown);
+				::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBTRACK, (unsigned short)psbti->nTrackPos), 0);
 				break;
 			default:
 				DispatchMessage(&Msg);
@@ -405,8 +435,8 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, U
 		}
 	}
 
-	if (pSBLButtonDown)
-		*pSBLButtonDown = 0;
+	if (psbti->nSBLButtonDown)
+		psbti->nSBLButtonDown = 0;
 
 	if (::IsWindow(hWnd) && ::GetCapture() == hWnd)
 		::ReleaseCapture();

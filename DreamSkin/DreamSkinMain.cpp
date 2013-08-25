@@ -13,8 +13,9 @@
 #include "DreamSkinStatic.h"
 #include "DreamSkinTab.h"
 #include "DreamSkinEdit.h"
-#include "DreamSkinListBox.h"
 #include "DreamSkinScrollBar.h"
+#include "DreamSkinListBox.h"
+#include "DreamSkinListCtrl.h"
 #include "WinGdiEx.h"
 
 CDreamSkinMain theSkinMain;
@@ -163,6 +164,11 @@ CDreamSkinMain::CDreamSkinMain()
 	m_HookSetScrollInfo.OrgAddr = 0;
 	m_HookSetScrollInfo.strFunctionName = "SetScrollInfo";
 	m_HookSetScrollInfo.wstrModuleName = L"user32.dll";
+
+	m_HookGetScrollInfo.NewAddr = (DWORD)CDreamSkinScrollBar::GetScrollInfo;
+	m_HookGetScrollInfo.OrgAddr = 0;
+	m_HookGetScrollInfo.strFunctionName = "GetScrollInfo";
+	m_HookGetScrollInfo.wstrModuleName = L"user32.dll";
 }
 
 CDreamSkinMain::~CDreamSkinMain()
@@ -292,6 +298,16 @@ BOOL CDreamSkinMain::InitDefaultHookWindowClassList()
 		m_pDefaultHookWindowClasses->Add(DEFAULT_LISTBOX_CLASSNAME_W, CDreamSkinListBox::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinListBox::CreateInstance);
 	}
 
+	bReturn = CDreamSkinListCtrl::InitialClass();
+	if(!bReturn)
+	{   //Init for dialog failed
+		//TODO: Add error handle code
+	}
+	else
+	{
+		m_pDefaultHookWindowClasses->Add(DEFAULT_LISTCTRL_CLASSNAME_W, CDreamSkinListCtrl::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinListCtrl::CreateInstance);
+	}
+
 	bReturn = CDreamSkinScrollBar::InitialClass();
 	if(!bReturn)
 	{   //Init for dialog failed
@@ -337,6 +353,9 @@ BOOL CDreamSkinMain::InitInstance()
 	if (bReturn)
 		bReturn = HookAPILocal(&m_HookSetScrollInfo);
 
+	if (bReturn)
+		bReturn = HookAPILocal(&m_HookGetScrollInfo);
+
 	return bReturn;
 
 	//TODO: Enum all current window and send update to them
@@ -368,6 +387,7 @@ BOOL CDreamSkinMain::LoadSkin(const WCHAR *wstrSkinFilePath)
 		CDreamSkinStatic::ApplySkin(&theLoader);
 		CDreamSkinTab::ApplySkin(&theLoader);
 		CDreamSkinListBox::ApplySkin(&theLoader);
+		CDreamSkinListCtrl::ApplySkin(&theLoader);
 		CDreamSkinScrollBar::ApplySkin(&theLoader);
 
 		if (m_pImageHandleList)

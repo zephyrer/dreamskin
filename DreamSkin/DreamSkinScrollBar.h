@@ -13,6 +13,13 @@
 #define SBHT_REGION_DOWN      4
 #define SBHT_THUMB            5
 
+typedef struct _tag_SCROLLBARTRACKINFO
+{
+	UINT nSBLButtonDown;
+	BOOL bIsTracking;
+	int  nTrackPos;
+}SCROLLBARTRACKINFO;
+
 class CDreamSkinScrollBar : public CDreamSkinWindow
 {
 //Contrustor and Destructor
@@ -27,6 +34,8 @@ public:
 public:
 	//Used to replace system SetScrollInfo API
 	static int WINAPI SetScrollInfo(HWND hWnd, int fnBar, LPCSCROLLINFO lpsi, BOOL fRedraw);
+	//Used to replace system GetScrollInfo API
+	static BOOL WINAPI GetScrollInfo(HWND hWnd, int fnBar, LPSCROLLINFO lpsi);
 
 	//Apply new skin
 	static BOOL ApplySkin(CDreamSkinLoader *pLoader);
@@ -46,7 +55,7 @@ public:
 	static int  ScrollBarHitTest(HWND hWnd, int fnBar, POINTS point);
 	static int  ScrollBarHitTest(HWND hWnd, int fnBar, POINT point);
 
-	static void TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, UINT *pSBLButtonDown);
+	static void TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, SCROLLBARTRACKINFO *psbti);
 
 protected:
 	static void DrawBackground(HDC hDC, RECT rcDraw, int nStatus);

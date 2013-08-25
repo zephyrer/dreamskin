@@ -21,8 +21,9 @@ using namespace xercesc;
 #include "DreamSkinButton.h"
 #include "DreamSkinStatic.h"
 #include "DreamSkinTab.h"
-#include "DreamSkinListBox.h"
 #include "DreamSkinScrollBar.h"
+#include "DreamSkinListBox.h"
+#include "DreamSkinListCtrl.h"
 
 #include "HexBin.h"
 
@@ -205,6 +206,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinListBox::GetDefaultSkin(&m_SkinListBox);
 		LoadSkinListBox(parser);
 
+		//Load Skin ListCtrl
+		CDreamSkinListCtrl::GetDefaultSkin(&m_SkinListCtrl);
+		LoadSkinListCtrl(parser);
+
 		parser->setErrorHandler(NULL);
 	}
 	catch (const XMLException& ) 
@@ -286,6 +291,14 @@ void CDreamSkinLoader::GetSkinListBox(SKINLISTBOX *pSkinListBox) const
 	if (pSkinListBox)
 	{
 		memcpy(pSkinListBox, &m_SkinListBox, sizeof(SKINLISTBOX));
+	}
+}
+
+void CDreamSkinLoader::GetSkinListCtrl(SKINLISTCTRL *pSkinListCtrl) const
+{
+	if (pSkinListCtrl)
+	{
+		memcpy(pSkinListCtrl, &m_SkinListCtrl, sizeof(SKINLISTCTRL));
 	}
 }
 
@@ -1163,6 +1176,13 @@ BOOL CDreamSkinLoader::LoadSkinListBox(void *parser)
 			pParentNode = pParentNode->getNextSibling();
 		}
 	}//listbox settings
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadSkinListCtrl(void *parser)
+{
+	BOOL bResult = TRUE;
 
 	return bResult;
 }

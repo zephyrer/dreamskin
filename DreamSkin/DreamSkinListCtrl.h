@@ -1,17 +1,17 @@
-//DreamSkinListBox.h
+//DreamSkinListCtrl.h
 
-#ifndef DREAMSKIN_LISTBOX_INCLUDE
-#define DREAMSKIN_LISTBOX_INCLUDE
+#ifndef DREAMSKIN_LISTCTRL_INCLUDE
+#define DREAMSKIN_LISTCTRL_INCLUDE
 
-#define DEFAULT_LISTBOX_CLASSNAME_A ("ListBox")
-#define DEFAULT_LISTBOX_CLASSNAME_W (L"ListBox")
+#define DEFAULT_LISTCTRL_CLASSNAME_A ("SysListView32")
+#define DEFAULT_LISTCTRL_CLASSNAME_W (L"SysListView32")
 
-class CDreamSkinListBox : public CDreamSkinWindow
+class CDreamSkinListCtrl : public CDreamSkinWindow
 {
 //Contrustor and Destructor
 public:
-	CDreamSkinListBox(HWND hWnd, WNDPROC OrgWndProc);
-	virtual ~CDreamSkinListBox();
+	CDreamSkinListCtrl(HWND hWnd, WNDPROC OrgWndProc);
+	virtual ~CDreamSkinListCtrl();
 
 	virtual void    Reload();
 
@@ -19,7 +19,7 @@ public:
 	//Apply new skin
 	static BOOL ApplySkin(CDreamSkinLoader *pLoader);
 	//Create an instance of this class
-	static CDreamSkinListBox * CreateInstance(HWND hWnd, WNDPROC OrgWndProc);
+	static CDreamSkinListCtrl * CreateInstance(HWND hWnd, WNDPROC OrgWndProc);
 	//window procedure for dreamskin dialog, which provides basic skin functions
 	static LRESULT WINAPI DefWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	//Initial the static member of the class
@@ -27,18 +27,14 @@ public:
 	//Destroy the static member of the class
 	static void DestroyClass();
 	//Get the default skin for static
-	static BOOL GetDefaultSkin(SKINLISTBOX *pSkinListBox);
+	static BOOL GetDefaultSkin(SKINLISTCTRL *pSkinListCtrl);
 
 public:
 	static WNDPROC          s_DefaultWindowProc;      //Default static window proc
-	static SKINLISTBOX      s_SkinListBox;            //List Box Skin Settings
+	static SKINLISTCTRL     s_SkinListCtrl;           //List Control Skin Settings
 
 public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
-	//process the WM_CREATE message
-	virtual LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
-	//process the WM_DRAWITEM message
-	virtual LRESULT OnDrawItem(UINT nCtrlID, LPDRAWITEMSTRUCT lpDrawItem);
 	//process the WM_ERASEBKGND message
 	virtual LRESULT OnEraseBkgnd(HDC hDC);
 	//process the WM_MOUSELEAVE message
@@ -57,28 +53,22 @@ public:
 	virtual LRESULT OnNcMouseMove(UINT nHitTest, POINTS point);
 	//process the WM_NCPAINT message
 	virtual LRESULT OnNcPaint(HRGN hRGN);
+	//process the SBM_GETSCROLLINFO message
+	virtual LRESULT OnGetScrollInfo(int fnBar, LPSCROLLINFO lpsi);
 
 protected:
 	//Draw the background
 	void    DrawBackground(HDC hDC, RECT rcClient);
-	void    DrawBackground(HDC hDC, SKINBACKGROUND* pBackGround, RECT rcDraw);
 	//Draw the border
 	void    DrawBorder(HDC hDC, RECT rcWindow);
-	//Draw the title
-	void    DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle);
-	//Draw one item
-	void    DrawItem(HDC hDC, SKINITEM *pItem, RECT rcItem, WCHAR *wstrTitle);
 
 	//Get current button status
 	int     GetCurrentStatus(DWORD dwStyle) const;
 
 protected:
-	SKINLISTBOX       *m_pSkinListBox;                //Instance Related List Box Skin Settings
-	int                m_nOwnerDraw;                  //Whether the listbox is owner draw
-	int                m_nCurHover;                   //Current hover item
-	UINT               m_nSBHover;                    //Current scroll bar hover item
+	SKINLISTCTRL     *m_pSkinListCtrl;                //Instance Related List Control Skin Settings
+	UINT             m_nSBHover;                      //Current scroll bar hover item
 	SCROLLBARTRACKINFO m_ScrollBarTrackInfo;          //Store the scrollbar track info
 };
 
-
-#endif //end of DREAMSKIN_LISTBOX_INCLUDE
+#endif // end of DREAMSKIN_LISTCTRL_INCLUDE

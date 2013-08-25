@@ -426,6 +426,22 @@ typedef struct _tag_SKINLISTBOX
 	SKINITEM         skinItemHoverSelected;           //Selected item in hover status
 }SKINLISTBOX;
 
+typedef struct _tag_SKINLISTCTRL
+{
+	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
+	SKINBACKGROUND   skinBkDisable;                   //Background in disable status
+
+	SKINBORDER       skinLBorderNormal;               //Left border in normal status
+	SKINBORDER       skinRBorderNormal;               //Right border in normal status
+	SKINBORDER       skinTBorderNormal;               //Top border in normal status
+	SKINBORDER       skinBBorderNormal;               //Bottom border in normal status
+
+	SKINBORDER       skinLBorderDisable;              //Left border in disable status
+	SKINBORDER       skinRBorderDisable;              //Right border in disable status
+	SKINBORDER       skinTBorderDisable;              //Top border in disable status
+	SKINBORDER       skinBBorderDisable;              //Bottom border in disable status
+}SKINLISTCTRL;
+
 typedef struct _tag_SKINSCROLLBAR
 {
 	SKINBACKGROUND   skinHBkNormal;                   //Background in normal status for horizontal scroll bar
@@ -572,6 +588,7 @@ public:
 	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
 	void GetSkinGroupBox(SKINGROUPBOX *pSkinGroupBox) const;
 	void GetSkinListBox(SKINLISTBOX *pSkinListBox) const;
+	void GetSkinListCtrl(SKINLISTCTRL *pSkinListCtrl) const;
 	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
 	void GetSkinScrollBar(SKINSCROLLBAR *pSkinScrollBar) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
@@ -584,6 +601,7 @@ protected:
 	BOOL LoadSkinEdit(void *parser);
 	BOOL LoadSkinGroupBox(void *parser);
 	BOOL LoadSkinListBox(void *parser);
+	BOOL LoadSkinListCtrl(void *parser);
 	BOOL LoadSkinRadio(void *parser);
 	BOOL LoadSkinScrollBar(void *parser);
 	BOOL LoadSkinStatic(void *parser);
@@ -615,6 +633,7 @@ protected:
 	SKINEDIT        m_SkinEdit;
 	SKINGROUPBOX    m_SkinGroupBox;
 	SKINLISTBOX     m_SkinListBox;
+	SKINLISTCTRL    m_SkinListCtrl;
 	SKINRADIO       m_SkinRadio;
 	SKINSCROLLBAR   m_SkinScrollBar;
 	SKINSTATIC      m_SkinStatic;
