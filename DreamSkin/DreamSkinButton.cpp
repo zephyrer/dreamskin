@@ -326,6 +326,10 @@ LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 			case WM_PAINT:
 				nResult = OnPaint();
 				break;
+			case WM_UPDATEUISTATE:
+				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+				UpdateWindow();
+				break;
 			default:
 				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
 				break;
@@ -372,6 +376,10 @@ LRESULT CDreamSkinButton::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 				nResult = OnSetButtonStyle(wParam & 0x0000FFFF);
 				break;
 			case WM_SETTEXT:
+				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+				UpdateWindow();
+				break;
+			case WM_UPDATEUISTATE:
 				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
 				UpdateWindow();
 				break;

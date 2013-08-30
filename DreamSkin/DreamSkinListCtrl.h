@@ -35,8 +35,14 @@ public:
 
 public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	//process the WM_CREATE message
+	virtual LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
+	//process the WM_DRAWITEM message
+	virtual LRESULT OnDrawItem(UINT nCtrlID, LPDRAWITEMSTRUCT lpDrawItem, int nViewType);
 	//process the WM_ERASEBKGND message
 	virtual LRESULT OnEraseBkgnd(HDC hDC);
+	//process the WM_LBUTTONDOWN message
+	virtual LRESULT OnLButtonDown(UINT nFlags, POINTS point);
 	//process the WM_MOUSELEAVE message
 	virtual LRESULT OnMouseLeave();
 	//process the WM_MOUSEMOVE message
@@ -53,6 +59,10 @@ public:
 	virtual LRESULT OnNcMouseMove(UINT nHitTest, POINTS point);
 	//process the WM_NCPAINT message
 	virtual LRESULT OnNcPaint(HRGN hRGN);
+	//process the WM_NOTIFY message
+	virtual LRESULT OnNotify(int idCtrl, LPNMHDR pnmh);
+	//process the WM_PAINT message
+	virtual LRESULT OnPaint();
 	//process the SBM_GETSCROLLINFO message
 	virtual LRESULT OnGetScrollInfo(int fnBar, LPSCROLLINFO lpsi);
 
@@ -61,13 +71,23 @@ protected:
 	void    DrawBackground(HDC hDC, RECT rcClient);
 	//Draw the border
 	void    DrawBorder(HDC hDC, RECT rcWindow);
+	//Draw one item
+	void    DrawItem(HDC hDC, int nItem, int nSubItem, int nViewType);
 
 	//Get current button status
 	int     GetCurrentStatus(DWORD dwStyle) const;
 
+	//Get view type from window style
+	int     GetViewTypeByStyle(DWORD dwStyle) const;
+	
+
 protected:
-	SKINLISTCTRL     *m_pSkinListCtrl;                //Instance Related List Control Skin Settings
-	UINT             m_nSBHover;                      //Current scroll bar hover item
+	SKINLISTCTRL      *m_pSkinListCtrl;               //Instance Related List Control Skin Settings
+	int                m_nOwnerDraw;                  //Whether the listbox is owner draw
+	int                m_nCurHover;                   //Current hover item
+	int                m_nCurHoverSub;                //Current hover subitem
+	int                m_nViewType;                   //Current view type
+	UINT               m_nSBHover;                    //Current scroll bar hover item
 	SCROLLBARTRACKINFO m_ScrollBarTrackInfo;          //Store the scrollbar track info
 };
 

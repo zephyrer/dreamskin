@@ -1,5 +1,6 @@
 //DreamSkinListCtrl.cpp
 #include <windows.h>
+#include <commctrl.h>
 
 #include "WinGdiEx.h"
 #include "DreamSkinMain.h"
@@ -16,6 +17,10 @@ CDreamSkinListCtrl::CDreamSkinListCtrl(HWND hWnd, WNDPROC OrgWndProc)
 	: CDreamSkinWindow(hWnd, OrgWndProc)
 {
 	m_pSkinListCtrl = &s_SkinListCtrl;
+	m_nOwnerDraw = -1;
+	m_nCurHover = -1;
+	m_nCurHoverSub = -1;
+	m_nViewType = -1;
 
 	m_ScrollBarTrackInfo.nSBLButtonDown = 0;
 	m_ScrollBarTrackInfo.bIsTracking = FALSE;
@@ -118,6 +123,14 @@ BOOL CDreamSkinListCtrl::GetDefaultSkin(SKINLISTCTRL *pSkinListCtrl)
 		GetDefaultBorder(&pSkinListCtrl->skinRBorderDisable, RGB(172, 168, 153), 1);
 		GetDefaultBorder(&pSkinListCtrl->skinTBorderDisable, RGB(172, 168, 153), 1);
 		GetDefaultBorder(&pSkinListCtrl->skinBBorderDisable, RGB(172, 168, 153), 1);
+
+		GetDefaultItem(&pSkinListCtrl->skinItemNormalSelected, RGB(0, 0, 128), RGB(255, 255, 255), RGB(0, 0, 0), 0);
+		GetDefaultItem(&pSkinListCtrl->skinItemDisableSelected, RGB(128, 128, 128), RGB(255, 255, 255), RGB(0, 0, 0), 0);
+		GetDefaultItem(&pSkinListCtrl->skinItemHoverSelected, RGB(0, 0, 128), RGB(255, 255, 255), RGB(0, 0, 0), 0);
+
+		GetDefaultItem(&pSkinListCtrl->skinItemNormalUnselected, RGB(255, 255, 255), RGB(0, 0, 0), RGB(0, 0, 0), 0);
+		GetDefaultItem(&pSkinListCtrl->skinItemDisableUnselected, RGB(236, 233, 216), RGB(0, 0, 0), RGB(0, 0, 0), 0);
+		GetDefaultItem(&pSkinListCtrl->skinItemHoverUnselected, RGB(0, 0, 255), RGB(255, 255, 255), RGB(0, 0, 0), 0);
 	}
 
 	return TRUE;
@@ -127,19 +140,31 @@ LRESULT CDreamSkinListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lP
 {
 	LRESULT nResult = ERROR_SUCCESS;
 
-	int nTemp;
-	SCROLLINFO ScrollInfo;
 	switch(message)
 	{
-	/*
-	
-	case WM_MEASUREITEM:
+	case LVM_SETVIEW:
 		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+		if (nResult > 0)
+			m_nViewType = wParam;
 		break;
-	
-	*/
+	case WM_CTLCOLOREDIT:
+		nResult = ::SendMessage((HWND)lParam, WM_CTLCOLOREDIT, wParam, (LPARAM)m_hWnd);
+		break;
+	case WM_CREATE:
+		nResult = OnCreate((LPCREATESTRUCT)lParam);
+		break;
+	//case WM_DRAWITEM:
+	//	nResult = OnDrawItem((UINT)wParam, (LPDRAWITEMSTRUCT)lParam, ::GetWindowLong(m_hWnd, GWL_STYLE) & LVS_TYPEMASK);
+	//	break;
+	case WM_ENABLE:
+		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
+		UpdateWindow();
+		break;
 	case WM_ERASEBKGND:
 		nResult = OnEraseBkgnd((HDC)wParam);
+		break;
+	case WM_LBUTTONDOWN:
+		nResult = OnLButtonDown(wParam, MAKEPOINTS(lParam));
 		break;
 	case WM_LBUTTONUP:
 		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
@@ -170,23 +195,14 @@ LRESULT CDreamSkinListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lP
 	case WM_NCPAINT:
 		nResult = OnNcPaint((HRGN)wParam);
 		break;
+	case WM_NOTIFY:
+		nResult = OnNotify(wParam, (LPNMHDR)lParam);
+		break;
+	//case WM_PAINT:
+	//	nResult = OnPaint();
+	//	break;
 	case SBM_GETSCROLLINFO:
 		nResult = OnGetScrollInfo(wParam, (LPSCROLLINFO)lParam);
-		break;
-	case WM_VSCROLL:
-		if (LOWORD(wParam) == 5)
-		{
-			nTemp = HIWORD(wParam);
-				ScrollInfo.cbSize = sizeof(SCROLLINFO);
-				ScrollInfo.fMask = SIF_ALL;
-				::GetScrollInfo(m_hWnd, SB_VERT, &ScrollInfo);
-				nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-				::GetScrollInfo(m_hWnd, SB_VERT, &ScrollInfo);
-		}
-		else
-		{
-			nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-		}
 		break;
 	default:
 		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
@@ -195,6 +211,25 @@ LRESULT CDreamSkinListCtrl::DefWindowProc(UINT message, WPARAM wParam, LPARAM lP
 
 	return nResult;
 
+}
+
+LRESULT CDreamSkinListCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+	if (lpCreateStruct->style & LVS_OWNERDRAWFIXED)
+		m_nOwnerDraw = 1;
+	else
+		m_nOwnerDraw = 0;
+
+	m_nViewType = GetViewTypeByStyle(lpCreateStruct->style);
+
+	return CDreamSkinWindow::DefWindowProc(WM_CREATE, 0, (LPARAM)lpCreateStruct);
+}
+
+LRESULT CDreamSkinListCtrl::OnDrawItem(UINT nCtrlID, LPDRAWITEMSTRUCT lpDrawItem, int nViewType)
+{
+	DrawItem(lpDrawItem->hDC, lpDrawItem->itemID, -1, nViewType);
+
+	return TRUE;
 }
 
 LRESULT CDreamSkinListCtrl::OnEraseBkgnd(HDC hDC)
@@ -207,17 +242,30 @@ LRESULT CDreamSkinListCtrl::OnEraseBkgnd(HDC hDC)
 	return 0;
 }
 
+LRESULT CDreamSkinListCtrl::OnLButtonDown(UINT nFlags, POINTS point)
+{
+	LRESULT lResult = CDreamSkinWindow::DefWindowProc(WM_LBUTTONDOWN, nFlags, MAKELPARAM(point.x, point.y));
+
+	if (m_nViewType == LV_VIEW_DETAILS)
+	{
+	}
+
+	return lResult;
+}
+
 LRESULT CDreamSkinListCtrl::OnMouseLeave()
 {
-	/*if(m_nCurHover >= 0)
+	if(m_nCurHover >= 0)
 	{
 		int nIndex = m_nCurHover;
 		m_nCurHover = -1;
+		m_nCurHoverSub = -1;
 
 		RECT rcItem;
-		::SendMessage(m_hWnd, LB_GETITEMRECT, nIndex, (LPARAM)&rcItem);
+		rcItem.left = LVIR_BOUNDS;
+		::SendMessage(m_hWnd, LVM_GETITEMRECT, nIndex, (LPARAM)&rcItem);
 		::InvalidateRect(m_hWnd, &rcItem, FALSE);
-	}*/
+	}
 
 	if (m_nSBHover > 0)
 	{
@@ -282,29 +330,47 @@ LRESULT CDreamSkinListCtrl::OnMouseMove(UINT nFlags, POINTS point)
 		OnNcPaint(NULL);
 	}
 
-	/*DWORD dwResult = (DWORD)::SendMessage(m_hWnd, LB_ITEMFROMPOINT, 0, MAKELPARAM(point.x, point.y));
-	int nIndex = -1;
-	if (!HIWORD(dwResult))
-		nIndex = LOWORD(dwResult);
+	LVHITTESTINFO HitTest;
+	memset(&HitTest, 0, sizeof(LVHITTESTINFO));
+	HitTest.pt.x = point.x;
+	HitTest.pt.y = point.y;
+	HitTest.flags = LVHT_ONITEM | LVHT_EX_ONCONTENTS;
 
-	if(nIndex != m_nCurHover)
+	int nHoverItem, nHoverSubItem;
+	//if (::SendMessage(m_hWnd, LVM_SUBITEMHITTEST, 0, (LPARAM)&HitTest) >= 0)
+	if (::SendMessage(m_hWnd, LVM_HITTEST, 0, (LPARAM)&HitTest) >= 0)
+	{
+		nHoverItem = HitTest.iItem;
+		nHoverSubItem = HitTest.iSubItem;
+	}
+	else
+	{
+		nHoverItem = -1;
+		nHoverSubItem = -1;
+	}
+
+	if (nHoverItem != m_nCurHover || nHoverSubItem != m_nCurHoverSub)
 	{
 		int nTemp = m_nCurHover;
-		m_nCurHover = nIndex;
+
+		m_nCurHover = nHoverItem;
+		m_nCurHoverSub = nHoverSubItem;
 		
 		RECT rcItem;
-		if (nIndex >= 0)
+		if (m_nCurHover >= 0)
 		{
-			::SendMessage(m_hWnd, LB_GETITEMRECT, nIndex, (LPARAM)&rcItem);
+			rcItem.left = LVIR_BOUNDS;
+			::SendMessage(m_hWnd, LVM_GETITEMRECT, m_nCurHover, (LPARAM)&rcItem);
 			::InvalidateRect(m_hWnd, &rcItem, FALSE);
 		}
 
-		if (nTemp >= 0)
+		if (nTemp >= 0 && nTemp != m_nCurHover)
 		{
-			::SendMessage(m_hWnd, LB_GETITEMRECT, nTemp, (LPARAM)&rcItem);
+			rcItem.left = LVIR_BOUNDS;
+			::SendMessage(m_hWnd, LVM_GETITEMRECT, nTemp, (LPARAM)&rcItem);
 			::InvalidateRect(m_hWnd, &rcItem, FALSE);
 		}
-	}*/
+	}
 
 	return CDreamSkinWindow::DefWindowProc(WM_MOUSEMOVE, nFlags, MAKELPARAM(point.x, point.y));
 }
@@ -541,6 +607,79 @@ LRESULT CDreamSkinListCtrl::OnNcPaint(HRGN hRGN)
 	return 0;
 }
 
+LRESULT CDreamSkinListCtrl::OnNotify(int idCtrl, LPNMHDR pnmh)
+{
+	LRESULT lResult = 0;
+	LPNMLVCUSTOMDRAW lplvcd;
+	DRAWITEMSTRUCT DrawItemStruct;
+
+	if (pnmh->hwndFrom == m_hWnd)
+	{
+		switch(pnmh->code)
+		{
+		case NM_CUSTOMDRAW:
+			lplvcd = (LPNMLVCUSTOMDRAW)pnmh;
+			switch(lplvcd->nmcd.dwDrawStage)
+			{
+			case CDDS_PREPAINT:
+				lResult = CDRF_NOTIFYITEMDRAW;
+				break;
+			case CDDS_ITEMPREPAINT:
+				if (m_nViewType < 0)
+					m_nViewType = GetViewTypeByStyle(::GetWindowLong(m_hWnd, GWL_STYLE));
+
+				if (m_nViewType == LV_VIEW_DETAILS)
+				{
+					lResult = CDRF_SKIPDEFAULT;
+					DrawItemStruct.CtlID = idCtrl;
+					DrawItemStruct.CtlType = ODT_LISTVIEW;
+					DrawItemStruct.hDC = lplvcd->nmcd.hdc;
+					DrawItemStruct.hwndItem = pnmh->hwndFrom;
+					DrawItemStruct.itemAction = ODA_DRAWENTIRE;
+					DrawItemStruct.itemData = lplvcd->nmcd.lItemlParam;
+					DrawItemStruct.itemID = lplvcd->nmcd.dwItemSpec;
+					DrawItemStruct.itemState = lplvcd->nmcd.uItemState;
+					DrawItemStruct.rcItem = lplvcd->nmcd.rc;
+					OnDrawItem(idCtrl, &DrawItemStruct, ::GetWindowLong(m_hWnd, GWL_STYLE) & LVS_TYPEMASK);
+				}
+				else
+				{
+					lResult = CDreamSkinWindow::DefWindowProc(WM_NOTIFY, idCtrl, (LPARAM)pnmh);
+				}
+				break;
+			default:
+				lResult = CDreamSkinWindow::DefWindowProc(WM_NOTIFY, idCtrl, (LPARAM)pnmh);
+				break;
+			}
+			break;
+		default:
+			lResult = CDreamSkinWindow::DefWindowProc(WM_NOTIFY, idCtrl, (LPARAM)pnmh);
+			break;
+		}
+	}
+	else
+	{
+		lResult = CDreamSkinWindow::DefWindowProc(WM_NOTIFY, idCtrl, (LPARAM)pnmh);
+	}
+
+	return lResult;
+}
+
+LRESULT CDreamSkinListCtrl::OnPaint()
+{
+	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+	if ((dwStyle & LVS_TYPEMASK) != LVS_REPORT)
+	{
+		//TODO: we need to handle
+		int aa = dwStyle & LVS_TYPEMASK;
+		return CDreamSkinWindow::DefWindowProc(WM_PAINT, 0, 0);
+	}
+	else
+	{
+		return CDreamSkinWindow::DefWindowProc(WM_PAINT, 0, 0);
+	}
+}
+
 LRESULT CDreamSkinListCtrl::OnGetScrollInfo(int fnBar, LPSCROLLINFO lpsi)
 {
 	BOOL bResult = FALSE;
@@ -656,6 +795,62 @@ void CDreamSkinListCtrl::DrawBorder(HDC hDC, RECT rcWindow)
 	}
 }
 
+void CDreamSkinListCtrl::DrawItem(HDC hDC, int nItem, int nSubItem, int nViewType)
+{
+	HWND hWndHeader = (HWND)::SendMessage(m_hWnd, LVM_GETHEADER, 0, 0);
+	int nColNum;
+	if (hWndHeader)
+		nColNum = ::SendMessage(hWndHeader, HDM_GETITEMCOUNT, 0, 0);
+	else
+		nColNum = 0;
+
+	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+	int nStatus = GetCurrentStatus(dwStyle);
+
+	DWORD dwExStyle = ::SendMessage(m_hWnd, LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+
+	SKINITEM *pItem;
+
+	LVITEM lvItem;
+	RECT rcDraw;
+	WCHAR buf[256];
+	for (int i = 0; i < nColNum; i++)
+	{
+		lvItem.iItem = nItem;
+		lvItem.iSubItem = i;
+		lvItem.mask = LVIF_IMAGE | LVIF_STATE | LVIF_TEXT;
+		lvItem.stateMask = (UINT)-1;
+		lvItem.pszText = buf;
+		lvItem.cchTextMax = 256;
+		::SendMessage(m_hWnd, LVM_GETITEM, 0, (LPARAM)&lvItem);
+
+		if (lvItem.state & LVIS_SELECTED)
+		{
+			if (nStatus == DRAWSTATUS_DISABLE)
+				pItem = &m_pSkinListCtrl->skinItemDisableSelected;
+			else if ((lvItem.iItem == m_nCurHover) && (dwExStyle & LVS_EX_FULLROWSELECT || lvItem.iSubItem == m_nCurHoverSub))
+				pItem = &m_pSkinListCtrl->skinItemHoverSelected;
+			else
+				pItem = &m_pSkinListCtrl->skinItemNormalSelected;
+		}
+		else
+		{
+			if (nStatus == DRAWSTATUS_DISABLE)
+				pItem = &m_pSkinListCtrl->skinItemDisableUnselected;
+			else if ((lvItem.iItem == m_nCurHover) && (dwExStyle & LVS_EX_FULLROWSELECT || lvItem.iSubItem == m_nCurHoverSub))
+				pItem = &m_pSkinListCtrl->skinItemHoverUnselected;
+			else
+				pItem = &m_pSkinListCtrl->skinItemNormalUnselected;
+		}
+
+		rcDraw.top = i;
+		rcDraw.left = LVIR_BOUNDS;
+		::SendMessage(m_hWnd, LVM_GETSUBITEMRECT, nItem, (LPARAM)&rcDraw);
+
+		CDreamSkinWindow::DrawItem(hDC, pItem, rcDraw, lvItem.pszText);
+	}
+}
+
 int CDreamSkinListCtrl::GetCurrentStatus(DWORD dwStyle) const
 {
 	int nStatus;
@@ -666,4 +861,29 @@ int CDreamSkinListCtrl::GetCurrentStatus(DWORD dwStyle) const
 		nStatus = DRAWSTATUS_NORMAL;        //Normal
 
 	return nStatus;
+}
+
+int CDreamSkinListCtrl::GetViewTypeByStyle(DWORD dwStyle) const
+{
+	int nResult;
+	switch (dwStyle & LVS_TYPEMASK)
+	{
+	case LVS_ICON:
+		nResult = LV_VIEW_ICON;
+		break;
+	case LVS_REPORT:
+		nResult = LV_VIEW_DETAILS;
+		break;
+	case LVS_SMALLICON:
+		nResult = LV_VIEW_SMALLICON;
+		break;
+	case LVS_LIST:
+		nResult = LV_VIEW_LIST;
+		break;
+	default:
+		nResult = -1;
+		break;
+	}
+
+	return nResult;
 }

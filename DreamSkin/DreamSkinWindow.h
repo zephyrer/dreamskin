@@ -36,6 +36,10 @@ public:
 	static void DrawBackground(HDC hDC, RECT rcDraw, SKINBACKGROUND *pSkinBackground);
 	static void DrawBorder(HDC hDC, SKINBORDER *pLBorder, SKINBORDER *pRBorder, SKINBORDER *pTBorder, SKINBORDER *pBBorder, RECT rcDraw);
 	static void DrawIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon);
+	//Draw one item
+	static void DrawItem(HDC hDC, SKINITEM *pItem, RECT rcItem, WCHAR *wstrTitle);
+	//Draw the title
+	static void DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle);
 
 public:
 	CDreamSkinWindow(HWND hWnd, WNDPROC OrgWndProc);

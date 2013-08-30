@@ -440,6 +440,14 @@ typedef struct _tag_SKINLISTCTRL
 	SKINBORDER       skinRBorderDisable;              //Right border in disable status
 	SKINBORDER       skinTBorderDisable;              //Top border in disable status
 	SKINBORDER       skinBBorderDisable;              //Bottom border in disable status
+
+	SKINITEM         skinItemNormalUnselected;        //Unselected item in normal status
+	SKINITEM         skinItemDisableUnselected;       //Unselected item in disable status
+	SKINITEM         skinItemHoverUnselected;         //Unselecetd item in disable status
+
+	SKINITEM         skinItemNormalSelected;          //Selected item in normal status
+	SKINITEM         skinItemDisableSelected;         //Selected item in disable status
+	SKINITEM         skinItemHoverSelected;           //Selected item in hover status
 }SKINLISTCTRL;
 
 typedef struct _tag_SKINSCROLLBAR
@@ -521,6 +529,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameEdit[];
 	static WCHAR wstrSkinFileNodeNameGroupBox[];
 	static WCHAR wstrSkinFileNodeNameListBox[];
+	static WCHAR wstrSkinFileNodeNameListCtrl[];
 	static WCHAR wstrSkinFileNodeNameRadio[];
 	static WCHAR wstrSkinFileNodeNameScrollBar[];
 	static WCHAR wstrSkinFileNodeNameStatic[];

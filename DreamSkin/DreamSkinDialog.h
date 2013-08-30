@@ -61,6 +61,8 @@ public:
 	virtual LRESULT OnNcMouseMove(UINT nHitTest, POINTS point);
 	//process the WM_NCPAINT message
 	virtual LRESULT OnNcPaint(HRGN hRGN);
+	//process the WM_NOTIFY message
+	virtual LRESULT OnNotify(int idCtrl, LPNMHDR pnmh);   
 	//process the WM_PAINT message
 	virtual LRESULT OnPaint();
 	//process the WM_SIZE message

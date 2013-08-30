@@ -40,6 +40,7 @@
 #define IDC_EDIT1                       1023
 #define IDC_EDIT_RESULT_MESSAGEBOX      1023
 #define IDC_EDIT_RESULT_LISTBOX         1023
+#define IDC_EDIT_RESULT_LISTCTRL        1024
 #define IDC_STATIC_BUTTONS              1025
 #define IDC_STATIC_CHECKBOXES           1026
 #define IDC_STATIC_EDITS                1027
@@ -61,18 +62,20 @@
 #define IDC_BTN_LISTBOX_DEL             1039
 #define IDC_CHECK1                      1040
 #define IDC_CHK_LISTBOX_MULTICOLUMN     1040
-#define IDC_CHK_LISTBOX_ENABLE2         1040
 #define IDC_CHK_LISTCTRL_ENABLE         1040
 #define IDC_LISTBOX_DEMO_MULTICOL       1041
 #define IDC_LISTCTRL_DEMO               1042
+#define IDC_CMB_LISTCTRL_VIEW           1043
+#define IDC_LISTCTRL_FULLROW            1044
+#define IDC_LISTCTRL_FULLROWSEL         1044
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        132
+#define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1043
+#define _APS_NEXT_CONTROL_VALUE         1045
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

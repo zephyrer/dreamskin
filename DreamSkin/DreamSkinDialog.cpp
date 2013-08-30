@@ -1,11 +1,14 @@
 //DreamSkinDialog.cpp
 #include <windows.h>
+#include <commctrl.h>
 
 #include "WinGdiEx.h"
 #include "DreamSkinMain.h"
 #include "DreamSkinLoader.h"
 #include "DreamSkinWindow.h"
 #include "DreamSkinDialog.h"
+#include "DreamSkinScrollBar.h"
+#include "DreamSkinListCtrl.h"
 
 
 //static member declaration
@@ -266,6 +269,9 @@ LRESULT CDreamSkinDialog::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 	case WM_NCPAINT:
 		nResult = OnNcPaint((HRGN)wParam);
 		break;
+	case WM_NOTIFY:
+		nResult = OnNotify(wParam, (LPNMHDR)lParam);
+		break;
 	case WM_PAINT:
 		nResult = OnPaint();
 		break;
@@ -402,15 +408,24 @@ LRESULT CDreamSkinDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 LRESULT CDreamSkinDialog::OnDrawItem(UINT nCtrlID, LPDRAWITEMSTRUCT lpDrawItem)
 {
+	LRESULT lResult = 0;
 	switch (lpDrawItem->CtlType)
 	{
 	case ODT_LISTBOX:
-		return CDreamSkinWindow::DefWindowProc(lpDrawItem->hwndItem, WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem); //::SendMessage(lpDrawItem->hwndItem, WM_DRAWITEM, (WPARAM)m_hWnd, (LPARAM)lpDrawItem);
+		lResult = CDreamSkinWindow::DefWindowProc(lpDrawItem->hwndItem, WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
+		break;
+	case ODT_LISTVIEW:
+		lResult = CDreamSkinWindow::DefWindowProc(lpDrawItem->hwndItem, WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
+		break;
+	case ODT_COMBOBOX:
+		lResult = CDreamSkinWindow::DefWindowProc(WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
 		break;
 	default:
-		return CDreamSkinWindow::DefWindowProc(WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
+		lResult = CDreamSkinWindow::DefWindowProc(WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
 		break;
 	}
+
+	return lResult;
 }
 
 LRESULT CDreamSkinDialog::OnMesureItem(int nCtrlID, LPMEASUREITEMSTRUCT lpMeasureItemStruct)
@@ -700,6 +715,33 @@ LRESULT CDreamSkinDialog::OnPaint()
 	::EndPaint(m_hWnd, &ps);
 
 	return 0;
+}
+
+LRESULT CDreamSkinDialog::OnNotify(int idCtrl, LPNMHDR pnmh)
+{
+	WCHAR	wstrClassName[MAX_CLASSNAME_LENGH + 1];
+	memset(wstrClassName, 0, (MAX_CLASSNAME_LENGH + 1) * sizeof(WCHAR));
+
+	LRESULT lResult = 0;
+	switch(pnmh->code)
+	{
+	case NM_CUSTOMDRAW:
+		::GetClassNameW(pnmh->hwndFrom, wstrClassName, MAX_CLASSNAME_LENGH);
+		if (!wcscmp(wstrClassName, DEFAULT_LISTCTRL_CLASSNAME_W))
+		{
+			lResult = CDreamSkinWindow::DefWindowProc(pnmh->hwndFrom, WM_NOTIFY, idCtrl, (LPARAM)pnmh);
+		}
+		else
+		{
+			lResult = CDreamSkinWindow::DefWindowProc(WM_NOTIFY, idCtrl, (LPARAM)pnmh);
+		}
+		break;
+	default:
+		lResult = CDreamSkinWindow::DefWindowProc(WM_NOTIFY, idCtrl, (LPARAM)pnmh);
+		break;
+	}
+
+	return lResult;
 }
 
 LRESULT CDreamSkinDialog::OnSize(UINT nType, WORD cx, WORD cy)

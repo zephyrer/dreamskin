@@ -613,6 +613,94 @@
 			</selected>
 		</item>
 	</listbox>
+	<listctrl>
+		<background type="0">
+			<normal>
+				<color start="0x00FFFFFF"/>
+			</normal>
+			<disable>
+				<color start="0x00F6E9E9"/>
+			</disable>
+		</background>
+		<border type="0">
+			<left width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</left>
+			<right width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</right>
+			<top width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</top>
+			<bottom width="1">
+				<normal>
+					<color start="0x00E5C5C5"/>
+				</normal>
+				<disable>
+					<color start="0x00ACA899" />
+				</disable>
+			</bottom>
+		</border>
+		<item>
+			<unselected>
+				<background type="0">
+					<normal>
+						<color start="0x00FFFFFF"/>
+					</normal>
+					<disable>
+						<color start="0x00F6E9E9" />
+					</disable>
+					<hover>
+						<color start="0x00F0D6D6" />
+					</hover>
+				</background>
+				<text>
+					<normal>
+						<color start="0x00444444" />
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+					<hover>
+						<color start="0x00BF4D4D" />
+					</hover>
+				</text>
+			</unselected>
+			<selected>
+				<background type="0">
+					<normal>
+						<color start="0x00BF4D4D"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+				</background>
+				<text>
+					<normal>
+						<color start="0x00FFFFFF" />
+					</normal>
+					<disable>
+						<color start="0x00FFFFFF" />
+					</disable>
+				</text>
+			</selected>
+		</item>
+	</listctrl>
 	<scrollbar>
 		<horizontal>
 			<background type="0">

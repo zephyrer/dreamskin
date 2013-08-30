@@ -21,22 +21,30 @@ protected:
 
 	DECLARE_MESSAGE_MAP()
 public:
+	BOOL m_bEnableListBox;
 	CString m_strResultListBox;
 	CListBox m_lsDemoListBox;
-	virtual BOOL OnInitDialog();
-	BOOL m_bEnableListBox;
-	afx_msg void OnBnClickedChkListboxEnable();
-	afx_msg void OnLbnSelchangeListboxDemo();
+	CListBox m_lsMultiColListBox;
+	CString m_strResultListCtrl;
 	CString m_strListBoxAdd;
-	afx_msg void OnEnChangeEditListboxAdd();
+	
+	BOOL m_bEnableListCtrl;
+	int m_nListCtrlView;
+	CListCtrl m_lsDemoListCtrl;
+	UINT     m_nListCtrlItemID;
 
 	void UpdateListBoxWindows();
+
+	virtual BOOL OnInitDialog();
+	afx_msg void OnBnClickedChkListboxEnable();
+	afx_msg void OnLbnSelchangeListboxDemo();
+	afx_msg void OnEnChangeEditListboxAdd();
 	afx_msg void OnBnClickedBtnListboxAdd();
 	afx_msg void OnBnClickedBtnListboxDel();
-	CListBox m_lsMultiColListBox;
 	afx_msg void OnLbnSelchangeListboxDemoMulticol();
-	CListCtrl m_lsDemoListCtrl;
-	BOOL m_bEnableListCtrl;
-	UINT     m_nListCtrlItemID;
 	afx_msg void OnBnClickedChkListctrlEnable();
+	afx_msg void OnCbnSelchangeCmbListctrlView();
+	afx_msg void OnLvnItemchangedListctrlDemo(NMHDR *pNMHDR, LRESULT *pResult);
+	BOOL m_bListCtrlFullRowSel;
+	afx_msg void OnBnClickedListctrlFullrowsel();
 };

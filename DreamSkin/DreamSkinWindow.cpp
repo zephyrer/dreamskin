@@ -304,6 +304,65 @@ void CDreamSkinWindow::DrawIcon(HDC hDC, RECT rcDraw, SKINICON *pSkinIcon)
 		::DrawStretchBitmap(hDC, rcDraw.left, rcDraw.top, rcDraw.right - rcDraw.left, rcDraw.bottom - rcDraw.top, pSkinIcon->imgDraw.hImage, pSkinIcon->imgDraw.x, pSkinIcon->imgDraw.y, pSkinIcon->imgDraw.nWidth, pSkinIcon->imgDraw.nHeight);
 }
 
+void CDreamSkinWindow::DrawItem(HDC hDC, SKINITEM *pItem, RECT rcItem, WCHAR *wstrTitle)
+{
+	RECT rcClient = GetItemRectClient(pItem, rcItem);
+	DrawBackground(hDC, rcItem, &pItem->skinBk);
+
+	DrawBorder(hDC, &pItem->skinLBorder, &pItem->skinRBorder, &pItem->skinTBorder, &pItem->skinBBorder, rcItem);
+
+	if (wstrTitle)
+		DrawTitle(hDC, &pItem->skinTxt, rcClient, wstrTitle);
+}
+
+void CDreamSkinWindow::DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle)
+{
+	LOGFONTW fnText;
+	HFONT hFnText, hFnOld = NULL;
+	int nLen = wcslen(wstrTitle);
+
+	if (nLen > 0)
+	{
+		//Create font
+		
+		memset(&fnText, 0, sizeof(LOGFONTW));
+		fnText.lfHeight = -MulDiv(pText->skinFont.nFontSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
+		fnText.lfWeight = 0;
+		fnText.lfEscapement = 0;
+		fnText.lfOrientation = 0;
+		if (pText->skinFont.nBold)
+			fnText.lfWeight = FW_BOLD;
+		else
+			fnText.lfWeight = FW_NORMAL;
+		fnText.lfItalic = 0;
+		fnText.lfUnderline = 0;
+		fnText.lfStrikeOut = 0;
+		fnText.lfCharSet = DEFAULT_CHARSET;
+		fnText.lfOutPrecision = OUT_DEFAULT_PRECIS;
+		fnText.lfClipPrecision = OUT_DEFAULT_PRECIS; 
+		fnText.lfQuality = DEFAULT_QUALITY;
+		fnText.lfPitchAndFamily = DEFAULT_PITCH|FF_DONTCARE;
+		wcscpy_s(fnText.lfFaceName, LF_FACESIZE, pText->skinFont.wstrFontName);
+
+		hFnText = ::CreateFontIndirectW(&fnText);
+		hFnOld = (HFONT)::SelectObject(hDC, hFnText);
+
+		//we need to draw the shadow of text
+		if(pText->bDrawShadow)
+		{
+			::OffsetRect(&rcDraw, 1, 1);
+			::SetTextColor(hDC, pText->clrShadow);
+			::DrawTextW(hDC, wstrTitle, nLen, &rcDraw,  DT_WORDBREAK | DT_LEFT);
+			::OffsetRect(&rcDraw, -1, -1);
+		}
+		::SetTextColor(hDC, pText->clrDraw);
+		::DrawTextW(hDC, wstrTitle, nLen, &rcDraw,  DT_WORDBREAK | DT_LEFT);
+
+		::SelectObject(hDC, hFnOld);
+		::DeleteObject(hFnText);
+	}
+}
+
 CDreamSkinWindow::CDreamSkinWindow(HWND hWnd, WNDPROC OrgWndProc)
 {
 	m_hWnd = hWnd;

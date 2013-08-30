@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "DreamSkinDemoDialog.h"
+#include "DreamSkinDemoDialogDlg.h"
 #include "PropertyPageListEdit.h"
 
 
@@ -16,6 +17,9 @@ CPropertyPageListEdit::CPropertyPageListEdit()
 	, m_bEnableListBox(TRUE)
 	, m_strListBoxAdd(_T(""))
 	, m_bEnableListCtrl(TRUE)
+	, m_strResultListCtrl(_T(""))
+	, m_nListCtrlView(3)
+	, m_bListCtrlFullRowSel(TRUE)
 {
 	m_nListCtrlItemID = 0;
 }
@@ -34,6 +38,9 @@ void CPropertyPageListEdit::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_LISTBOX_DEMO_MULTICOL, m_lsMultiColListBox);
 	DDX_Control(pDX, IDC_LISTCTRL_DEMO, m_lsDemoListCtrl);
 	DDX_Check(pDX, IDC_CHK_LISTCTRL_ENABLE, m_bEnableListCtrl);
+	DDX_Text(pDX, IDC_EDIT_RESULT_LISTCTRL, m_strResultListCtrl);
+	DDX_CBIndex(pDX, IDC_CMB_LISTCTRL_VIEW, m_nListCtrlView);
+	DDX_Check(pDX, IDC_LISTCTRL_FULLROWSEL, m_bListCtrlFullRowSel);
 }
 
 
@@ -45,6 +52,9 @@ BEGIN_MESSAGE_MAP(CPropertyPageListEdit, CPropertyPage)
 	ON_BN_CLICKED(IDC_BTN_LISTBOX_DEL, &CPropertyPageListEdit::OnBnClickedBtnListboxDel)
 	ON_LBN_SELCHANGE(IDC_LISTBOX_DEMO_MULTICOL, &CPropertyPageListEdit::OnLbnSelchangeListboxDemoMulticol)
 	ON_BN_CLICKED(IDC_CHK_LISTCTRL_ENABLE, &CPropertyPageListEdit::OnBnClickedChkListctrlEnable)
+	ON_CBN_SELCHANGE(IDC_CMB_LISTCTRL_VIEW, &CPropertyPageListEdit::OnCbnSelchangeCmbListctrlView)
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_LISTCTRL_DEMO, &CPropertyPageListEdit::OnLvnItemchangedListctrlDemo)
+	ON_BN_CLICKED(IDC_LISTCTRL_FULLROWSEL, &CPropertyPageListEdit::OnBnClickedListctrlFullrowsel)
 END_MESSAGE_MAP()
 
 
@@ -55,6 +65,13 @@ BOOL CPropertyPageListEdit::OnInitDialog()
 	CPropertyPage::OnInitDialog();
 
 	CString strMessage;
+
+	DWORD dwExStyle = m_lsDemoListCtrl.GetExtendedStyle();
+	if (m_bListCtrlFullRowSel)
+		dwExStyle |= LVS_EX_FULLROWSELECT;
+	else
+		dwExStyle &= ~LVS_EX_FULLROWSELECT;
+	m_lsDemoListCtrl.SetExtendedStyle(dwExStyle);
 
 	m_lsDemoListCtrl.InsertColumn(0, _T("ID"), LVCFMT_LEFT, 30);
 	m_lsDemoListCtrl.InsertColumn(1, _T("Name"), LVCFMT_CENTER, 120);
@@ -222,4 +239,56 @@ void CPropertyPageListEdit::OnBnClickedChkListctrlEnable()
 	m_lsDemoListCtrl.EnableWindow(m_bEnableListCtrl);
 
 	UpdateData(FALSE);
+}
+
+void CPropertyPageListEdit::OnCbnSelchangeCmbListctrlView()
+{
+	UpdateData();
+
+	switch (m_nListCtrlView)
+	{
+	case 0:    //icon
+		m_lsDemoListCtrl.SetView(LV_VIEW_ICON);
+		break;
+	case 1:    //small icon
+		m_lsDemoListCtrl.SetView(LV_VIEW_SMALLICON);
+		break;
+	case 2:    //list
+		m_lsDemoListCtrl.SetView(LV_VIEW_LIST);
+		break;
+	default:
+		m_lsDemoListCtrl.SetView(LV_VIEW_DETAILS);
+		break;
+	}
+}
+
+void CPropertyPageListEdit::OnLvnItemchangedListctrlDemo(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>(pNMHDR);
+	m_strResultListCtrl = _T("");
+
+	POSITION pos = m_lsDemoListCtrl.GetFirstSelectedItemPosition();
+	while (pos)
+	{
+		int nItem = m_lsDemoListCtrl.GetNextSelectedItem(pos);
+		
+		m_strResultListCtrl += m_lsDemoListCtrl.GetItemText(nItem, 0);
+		m_strResultListCtrl += _T(";");
+	}
+
+	UpdateData(FALSE);
+	*pResult = 0;
+}
+
+void CPropertyPageListEdit::OnBnClickedListctrlFullrowsel()
+{
+	UpdateData();
+
+	DWORD dwExStyle = m_lsDemoListCtrl.GetExtendedStyle();
+	if (m_bListCtrlFullRowSel)
+		dwExStyle |= LVS_EX_FULLROWSELECT;
+	else
+		dwExStyle &= ~LVS_EX_FULLROWSELECT;
+
+	m_lsDemoListCtrl.SetExtendedStyle(dwExStyle);
 }

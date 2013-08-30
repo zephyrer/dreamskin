@@ -61,13 +61,9 @@ public:
 protected:
 	//Draw the background
 	void    DrawBackground(HDC hDC, RECT rcClient);
-	void    DrawBackground(HDC hDC, SKINBACKGROUND* pBackGround, RECT rcDraw);
+	//void    DrawBackground(HDC hDC, SKINBACKGROUND* pBackGround, RECT rcDraw);
 	//Draw the border
 	void    DrawBorder(HDC hDC, RECT rcWindow);
-	//Draw the title
-	void    DrawTitle(HDC hDC, SKINTEXT *pText, RECT rcDraw, WCHAR *wstrTitle);
-	//Draw one item
-	void    DrawItem(HDC hDC, SKINITEM *pItem, RECT rcItem, WCHAR *wstrTitle);
 
 	//Get current button status
 	int     GetCurrentStatus(DWORD dwStyle) const;
