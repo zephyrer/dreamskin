@@ -741,6 +741,81 @@
 			</selected>
 		</item>
 	</listctrl>
+	<headerctrl>
+		<item>
+			<background type="1">
+				<normal>
+					<image source="Images/headerctrl.bmp" x="1" y="0" width="94" height="22" />
+				</normal>
+				<disable>
+					<image source="Images/headerctrl.bmp" x="1" y="23" width="94" height="22" />
+				</disable>
+				<hover>
+					<image source="Images/headerctrl.bmp" x="1" y="46" width="94" height="22" />
+				</hover>
+				<press>
+					<image source="Images/headerctrl.bmp" x="2" y="71" width="93" height="20" />
+				</press>
+			</background>
+			<text>
+				<normal>
+					<color start="0x00000000" />
+				</normal>
+			</text>
+			<border type="1">
+				<left width="1" type="1">
+					<normal>
+						<image source="Images/headerctrl.bmp" x="0" y="0" width="1" height="22" />
+					</normal>
+					<disable>
+						<image source="Images/headerctrl.bmp" x="0" y="23" width="1" height="22" />
+					</disable>
+					<hover>
+						<image source="Images/headerctrl.bmp" x="0" y="46" width="1" height="22" />
+					</hover>
+					<press width="2">
+						<image source="Images/headerctrl.bmp" x="0" y="71" width="2" height="20" />
+					</press>
+				</left>
+				<right width="2" type="1">
+					<normal>
+						<image source="Images/headerctrl.bmp" x="95" y="0" width="2" height="22" />
+					</normal>
+					<disable>
+						<image source="Images/headerctrl.bmp" x="95" y="23" width="2" height="22" />
+					</disable>
+					<hover>
+						<image source="Images/headerctrl.bmp" x="95" y="46" width="2" height="22" />
+					</hover>
+					<press width="2">
+						<image source="Images/headerctrl.bmp" x="95" y="71" width="2" height="20" />
+					</press>
+				</right>
+				<top width="0" start="2" end="2" type="1">
+					<normal>
+						<color start="0x00FFFFFF" />
+					</normal>
+					<press width="2">
+						<image source="Images/headerctrl.bmp" x="0" y="69" width="97" height="2" />
+					</press>
+				</top>
+				<bottom width="1" type="0">
+					<normal>
+						<color start="0x00D6D7D6" />
+					</normal>
+					<disable>
+						<color start="0x00D6D7D6" />
+					</disable>
+					<hover>
+						<color start="0x0094CBE7" />
+					</hover>
+					<press>
+						<color start="0x0094CBE7" />
+					</press>
+				</bottom>
+			</border>
+		</item>
+	</headerctrl>
 	<scrollbar>
 		<horizontal>
 			<background type="1">

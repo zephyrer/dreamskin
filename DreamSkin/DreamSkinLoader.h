@@ -516,6 +516,14 @@ typedef struct _tag_SKINSCROLLBAR
 	int              nVThumbIncludeBorder;            //Whether thumb include border
 }SKINSCROLLBAR;
 
+typedef struct _tag_SKINHEADERCTRL
+{
+	SKINITEM         skinItemNormal;                  //Item in normal status
+	SKINITEM         skinItemDisabled;                //Item in disable status
+	SKINITEM         skinItemHover;                   //Item in hover status
+	SKINITEM         skinItemPress;                   //Item in press status
+}SKINHEADERCTRL;
+
 class CDreamSkinLoader
 {
 public:
@@ -528,6 +536,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameEdit[];
 	static WCHAR wstrSkinFileNodeNameGroupBox[];
+	static WCHAR wstrSkinFileNodeNameHeaderCtrl[];
 	static WCHAR wstrSkinFileNodeNameListBox[];
 	static WCHAR wstrSkinFileNodeNameListCtrl[];
 	static WCHAR wstrSkinFileNodeNameRadio[];
@@ -596,6 +605,7 @@ public:
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
 	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
 	void GetSkinGroupBox(SKINGROUPBOX *pSkinGroupBox) const;
+	void GetSkinHeaderCtrl(SKINHEADERCTRL *pSkinHeaderCtrl) const;
 	void GetSkinListBox(SKINLISTBOX *pSkinListBox) const;
 	void GetSkinListCtrl(SKINLISTCTRL *pSkinListCtrl) const;
 	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
@@ -609,6 +619,7 @@ protected:
 	BOOL LoadSkinCheckBox(void *parser);
 	BOOL LoadSkinEdit(void *parser);
 	BOOL LoadSkinGroupBox(void *parser);
+	BOOL LoadSkinHeaderCtrl(void *parser);
 	BOOL LoadSkinListBox(void *parser);
 	BOOL LoadSkinListCtrl(void *parser);
 	BOOL LoadSkinRadio(void *parser);
@@ -641,6 +652,7 @@ protected:
 	SKINCHECKBOX    m_SkinCheckBox;
 	SKINEDIT        m_SkinEdit;
 	SKINGROUPBOX    m_SkinGroupBox;
+	SKINHEADERCTRL  m_SkinHeaderCtrl;
 	SKINLISTBOX     m_SkinListBox;
 	SKINLISTCTRL    m_SkinListCtrl;
 	SKINRADIO       m_SkinRadio;

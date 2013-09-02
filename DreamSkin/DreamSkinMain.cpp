@@ -14,6 +14,7 @@
 #include "DreamSkinTab.h"
 #include "DreamSkinEdit.h"
 #include "DreamSkinScrollBar.h"
+#include "DreamSkinHeaderCtrl.h"
 #include "DreamSkinListBox.h"
 #include "DreamSkinListCtrl.h"
 #include "WinGdiEx.h"
@@ -318,6 +319,16 @@ BOOL CDreamSkinMain::InitDefaultHookWindowClassList()
 		m_pDefaultHookWindowClasses->Add(DEFAULT_SCROLLBAR_CLASSNAME_W, CDreamSkinScrollBar::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinScrollBar::CreateInstance);
 	}
 
+	bReturn = CDreamSkinHeaderCtrl::InitialClass();
+	if(!bReturn)
+	{   //Init for dialog failed
+		//TODO: Add error handle code
+	}
+	else
+	{
+		m_pDefaultHookWindowClasses->Add(DEFAULT_HEADERCTRL_CLASSNAME_W, CDreamSkinHeaderCtrl::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinHeaderCtrl::CreateInstance);
+	}
+
 
 	return TRUE;
 }
@@ -389,6 +400,7 @@ BOOL CDreamSkinMain::LoadSkin(const WCHAR *wstrSkinFilePath)
 		CDreamSkinListBox::ApplySkin(&theLoader);
 		CDreamSkinListCtrl::ApplySkin(&theLoader);
 		CDreamSkinScrollBar::ApplySkin(&theLoader);
+		CDreamSkinHeaderCtrl::ApplySkin(&theLoader);
 
 		if (m_pImageHandleList)
 		{

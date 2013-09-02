@@ -22,6 +22,7 @@ using namespace xercesc;
 #include "DreamSkinStatic.h"
 #include "DreamSkinTab.h"
 #include "DreamSkinScrollBar.h"
+#include "DreamSkinHeaderCtrl.h"
 #include "DreamSkinListBox.h"
 #include "DreamSkinListCtrl.h"
 
@@ -66,6 +67,7 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameCheckBox[] = L"checkbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameEdit[] = L"edit";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameGroupBox[] = L"groupbox";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameHeaderCtrl[] = L"headerctrl";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameListBox[] = L"listbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameListCtrl[] = L"listctrl";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRadio[] = L"radio";
@@ -211,6 +213,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinListCtrl::GetDefaultSkin(&m_SkinListCtrl);
 		LoadSkinListCtrl(parser);
 
+		//Load Skin HeaderCtrl
+		CDreamSkinHeaderCtrl::GetDefaultSkin(&m_SkinHeaderCtrl);
+		LoadSkinHeaderCtrl(parser);
+
 		parser->setErrorHandler(NULL);
 	}
 	catch (const XMLException& ) 
@@ -286,6 +292,15 @@ void CDreamSkinLoader::GetSkinGroupBox(SKINGROUPBOX *pSkinGroupBox) const
 		memcpy(pSkinGroupBox, &m_SkinGroupBox, sizeof(SKINGROUPBOX));
 	}
 }
+
+void CDreamSkinLoader::GetSkinHeaderCtrl(SKINHEADERCTRL *pSkinHeaderCtrl) const
+{
+	if (pSkinHeaderCtrl)
+	{
+		memcpy(pSkinHeaderCtrl, &m_SkinHeaderCtrl, sizeof(SKINHEADERCTRL));
+	}
+}
+
 
 void CDreamSkinLoader::GetSkinListBox(SKINLISTBOX *pSkinListBox) const
 {
@@ -1057,6 +1072,39 @@ BOOL CDreamSkinLoader::LoadSkinGroupBox(void *parser)
 			pParentNode = pParentNode->getNextSibling();
 		}
 	} //end load groupbox
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadSkinHeaderCtrl(void *parser)
+{
+	BOOL bResult = TRUE;
+
+	DOMNode *pParentNode;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pHeaderCtrlNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameHeaderCtrl);
+	const WCHAR *wstrNodeName;
+	SKINITEM *pSkinItemList[DRAWSTATUS_MAXCOUNT];
+
+	if (pHeaderCtrlNode)
+	{
+		//loop to load all settings
+		pParentNode = pHeaderCtrlNode->getFirstChild();
+		while (pParentNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameItem) == 0)
+			{//item
+				pSkinItemList[DRAWSTATUS_NORMAL] = &m_SkinHeaderCtrl.skinItemNormal;
+				pSkinItemList[DRAWSTATUS_DISABLE] = &m_SkinHeaderCtrl.skinItemDisabled;
+				pSkinItemList[DRAWSTATUS_HOVER] = &m_SkinHeaderCtrl.skinItemHover;
+				pSkinItemList[DRAWSTATUS_PRESS] = &m_SkinHeaderCtrl.skinItemPress;
+				LoadItem(pParentNode, pSkinItemList, DRAWSTATUS_PRESS + 1);
+			}//item
+
+			pParentNode = pParentNode->getNextSibling();
+		}
+	}//headerctrl settings
 
 	return bResult;
 }
@@ -2906,10 +2954,35 @@ BOOL CDreamSkinLoader::LoadBorder(void *border, SKINBORDER **pSkinBorderList, in
 BOOL CDreamSkinLoader::LoadBorderItem(void *bditem, SKINBORDER *pSkinBorder)
 {
 	BOOL bResult = TRUE;
-	DOMNode *pNode;
+	DOMNode *pNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
 	const WCHAR *wstrNodeName;
 	
 	pSkinBorder->nDefault = 0;
+
+	pAttr = ((DOMNode*)bditem)->getAttributes();
+	if (pAttr)
+	{
+		//border width
+		pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameWidth));
+		if (pTempNode)
+			pSkinBorder->nWidth = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+
+		//draw type
+		pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+		if (pTempNode)
+			pSkinBorder->nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+
+		//start size
+		pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameStart));
+		if (pTempNode)
+			pSkinBorder->nStart = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+
+		//end size
+		pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameEnd));
+		if (pTempNode)
+			pSkinBorder->nEnd = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+	}
 
 	pNode = ((DOMNode*)bditem)->getFirstChild();
 	while(pNode != NULL)

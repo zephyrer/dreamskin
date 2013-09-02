@@ -701,6 +701,75 @@
 			</selected>
 		</item>
 	</listctrl>
+	<headerctrl>
+		<item>
+			<background type="0">
+				<normal>
+					<color start="0x00F2D6D6"/>
+				</normal>
+				<disable>
+					<color start="0x00F8E6E6"/>
+				</disable>
+				<hover>
+					<color start="0x00F6E9E9"/>
+				</hover>
+				<press>
+					<color start="0x00993838"/>
+				</press>
+			</background>
+			<text>
+				<normal>
+					<color start="0x00BF4D4D" />
+				</normal>
+				<hover>
+					<color start="0x00C96060" />
+				</hover>
+				<press>
+					<color start="0x00C96060" />
+				</press>
+			</text>
+			<border type="0">
+				<left width="1">
+					<normal>
+						<color start="0x00F2D6D6"/>
+					</normal>
+					<disable>
+						<color start="0x00F8E6E6"/>
+					</disable>
+					<hover>
+						<color start="0x00F6E9E9"/>
+					</hover>
+					<press>
+						<color start="0x00993838"/>
+					</press>
+				</left>
+				<right width="1">
+					<normal>
+						<color start="0x00D89F9F"/>
+					</normal>
+				</right>
+				<top width="1">
+					<normal>
+						<color start="0x00F2D6D6"/>
+					</normal>
+					<disable>
+						<color start="0x00F8E6E6"/>
+					</disable>
+					<hover>
+						<color start="0x00F6E9E9"/>
+					</hover>
+					<press>
+						<color start="0x00993838"/>
+					</press>
+				</top>
+				<bottom width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</bottom>
+			</border>
+		</item>
+	</headerctrl>
 	<scrollbar>
 		<horizontal>
 			<background type="0">
