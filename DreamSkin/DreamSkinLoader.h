@@ -659,6 +659,8 @@ protected:
 	SKINSCROLLBAR   m_SkinScrollBar;
 	SKINSTATIC      m_SkinStatic;
 	SKINTAB         m_SkinTab;
+	WCHAR           m_wstrSkinFilePath[MAX_PATH];
+	WCHAR           m_wstrSkinFileDir[MAX_PATH];
 	
 	CImageHandleList *m_pImageHandleList;
 };

@@ -1,5 +1,6 @@
 //DreamSkinMain.cpp
 #include <windows.h>
+#include <Dbghelp.h>
 #include <Tlhelp32.h>
 #include "HookWindowClassList.h"
 #include "HookedWindowList.h"
@@ -63,7 +64,8 @@ BOOL CDreamSkinMain::HookAPILocal(APIHOOKITEM *pAPIHookItem)
 					CloseHandle(hSnapshot);
 
 					//Hook export API table for later loaded modules
-					HookAPIByExportTable(pAPIHookItem->OrgAddr, pAPIHookItem->NewAddr, hModule);
+					//TODO: This solution can't work on Windows 7, currently just remove it, we need some other solution later
+					//HookAPIByExportTable(pAPIHookItem->OrgAddr, pAPIHookItem->NewAddr, hModule);
 				}
 				else
 				{
@@ -77,8 +79,8 @@ BOOL CDreamSkinMain::HookAPILocal(APIHOOKITEM *pAPIHookItem)
 				bResult = FALSE;
 			}
 
-			//Don't call FreeLibrary since we already hook the export table
-			//::FreeLibrary(hModule)
+			//Don't call FreeLibrary if we already hook the export table
+			::FreeLibrary(hModule);
 		}
 		else
 		{
@@ -102,7 +104,7 @@ void CDreamSkinMain::HookAPIByExportTable(DWORD OrgAddr,DWORD NewAddr, HMODULE h
 		if((DWORD)((PBYTE)hModule + pAddressOfFunction[i]) == OrgAddr)   
 		{   
 			DWORD Addr = NewAddr - (DWORD)hModule;   
-			DWORD dwOldProcted; 
+			DWORD dwOldProcted;   
 			VirtualProtect(&(pAddressOfFunction[i]),sizeof(DWORD),PAGE_WRITECOPY,&dwOldProcted);   
 			WriteProcessMemory(GetCurrentProcess(),&(pAddressOfFunction[i]),&Addr, sizeof(DWORD), NULL);   
 			VirtualProtect(&(pAddressOfFunction[i]),sizeof(DWORD),dwOldProcted,0);   
@@ -115,7 +117,8 @@ void CDreamSkinMain::HookAPIByImportTable(DWORD OrgAddr,DWORD NewAddr,const WCHA
 { 
     PIMAGE_THUNK_DATA         pThunkData;
     DWORD *Addr2;   
-    DWORD dwOLD;   
+    DWORD dwOLD;
+	ULONG uSize;
     MEMORY_BASIC_INFORMATION  mbi;   
    
 	HMODULE hMod = ::GetModuleHandleW(wstrLoadedModuleName);
@@ -123,7 +126,8 @@ void CDreamSkinMain::HookAPIByImportTable(DWORD OrgAddr,DWORD NewAddr,const WCHA
 	{
 		PIMAGE_DOS_HEADER pImageDosHeader = (PIMAGE_DOS_HEADER)hMod;
 		PIMAGE_NT_HEADERS pImageNtHeader = (PIMAGE_NT_HEADERS)((DWORD)hMod + pImageDosHeader->e_lfanew);
-		PIMAGE_IMPORT_DESCRIPTOR pImportDescriptor = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD)hMod + pImageNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
+		PIMAGE_IMPORT_DESCRIPTOR pImportDescriptor = (PIMAGE_IMPORT_DESCRIPTOR)ImageDirectoryEntryToData(hMod,true,IMAGE_DIRECTORY_ENTRY_IMPORT,&uSize);   
+		//PIMAGE_IMPORT_DESCRIPTOR pImportDescriptor = (PIMAGE_IMPORT_DESCRIPTOR)((DWORD)hMod + pImageNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
 		if (pImportDescriptor)
 		{
 			while(pImportDescriptor->Name)   

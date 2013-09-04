@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="xerces-c_3D.lib"
+				AdditionalDependencies="xerces-c_3D.lib Dbghelp.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="$(SolutionDir)ThirdParty\xerces-c-3.1.1\Build\Win32\VC9\$(ConfigurationName)"
 				GenerateDebugInformation="true"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="xerces-c_3.lib"
+				AdditionalDependencies="xerces-c_3.lib Dbghelp.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="$(SolutionDir)ThirdParty\xerces-c-3.1.1\Build\Win32\VC9\$(ConfigurationName)"
 				GenerateDebugInformation="true"
@@ -249,6 +249,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\WinFileEx.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\WinGdiEx.cpp"
 				>
 			</File>
@@ -328,6 +332,10 @@
 			</File>
 			<File
 				RelativePath=".\ImageHandleList.h"
+				>
+			</File>
+			<File
+				RelativePath=".\WinFileEx.h"
 				>
 			</File>
 			<File

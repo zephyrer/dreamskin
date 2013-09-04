@@ -25,6 +25,7 @@ using namespace xercesc;
 #include "DreamSkinHeaderCtrl.h"
 #include "DreamSkinListBox.h"
 #include "DreamSkinListCtrl.h"
+#include "WinFileEx.h"
 
 #include "HexBin.h"
 
@@ -144,6 +145,8 @@ CDreamSkinLoader::CDreamSkinLoader(CImageHandleList *pImageHandleList)
 {
 	XMLPlatformUtils::Initialize();
 
+	memset(m_wstrSkinFilePath, 0, sizeof(WCHAR) * MAX_PATH);
+	memset(m_wstrSkinFileDir, 0, sizeof(WCHAR) * MAX_PATH);
 	m_pImageHandleList = pImageHandleList;
 }
 
@@ -169,6 +172,8 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 
 		//TODO: Add DreamSkin XML schema validator to ensure it's really dreamskin file
 		parser->parse(wstrSkinFilePath);
+		wcscpy_s(m_wstrSkinFilePath, MAX_PATH, wstrSkinFilePath);
+		::GetDirectoryName(m_wstrSkinFilePath, MAX_PATH, m_wstrSkinFileDir);
 
 		//Load Skin Dialog
 		CDreamSkinDialog::GetDefaultSkin(&m_SkinDialog);
@@ -2618,7 +2623,24 @@ BOOL CDreamSkinLoader::LoadImage(void *image, DRAWIMAGE *pDrawImage)
 		{
 			pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameSource));
 			if (pTempNode)
-				pDrawImage->hImage = m_pImageHandleList->LoadImage(XStringtoWString(pTempNode->getNodeValue()));
+			{
+				const WCHAR *wstrImagePath = XStringtoWString(pTempNode->getNodeValue());
+				WCHAR wstrFullImagePath[MAX_PATH];
+				if (::GetFullPathName(wstrImagePath, MAX_PATH, wstrFullImagePath, NULL))
+				{
+					if (wcscmp(wstrFullImagePath, wstrImagePath))
+					{
+						if ((wcslen(m_wstrSkinFileDir) + wcslen(wstrImagePath)) < MAX_PATH)
+							wsprintf(wstrFullImagePath, L"%s%s", m_wstrSkinFileDir, wstrImagePath);
+					}
+
+					pDrawImage->hImage = m_pImageHandleList->LoadImage(wstrFullImagePath);
+				}
+				else
+				{
+					pDrawImage->hImage = m_pImageHandleList->LoadImage(wstrImagePath);
+				}
+			}
 		}
 
 		bResult = TRUE;
