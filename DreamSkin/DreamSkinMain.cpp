@@ -18,6 +18,8 @@
 #include "DreamSkinHeaderCtrl.h"
 #include "DreamSkinListBox.h"
 #include "DreamSkinListCtrl.h"
+#include "DreamSkinComboBox.h"
+#include "DreamSkinComboLBox.h"
 #include "WinGdiEx.h"
 
 CDreamSkinMain theSkinMain;
@@ -333,6 +335,26 @@ BOOL CDreamSkinMain::InitDefaultHookWindowClassList()
 		m_pDefaultHookWindowClasses->Add(DEFAULT_HEADERCTRL_CLASSNAME_W, CDreamSkinHeaderCtrl::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinHeaderCtrl::CreateInstance);
 	}
 
+	bReturn = CDreamSkinComboBox::InitialClass();
+	if(!bReturn)
+	{   //Init for dialog failed
+		//TODO: Add error handle code
+	}
+	else
+	{
+		m_pDefaultHookWindowClasses->Add(DEFAULT_COMBOBOX_CLASSNAME_W, CDreamSkinComboBox::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinComboBox::CreateInstance);
+	}
+
+	bReturn = CDreamSkinComboLBox::InitialClass();
+	if(!bReturn)
+	{   //Init for dialog failed
+		//TODO: Add error handle code
+	}
+	else
+	{
+		m_pDefaultHookWindowClasses->Add(DEFAULT_COMBOLBOX_CLASSNAME_W, CDreamSkinComboLBox::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinComboLBox::CreateInstance);
+	}
+
 
 	return TRUE;
 }
@@ -403,6 +425,7 @@ BOOL CDreamSkinMain::LoadSkin(const WCHAR *wstrSkinFilePath)
 		CDreamSkinTab::ApplySkin(&theLoader);
 		CDreamSkinListBox::ApplySkin(&theLoader);
 		CDreamSkinListCtrl::ApplySkin(&theLoader);
+		CDreamSkinComboBox::ApplySkin(&theLoader);
 		CDreamSkinScrollBar::ApplySkin(&theLoader);
 		CDreamSkinHeaderCtrl::ApplySkin(&theLoader);
 

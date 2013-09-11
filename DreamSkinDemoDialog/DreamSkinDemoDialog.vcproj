@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PropertyPageCommonControl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\PropertyPageListEdit.cpp"
 				>
 			</File>
@@ -253,6 +257,10 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinDemoDialogDlg.h"
+				>
+			</File>
+			<File
+				RelativePath=".\PropertyPageCommonControl.h"
 				>
 			</File>
 			<File

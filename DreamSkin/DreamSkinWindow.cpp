@@ -161,6 +161,7 @@ void CDreamSkinWindow::GetDefaultSysButton(SKINSYSBUTTON *pSysButton, COLORREF c
 	pSysButton->clrBk.clrStart = clrBk;
 	pSysButton->clrTxt = clrText;
 	pSysButton->clrBd = clrBd;
+	pSysButton->bDrawBd = TRUE;
 	memset(&(pSysButton->imgDraw), 0, sizeof(DRAWIMAGE));
 }
 

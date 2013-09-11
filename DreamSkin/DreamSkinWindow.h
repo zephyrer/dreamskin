@@ -9,6 +9,10 @@
 #define DRAW_ITEM_ICON_VALIGN_TOP             0x00000004
 #define DRAW_ITEM_ICON_VALIGN_BOTTOM          0x00000008
 
+#define DREAMSKIN_WINDOW                      0
+#define DREAMSKIN_BUTTON                      1
+#define DREAMSKIN_COMBOBOX                    2
+
 class CDreamSkinWindow
 {
 public:
@@ -52,6 +56,8 @@ public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	
 	virtual void    Reload() {};
+
+	virtual int     GetType() { return DREAMSKIN_WINDOW; };
 
 	virtual inline void UpdateWindow()
 	{

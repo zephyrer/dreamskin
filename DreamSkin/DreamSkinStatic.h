@@ -40,9 +40,9 @@ public:
 
 protected:
 	//Draw the background of the static
-	virtual void    DrawBackground(HDC hDC, RECT rcClient);
+	void    DrawBackground(HDC hDC, RECT rcClient);
 	//Draw the title of the static
-	virtual void    DrawTitle(HDC hDC, RECT rcClient);
+	void    DrawTitle(HDC hDC, RECT rcClient);
 
 protected:
 	SKINSTATIC      *m_pSkinStatic;                   //Instance Related Static Skin Settings

@@ -2,6 +2,7 @@
 
 #include "PropertypageListEdit.h"
 #include "PropertyPageSystemDialog.h"
+#include "PropertyPageCommonControl.h"
 
 // CCtrlDemoPropertySheet
 
@@ -14,8 +15,9 @@ public:
 	virtual ~CCtrlDemoPropertySheet();
 
 public:
-	CPropertyPageListEdit     m_PropertyPageListEdit;
-	CPropertyPageSystemDialog m_PropertyPageSystemDialog;
+	CPropertyPageListEdit      m_PropertyPageListEdit;
+	CPropertyPageSystemDialog  m_PropertyPageSystemDialog;
+	CPropertyPageCommonControl m_PropertyPageCommonControl;
 
 protected:
 	DECLARE_MESSAGE_MAP()

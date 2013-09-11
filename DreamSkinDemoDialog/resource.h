@@ -13,6 +13,7 @@
 #define IDR_MAINFRAME                   128
 #define IDD_DLG_SYSTEM_DIALOG           129
 #define IDD_DLG_LIST_EDIT               131
+#define IDD_DLG_COMMON_CONTROL          133
 #define IDC_TAB_QUICK_DEMO              999
 #define IDC_SYSMENU_INCLUDE             1000
 #define IDC_DREAMSKIN_ENABLE            1001
@@ -40,6 +41,8 @@
 #define IDC_EDIT1                       1023
 #define IDC_EDIT_RESULT_MESSAGEBOX      1023
 #define IDC_EDIT_RESULT_LISTBOX         1023
+#define IDC_EDIT_                       1023
+#define IDC_EDIT_RESULT_COMBOBOX        1023
 #define IDC_EDIT_RESULT_LISTCTRL        1024
 #define IDC_STATIC_BUTTONS              1025
 #define IDC_STATIC_CHECKBOXES           1026
@@ -55,6 +58,7 @@
 #define IDC_BTN_NEWDIALOG               1034
 #define IDC_BTN_MESSAGEBOX              1034
 #define IDC_BTN_LISTBOX_ADD             1034
+#define IDC_BTN_CLEAR_COMBOBOX          1034
 #define IDC_CMB_MESSAGEBOX_TYPE         1035
 #define IDC_LISTBOX_DEMO                1036
 #define IDC_CHK_LISTBOX_ENABLE          1037
@@ -66,16 +70,20 @@
 #define IDC_LISTBOX_DEMO_MULTICOL       1041
 #define IDC_LISTCTRL_DEMO               1042
 #define IDC_CMB_LISTCTRL_VIEW           1043
-#define IDC_LISTCTRL_FULLROW            1044
 #define IDC_LISTCTRL_FULLROWSEL         1044
+#define IDC_CMB_DEMO_SIMPLE             1045
+#define IDC_CMD_DEMO_DROPDOWN           1046
+#define IDC_CMD_DEMO_DROPLIST           1047
+#define IDC_CHK_ENABLE_ALL              1049
+#define IDC_CHK_ENABLE_COMBOBOX         1050
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        133
+#define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1045
+#define _APS_NEXT_CONTROL_VALUE         1051
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

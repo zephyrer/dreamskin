@@ -22,6 +22,8 @@ public:
 
 	virtual void    Reload();
 
+	virtual int     GetType() { return DREAMSKIN_BUTTON;};
+
 public:
 	//Apply new skin
 	static BOOL ApplySkin(CDreamSkinLoader *pLoader);

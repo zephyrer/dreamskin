@@ -332,16 +332,22 @@ LRESULT CDreamSkinListBox::OnMouseMove(UINT nFlags, POINTS point)
 
 	int nSBHover = 0;
 	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
+
+	POINT ptScreen;
+	ptScreen.x = point.x;
+	ptScreen.y = point.y;
+	::ClientToScreen(m_hWnd, &ptScreen);
+
 	if (dwStyle & WS_VSCROLL)
 	{
-		nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_VERT, point);
+		nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_VERT, ptScreen);
 		if (nSBHover > 0)
 			nSBHover = SB_VERT << 16 | nSBHover;
 	}
 	
 	if (dwStyle & WS_HSCROLL && nSBHover == 0)
 	{
-		nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_HORZ, point);
+		nSBHover = CDreamSkinScrollBar::ScrollBarHitTest(m_hWnd, SB_HORZ, ptScreen);
 		if (nSBHover > 0)
 			nSBHover = SB_HORZ << 16 | nSBHover;
 	}

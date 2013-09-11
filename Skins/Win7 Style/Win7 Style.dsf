@@ -1114,4 +1114,82 @@
 			</thumb>
 		</vertical>
 	</scrollbar>
+	<combobox>
+		<background type="0">
+			<normal>
+				<color start="0x00FFFFFF"/>
+			</normal>
+			<disable>
+				<color start="0x00F7F7F7"/>
+			</disable>
+		</background>
+		<border type="1">
+			<left width="2" type="1">
+				<normal>
+					<image source="Images/combobox.bmp" x="0" y="2" width="2" height="17" />
+				</normal>
+				<disable>
+					<image source="Images/combobox.bmp" x="0" y="23" width="2" height="17" />
+				</disable>
+				<hover>
+					<image source="Images/combobox.bmp" x="0" y="44" width="2" height="17" />
+				</hover>
+			</left>
+			<right width="2" type="1">
+				<normal>
+					<image source="Images/combobox.bmp" x="90" y="2" width="2" height="17" />
+				</normal>
+				<disable>
+					<image source="Images/combobox.bmp" x="90" y="23" width="2" height="17" />
+				</disable>
+				<hover>
+					<image source="Images/combobox.bmp" x="90" y="44" width="2" height="17" />
+				</hover>
+			</right>
+			<top width="2" start="2" end="2" type="1">
+				<normal>
+					<image source="Images/combobox.bmp" x="0" y="0" width="92" height="2" />
+				</normal>
+				<disable>
+					<image source="Images/combobox.bmp" x="0" y="21" width="92" height="2" />
+				</disable>
+				<hover>
+					<image source="Images/combobox.bmp" x="0" y="42" width="92" height="2" />
+				</hover>
+			</top>
+			<bottom width="2" start="2" end="2" type="1">
+				<normal>
+					<image source="Images/combobox.bmp" x="0" y="19" width="92" height="2" />
+				</normal>
+				<disable>
+					<image source="Images/combobox.bmp" x="0" y="40" width="92" height="2" />
+				</disable>
+				<hover>
+					<image source="Images/combobox.bmp" x="0" y="61" width="92" height="2" />
+				</hover>
+			</bottom>
+		</border>
+		<text>
+			<normal>
+				<color start="0x00000000" />
+			</normal>
+			<disable>
+				<color start="0x006B6D6B" />
+			</disable>
+		</text>
+		<expand type="1" incborder="1">
+			<normal>
+				<image source="Images/combobox.bmp" x="75" y="0" width="17" height="21" />
+			</normal>
+			<disable>
+				<image source="Images/combobox.bmp" x="75" y="21" width="17" height="21" />
+			</disable>
+			<hover>
+				<image source="Images/combobox.bmp" x="75" y="63" width="17" height="21" />
+			</hover>
+			<press>
+				<image source="Images/combobox.bmp" x="75" y="84" width="17" height="21" />
+			</press>
+		</expand>
+	</combobox>
 </dreamskin>

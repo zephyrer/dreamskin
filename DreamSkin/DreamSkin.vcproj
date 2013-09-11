@@ -185,6 +185,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DreamSkinComboBox.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\DreamSkinComboLBox.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DreamSkinDialog.cpp"
 				>
 			</File>
@@ -268,6 +276,14 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinButton.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DreamSkinComboBox.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DreamSkinComboLBox.h"
 				>
 			</File>
 			<File

@@ -76,6 +76,7 @@ typedef struct _tag_SKINSYSBUTTON
 	DRAWCOLOR        clrBk;                           //Button background
 	COLORREF         clrTxt;                          //Button text color;
 	COLORREF         clrBd;                           //Button border
+	BOOL             bDrawBd;                         //Draw border or not
 }SKINSYSBUTTON;
 
 typedef struct _tag_SKINTEXTFONT
@@ -450,6 +451,38 @@ typedef struct _tag_SKINLISTCTRL
 	SKINITEM         skinItemHoverSelected;           //Selected item in hover status
 }SKINLISTCTRL;
 
+typedef struct _tag_SKINCOMBOBOX
+{
+	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
+	SKINBACKGROUND   skinBkDisable;                   //Background in disable status
+
+	SKINTEXT         skinTxtNormal;                   //Text in normal status
+	SKINTEXT         skinTxtDisable;                  //Text in disable status
+
+	SKINBORDER       skinLBorderNormal;               //Left border in normal status
+	SKINBORDER       skinRBorderNormal;               //Right border in normal status
+	SKINBORDER       skinTBorderNormal;               //Top border in normal status
+	SKINBORDER       skinBBorderNormal;               //Bottom border in normal status
+
+	SKINBORDER       skinLBorderDisable;              //Left border in disable status
+	SKINBORDER       skinRBorderDisable;              //Right border in disable status
+	SKINBORDER       skinTBorderDisable;              //Top border in disable status
+	SKINBORDER       skinBBorderDisable;              //Bottom border in disable status
+
+	SKINBORDER       skinLBorderHover;                //Left border in hover status
+	SKINBORDER       skinRBorderHover;                //Right border in hover status
+	SKINBORDER       skinTBorderHover;                //Top border in hover status
+	SKINBORDER       skinBBorderHover;                //Bottom border in hover status
+
+	SKINSYSBUTTON    skinBtnNormal;                   //Dropdown button in normal status
+	SKINSYSBUTTON    skinBtnDisable;                  //Dropdown button in disable status
+	SKINSYSBUTTON    skinBtnHover;                    //Dropdown button in hover status
+	SKINSYSBUTTON    skinBtnPress;                    //Dropdown button in press status
+	int              nBtnIncludeBorder;               //Whether button include border
+
+	SKINLISTBOX      skinListBox;                     //Skin list box
+}SKINCOMBOBOX;
+
 typedef struct _tag_SKINSCROLLBAR
 {
 	SKINBACKGROUND   skinHBkNormal;                   //Background in normal status for horizontal scroll bar
@@ -533,6 +566,7 @@ public:
 protected:
 	static WCHAR wstrSkinFileNodeNameButton[];
 	static WCHAR wstrSkinFileNodeNameCheckBox[];
+	static WCHAR wstrSkinFileNodeNameComboBox[];
 	static WCHAR wstrSkinFileNodeNameDialog[];
 	static WCHAR wstrSkinFileNodeNameEdit[];
 	static WCHAR wstrSkinFileNodeNameGroupBox[];
@@ -572,6 +606,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameMaximize[];
 	static WCHAR wstrSkinFileNodeNameRestore[];
 	static WCHAR wstrSkinFileNodeNameMinimize[];
+	static WCHAR wstrSkinFileNodeNameExpand[];
 	static WCHAR wstrSkinFileNodeNameHorizontal[];
 	static WCHAR wstrSkinFileNodeNameVertical[];
 
@@ -602,6 +637,7 @@ public:
 
 	void GetSkinButton(SKINBUTTON *pSkinButton) const;
 	void GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const;
+	void GetSkinComboBox(SKINCOMBOBOX *pSkinComboBox) const;
 	void GetSkinDialog(SKINDIALOG *pSkinDialog) const;
 	void GetSkinEdit(SKINEDIT *pSkinEdit) const;
 	void GetSkinGroupBox(SKINGROUPBOX *pSkinGroupBox) const;
@@ -617,6 +653,7 @@ protected:
 	BOOL LoadSkinDialog(void *parser);
 	BOOL LoadSkinButton(void *parser);
 	BOOL LoadSkinCheckBox(void *parser);
+	BOOL LoadSkinComboBox(void *parser);
 	BOOL LoadSkinEdit(void *parser);
 	BOOL LoadSkinGroupBox(void *parser);
 	BOOL LoadSkinHeaderCtrl(void *parser);
@@ -650,6 +687,7 @@ protected:
 	SKINDIALOG      m_SkinDialog;
 	SKINBUTTON      m_SkinButton;
 	SKINCHECKBOX    m_SkinCheckBox;
+	SKINCOMBOBOX    m_SkinComboBox;
 	SKINEDIT        m_SkinEdit;
 	SKINGROUPBOX    m_SkinGroupBox;
 	SKINHEADERCTRL  m_SkinHeaderCtrl;

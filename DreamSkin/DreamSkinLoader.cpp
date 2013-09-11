@@ -25,6 +25,7 @@ using namespace xercesc;
 #include "DreamSkinHeaderCtrl.h"
 #include "DreamSkinListBox.h"
 #include "DreamSkinListCtrl.h"
+#include "DreamSkinComboBox.h"
 #include "WinFileEx.h"
 
 #include "HexBin.h"
@@ -65,6 +66,7 @@ DOMNode * GetNamedChild(DOMNode* pParentNode, const WCHAR *wstrNodeName)
 
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameButton[] = L"button";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameCheckBox[] = L"checkbox";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameComboBox[] = L"combobox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameDialog[] = L"dialog";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameEdit[] = L"edit";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameGroupBox[] = L"groupbox";
@@ -104,6 +106,7 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameClose[] = L"close";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameMaximize[] = L"maximize";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRestore[] = L"restore";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameMinimize[] = L"minimize";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameExpand[] = L"expand";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameHorizontal[] = L"horizontal";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameVertical[] = L"vertical";
 
@@ -222,6 +225,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinHeaderCtrl::GetDefaultSkin(&m_SkinHeaderCtrl);
 		LoadSkinHeaderCtrl(parser);
 
+		//Load Skin ComboBox
+		CDreamSkinComboBox::GetDefaultSkin(&m_SkinComboBox);
+		LoadSkinComboBox(parser);
+
 		parser->setErrorHandler(NULL);
 	}
 	catch (const XMLException& ) 
@@ -263,6 +270,14 @@ void CDreamSkinLoader::GetSkinCheckBox(SKINCHECKBOX *pSkinCheckBox) const
 	if (pSkinCheckBox)
 	{
 		memcpy(pSkinCheckBox, &m_SkinCheckBox, sizeof(SKINCHECKBOX));
+	}
+}
+
+void CDreamSkinLoader::GetSkinComboBox(SKINCOMBOBOX *pSkinComboBox) const
+{
+	if (pSkinComboBox)
+	{
+		memcpy(pSkinComboBox, &m_SkinComboBox, sizeof(SKINCOMBOBOX));
 	}
 }
 
@@ -741,6 +756,171 @@ BOOL CDreamSkinLoader::LoadSkinDialog(void *parser)
 			pParentNode = pParentNode->getNextSibling();
 		}//loop to load all settings
 	}//dialog settings
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadSkinComboBox(void *parser)
+{
+	BOOL bResult = TRUE;
+
+	DOMNode *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pComboBoxNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameComboBox);
+	const WCHAR *wstrNodeName;
+	SKINTEXT *pSkinTextList[DRAWSTATUS_MAXCOUNT + 1];
+	SKINBORDER *pSkinBorderList[DRAWSTATUS_MAXCOUNT + 1];
+
+	if (pComboBoxNode)
+	{
+		//loop to load all settings
+		pParentNode = pComboBoxNode->getFirstChild();
+		while (pParentNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+			{//background
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//background draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinComboBox.skinBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						m_SkinComboBox.skinBkDisable.nDrawType = m_SkinComboBox.skinBkNormal.nDrawType;
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadBackground(pChildNode, &(m_SkinComboBox.skinBkNormal));
+					}//normal
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+					{//disable
+						LoadBackground(pChildNode, &(m_SkinComboBox.skinBkDisable));
+					}//disable
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+
+				if (m_SkinComboBox.skinBkDisable.nDefault)
+					m_SkinComboBox.skinBkDisable = m_SkinComboBox.skinBkNormal;
+			}//background
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameText) == 0)
+			{//text
+				pSkinTextList[DRAWSTATUS_NORMAL] = &m_SkinComboBox.skinTxtNormal;
+				pSkinTextList[DRAWSTATUS_DISABLE] = &m_SkinComboBox.skinTxtDisable;
+				LoadText(pParentNode, pSkinTextList, DRAWSTATUS_DISABLE + 1);
+			}//text
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBorder) == 0)
+			{//border
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+					{//left
+						pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinComboBox.skinLBorderNormal;
+						pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinComboBox.skinLBorderDisable;
+						pSkinBorderList[DRAWSTATUS_HOVER] = &m_SkinComboBox.skinLBorderHover;
+						LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_HOVER + 1);
+					}//left
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+					{//right
+						pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinComboBox.skinRBorderNormal;
+						pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinComboBox.skinRBorderDisable;
+						pSkinBorderList[DRAWSTATUS_HOVER] = &m_SkinComboBox.skinRBorderHover;
+						LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_HOVER + 1);
+					}//right
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+					{//top
+						pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinComboBox.skinTBorderNormal;
+						pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinComboBox.skinTBorderDisable;
+						pSkinBorderList[DRAWSTATUS_HOVER] = &m_SkinComboBox.skinTBorderHover;
+						LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_HOVER + 1);
+					}//top
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+					{//bottom
+						pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinComboBox.skinBBorderNormal;
+						pSkinBorderList[DRAWSTATUS_DISABLE] = &m_SkinComboBox.skinBBorderDisable;
+						pSkinBorderList[DRAWSTATUS_HOVER] = &m_SkinComboBox.skinBBorderHover;
+						LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_HOVER + 1);
+					}//bottom
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+			}//border
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameExpand) == 0)
+			{//expand button
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//left button draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinComboBox.skinBtnNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						m_SkinComboBox.skinBtnDisable.nDrawType = m_SkinComboBox.skinBtnNormal.nDrawType;
+						m_SkinComboBox.skinBtnHover.nDrawType = m_SkinComboBox.skinBtnNormal.nDrawType;
+						m_SkinComboBox.skinBtnPress.nDrawType = m_SkinComboBox.skinBtnNormal.nDrawType;
+					}
+
+					//whether include border
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameIncludeBorder));
+					if (pTempNode)
+						m_SkinComboBox.nBtnIncludeBorder = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadSysButtonItem(pChildNode, &(m_SkinComboBox.skinBtnNormal));
+					}//normal
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+					{//hover
+						LoadSysButtonItem(pChildNode, &(m_SkinComboBox.skinBtnHover));
+					}//hover
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+					{//press
+						LoadSysButtonItem(pChildNode, &(m_SkinComboBox.skinBtnPress));
+					}//press
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+					{//disable
+						LoadSysButtonItem(pChildNode, &(m_SkinComboBox.skinBtnDisable));
+					}//disable
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+
+				if (m_SkinComboBox.skinBtnHover.nDefault)
+					m_SkinComboBox.skinBtnHover = m_SkinComboBox.skinBtnNormal;
+
+				if (m_SkinComboBox.skinBtnDisable.nDefault)
+					m_SkinComboBox.skinBtnDisable = m_SkinComboBox.skinBtnNormal;
+
+				if (m_SkinComboBox.skinBtnPress.nDefault)
+					m_SkinComboBox.skinBtnPress = m_SkinComboBox.skinBtnHover;
+			}//expand button
+
+			pParentNode = pParentNode->getNextSibling();
+		}
+	} //end load combobox
+
+	m_SkinComboBox.skinListBox = m_SkinListBox;
 
 	return bResult;
 }

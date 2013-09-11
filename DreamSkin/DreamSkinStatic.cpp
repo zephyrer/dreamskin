@@ -151,15 +151,11 @@ LRESULT CDreamSkinStatic::OnPaint()
 
 void CDreamSkinStatic::DrawBackground(HDC hDC, RECT rcClient)
 {
-	SKINBACKGROUND *pBackGround;
+	SKINBACKGROUND *pSkinBackground;
 
-	pBackGround = &m_pSkinStatic->skinBkNormal;
+	pSkinBackground = &m_pSkinStatic->skinBkNormal;
 
-
-	if (pBackGround->nDrawType == DRAWTYPE_STRETCHBITMAP && pBackGround->imgDraw.hImage)
-		::DrawStretchBitmap(hDC, rcClient.left, rcClient.top, rcClient.right - rcClient.left, rcClient.bottom - rcClient.top, pBackGround->imgDraw.hImage, pBackGround->imgDraw.x, pBackGround->imgDraw.y, pBackGround->imgDraw.nWidth, pBackGround->imgDraw.nHeight);
-	else
-		::FillSolidRect(hDC, &rcClient, pBackGround->clrDraw.clrStart);
+	CDreamSkinWindow::DrawBackground(hDC, rcClient, pSkinBackground);
 }
 
 void CDreamSkinStatic::DrawTitle(HDC hDC, RECT rcClient)
@@ -180,6 +176,7 @@ void CDreamSkinStatic::DrawTitle(HDC hDC, RECT rcClient)
 	{
 		//Create font
 		LOGFONTW fnText;
+		memset(&fnText, 0, sizeof(LOGFONTW));
 		fnText.lfHeight = -MulDiv(pText->skinFont.nFontSize, GetDeviceCaps(hDC, LOGPIXELSY), 72);
 		fnText.lfWeight = 0;
 		fnText.lfEscapement = 0;

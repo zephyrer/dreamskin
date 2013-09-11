@@ -43,6 +43,8 @@ public:
 	virtual LRESULT OnActive(UINT unState, HANDLE hWndOther);
 	//process the WM_CREATE message
 	virtual LRESULT OnCreate(LPCREATESTRUCT lpCreateStruct);
+	//process the WM_COMPAREITEM message
+	virtual LRESULT OnCompareItem(UINT nCtrlID, LPCOMPAREITEMSTRUCT lpCompareItemStruct);
 	//process the WM_DRAWITEM message
 	virtual LRESULT OnDrawItem(UINT nCtrlID, LPDRAWITEMSTRUCT lpDrawItem);
 	//process the WM_MEASUREITEM message

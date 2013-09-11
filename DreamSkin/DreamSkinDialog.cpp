@@ -9,6 +9,7 @@
 #include "DreamSkinDialog.h"
 #include "DreamSkinScrollBar.h"
 #include "DreamSkinListCtrl.h"
+#include "DreamSkinComboBox.h"
 
 
 //static member declaration
@@ -229,6 +230,7 @@ LRESULT CDreamSkinDialog::DefWindowProc(UINT message, WPARAM wParam, LPARAM lPar
 		nResult = OnActive((UINT)wParam, (HANDLE)lParam);
 		break;
 	case WM_COMPAREITEM:
+		nResult = OnCompareItem((UINT)wParam, (LPCOMPAREITEMSTRUCT)lParam);
 		break;
 	case WM_CTLCOLOREDIT:
 		nResult = ::SendMessage((HWND)lParam, WM_CTLCOLOREDIT, wParam, (LPARAM)m_hWnd);
@@ -406,9 +408,29 @@ LRESULT CDreamSkinDialog::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	return 0;
 }
 
+LRESULT CDreamSkinDialog::OnCompareItem(UINT nCtrlID, LPCOMPAREITEMSTRUCT lpCompareItemStruct)
+{
+	LRESULT lResult = 0;
+	switch (lpCompareItemStruct->CtlType)
+	{
+	case ODT_LISTBOX:
+		lResult = CDreamSkinWindow::DefWindowProc(lpCompareItemStruct->hwndItem, WM_COMPAREITEM, (WPARAM)nCtrlID, (LPARAM)lpCompareItemStruct);
+		break;
+	//case ODT_COMBOBOX:
+	//	lResult = CDreamSkinWindow::DefWindowProc(lpCompareItemStruct->hwndItem, WM_COMPAREITEM, (WPARAM)nCtrlID, (LPARAM)lpCompareItemStruct);
+	//	break;
+	default:
+		lResult = CDreamSkinWindow::DefWindowProc(WM_COMPAREITEM, (WPARAM)nCtrlID, (LPARAM)lpCompareItemStruct);
+		break;
+	}
+
+	return lResult;
+}
+
 LRESULT CDreamSkinDialog::OnDrawItem(UINT nCtrlID, LPDRAWITEMSTRUCT lpDrawItem)
 {
 	LRESULT lResult = 0;
+	CDreamSkinWindow *pSkinWnd;
 	switch (lpDrawItem->CtlType)
 	{
 	case ODT_LISTBOX:
@@ -418,7 +440,11 @@ LRESULT CDreamSkinDialog::OnDrawItem(UINT nCtrlID, LPDRAWITEMSTRUCT lpDrawItem)
 		lResult = CDreamSkinWindow::DefWindowProc(lpDrawItem->hwndItem, WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
 		break;
 	case ODT_COMBOBOX:
-		lResult = CDreamSkinWindow::DefWindowProc(WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
+		pSkinWnd = theSkinMain.GetHookedWindow(lpDrawItem->hwndItem);
+		if (pSkinWnd && pSkinWnd->GetType() == DREAMSKIN_COMBOBOX && !((CDreamSkinComboBox*)pSkinWnd)->m_nOwnerDraw)
+			lResult = ((CDreamSkinComboBox*)pSkinWnd)->OnDrawItem(nCtrlID, lpDrawItem);
+		else
+			lResult = CDreamSkinWindow::DefWindowProc(WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);
 		break;
 	default:
 		lResult = CDreamSkinWindow::DefWindowProc(WM_DRAWITEM, (WPARAM)nCtrlID, (LPARAM)lpDrawItem);

@@ -13,6 +13,7 @@ IMPLEMENT_DYNAMIC(CCtrlDemoPropertySheet, CPropertySheet)
 CCtrlDemoPropertySheet::CCtrlDemoPropertySheet(CWnd* pParentWnd, UINT iSelectPage)
 	:CPropertySheet(IDS_PROPSHT_TITLE, pParentWnd, iSelectPage)
 {
+	AddPage(&m_PropertyPageCommonControl);
 	AddPage(&m_PropertyPageListEdit);
 	AddPage(&m_PropertyPageSystemDialog);
 	
