@@ -1,5 +1,6 @@
 #pragma once
 #include "afxwin.h"
+#include "afxcmn.h"
 
 
 // CPropertyPageCommonControl dialog
@@ -28,11 +29,22 @@ public:
 	CComboBox m_cmbDemoDropdown;
 	CComboBox m_cmbDemoDropList;
 
+	BOOL m_bEnableProgress;
+	int m_nResultProgress;
+	CScrollBar m_sbDemoHorz;
+	CScrollBar m_sbDemoVert;
+	int m_nSliderDemoHorz;
+	int m_nSliderDemoVert;
+	CProgressCtrl m_prgDemoHorz;
+	CProgressCtrl m_prgDemoVert;
+
 	virtual BOOL OnInitDialog();
 
 protected:
 	void    EnableComboBox(BOOL bEnable);
+	void    EnableProgress(BOOL bEnable);
 	void    EnableAllStatusUpdate();
+	void    ProgressPosUpdate();
 public:
 	afx_msg void OnBnClickedChkEnableCombobox();
 	afx_msg void OnBnClickedChkEnableAll();
@@ -42,4 +54,8 @@ public:
 	afx_msg void OnCbnEditchangeCmdDemoDropdown();
 	afx_msg void OnCbnSelchangeCmbDemoSimple();
 	afx_msg void OnCbnEditchangeCmbDemoSimple();
+	
+	afx_msg void OnBnClickedChkEnableProgress();
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 };

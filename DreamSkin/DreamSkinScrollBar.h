@@ -27,13 +27,14 @@ public:
 	CDreamSkinScrollBar(HWND hWnd, WNDPROC OrgWndProc);
 	virtual ~CDreamSkinScrollBar();
 
-public:
-	static WNDPROC          s_DefaultWindowProc;      //Default static window proc
-	static SKINSCROLLBAR    s_SkinScrollBar;          //ScrollBar Skin Settings
+	virtual void    Reload();
 
 public:
 	//Used to replace system SetScrollInfo API
 	static int WINAPI SetScrollInfo(HWND hWnd, int fnBar, LPCSCROLLINFO lpsi, BOOL fRedraw);
+	//Used to replace system SetScrollPos API
+	static int WINAPI SetScrollPos(HWND hWnd, int nBar, int nPos, BOOL bRedraw);
+
 	//Used to replace system GetScrollInfo API
 	static BOOL WINAPI GetScrollInfo(HWND hWnd, int fnBar, LPSCROLLINFO lpsi);
 
@@ -54,8 +55,30 @@ public:
 	//Get the position of mouse point on scroll bar
 	static int  ScrollBarHitTest(HWND hWnd, int fnBar, POINTS point);
 	static int  ScrollBarHitTest(HWND hWnd, int fnBar, POINT point);
+	static int  ScrollBarHitTest(LPSCROLLBARINFO psbi, int fnBar, POINT point);
 
 	static void TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, SCROLLBARTRACKINFO *psbti);
+
+public:
+	static WNDPROC          s_DefaultWindowProc;      //Default static window proc
+	static SKINSCROLLBAR    s_SkinScrollBar;          //ScrollBar Skin Settings
+
+public:
+	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
+	//process the SBM_GETSCROLLBARINFO
+	virtual LRESULT OnGetScrollBarInfo(PSCROLLBARINFO psbi);
+	//process the WM_HSCROLL message
+	virtual LRESULT OnHScroll(UINT nSBCode, HWND hWndCtrl);
+	//process the WM_LBUTTONDOWN message
+	virtual LRESULT OnLButtonDown(UINT nFlags, POINTS point);
+	//process the WM_MOUSELEAVE message
+	virtual LRESULT OnMouseLeave();
+	//process the WM_MOUSEMOVE message
+	virtual LRESULT OnMouseMove(UINT nFlags, POINTS point);
+	//process the WM_PAINT message
+	virtual LRESULT OnPaint();
+	//process the WM_VSCROLL message
+	virtual LRESULT OnVScroll(UINT nSBCode, HWND hWndCtrl);
 
 protected:
 	static void DrawBackground(HDC hDC, RECT rcDraw, int nStatus);
@@ -71,10 +94,17 @@ protected:
 	static void DrawVertScrollBar(HWND hWnd, HDC hDC, UINT nSBLButtonDown, UINT nSBHover);
 	static void DrawHorzScrollBar(HWND hWnd, HDC hDC, UINT nSBLButtonDown, UINT nSBHover);
 	
-	static int  ScrollBarDragPos(int fnBar, LPSCROLLINFO lpsi, LPSCROLLBARINFO psbi, POINT point, UINT *pSBLButtonDown);
+	static int  ScrollBarDragPos(int fnBar, LPSCROLLINFO lpsi, LPSCROLLBARINFO psbi, POINT point, int nOffSet, UINT *pSBLButtonDown);
 
 protected:
-	SKINSCROLLBAR   *m_pSkinScrollBar;                //Instance Related ScrollBar Skin Settings
+	void        DrawHorzScrollBar(HDC hDC, DWORD dwStyle);
+	void        DrawVertScrollBar(HDC hDC, DWORD dwStyle);
+	BOOL        GetScrollBarInfo(RECT rcWindow, int fnBar, LPSCROLLINFO lpsi, PSCROLLBARINFO psbi);
+
+protected:
+	SKINSCROLLBAR     *m_pSkinScrollBar;              //Instance Related ScrollBar Skin Settings
+	UINT               m_nSBHover;                    //Current scroll bar hover item
+	SCROLLBARTRACKINFO m_ScrollBarTrackInfo;          //Store the scrollbar track info
 };
 
 #endif // end of DREAMSKIN_SCROLLBAR_INCLUDE

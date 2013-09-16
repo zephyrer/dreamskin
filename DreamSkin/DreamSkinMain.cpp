@@ -176,6 +176,11 @@ CDreamSkinMain::CDreamSkinMain()
 	m_HookGetScrollInfo.OrgAddr = 0;
 	m_HookGetScrollInfo.strFunctionName = "GetScrollInfo";
 	m_HookGetScrollInfo.wstrModuleName = L"user32.dll";
+
+	m_HookSetScrollPos.NewAddr = (DWORD)CDreamSkinScrollBar::SetScrollPos;
+	m_HookSetScrollPos.OrgAddr = 0;
+	m_HookSetScrollPos.strFunctionName = "SetScrollPos";
+	m_HookSetScrollPos.wstrModuleName = L"user32.dll";
 }
 
 CDreamSkinMain::~CDreamSkinMain()
@@ -392,6 +397,9 @@ BOOL CDreamSkinMain::InitInstance()
 
 	if (bReturn)
 		bReturn = HookAPILocal(&m_HookGetScrollInfo);
+
+	if (bReturn)
+		bReturn = HookAPILocal(&m_HookSetScrollPos);
 
 	return bReturn;
 

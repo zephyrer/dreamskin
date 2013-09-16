@@ -56,6 +56,7 @@ protected:
 public:
 	APIHOOKITEM           m_HookSetScrollInfo;
 	APIHOOKITEM           m_HookGetScrollInfo;
+	APIHOOKITEM           m_HookSetScrollPos;
 };
 
 extern CDreamSkinMain theSkinMain;

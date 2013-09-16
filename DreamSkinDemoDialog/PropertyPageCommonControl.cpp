@@ -15,6 +15,10 @@ CPropertyPageCommonControl::CPropertyPageCommonControl()
 	, m_bEnableAll(TRUE)
 	, m_bEnableComboBox(TRUE)
 	, m_strResultComboBox(_T(""))
+	, m_bEnableProgress(TRUE)
+	, m_nSliderDemoHorz(0)
+	, m_nSliderDemoVert(0)
+	, m_nResultProgress(0)
 {
 	m_psp.dwFlags &= ~PSP_HASHELP;
 }
@@ -32,6 +36,17 @@ void CPropertyPageCommonControl::DoDataExchange(CDataExchange* pDX)
 	DDX_Check(pDX, IDC_CHK_ENABLE_ALL, m_bEnableAll);
 	DDX_Check(pDX, IDC_CHK_ENABLE_COMBOBOX, m_bEnableComboBox);
 	DDX_Text(pDX, IDC_EDIT_RESULT_COMBOBOX, m_strResultComboBox);
+	DDX_Check(pDX, IDC_CHK_ENABLE_PROGRESS, m_bEnableProgress);
+	DDX_Slider(pDX, IDC_SLIDER_DEMO_HORZ, m_nSliderDemoHorz);
+	DDV_MinMaxInt(pDX, m_nSliderDemoHorz, 0, 100);
+	DDX_Slider(pDX, IDC_SLIDER_DEMO_VERT, m_nSliderDemoVert);
+	DDV_MinMaxInt(pDX, m_nSliderDemoVert, 0, 100);
+	DDX_Control(pDX, IDC_PROGRESS_DEMO_HORZ, m_prgDemoHorz);
+	DDX_Control(pDX, IDC_PROGRESS_DEMO_VERT, m_prgDemoVert);
+	DDX_Control(pDX, IDC_SCROLLBAR_DEMO_HORZ, m_sbDemoHorz);
+	DDX_Control(pDX, IDC_SCROLLBAR_DEMO_VERT, m_sbDemoVert);
+	DDX_Text(pDX, IDC_EDIT_RESULT_PROGRESS, m_nResultProgress);
+	DDV_MinMaxInt(pDX, m_nResultProgress, 0, 100);
 }
 
 
@@ -44,6 +59,9 @@ BEGIN_MESSAGE_MAP(CPropertyPageCommonControl, CPropertyPage)
 	ON_CBN_EDITCHANGE(IDC_CMD_DEMO_DROPDOWN, &CPropertyPageCommonControl::OnCbnEditchangeCmdDemoDropdown)
 	ON_CBN_SELCHANGE(IDC_CMB_DEMO_SIMPLE, &CPropertyPageCommonControl::OnCbnSelchangeCmbDemoSimple)
 	ON_CBN_EDITCHANGE(IDC_CMB_DEMO_SIMPLE, &CPropertyPageCommonControl::OnCbnEditchangeCmbDemoSimple)
+	ON_BN_CLICKED(IDC_CHK_ENABLE_PROGRESS, &CPropertyPageCommonControl::OnBnClickedChkEnableProgress)
+	ON_WM_HSCROLL()
+	ON_WM_VSCROLL()
 END_MESSAGE_MAP()
 
 
@@ -62,6 +80,16 @@ BOOL CPropertyPageCommonControl::OnInitDialog()
 		m_cmbDemoDropList.AddString((LPCTSTR)strMessage);
 	}
 
+	SCROLLINFO ScrollInfo;
+	ScrollInfo.cbSize = sizeof(SCROLLINFO);
+	ScrollInfo.fMask = SIF_PAGE | SIF_POS | SIF_RANGE;
+	ScrollInfo.nMax = 100;
+	ScrollInfo.nMin = 0;
+	ScrollInfo.nPage = 9;
+	ScrollInfo.nPos = 0;
+	m_sbDemoHorz.SetScrollInfo(&ScrollInfo);
+	m_sbDemoVert.SetScrollInfo(&ScrollInfo);
+
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -73,16 +101,42 @@ void CPropertyPageCommonControl::EnableComboBox(BOOL bEnable)
 	GetDlgItem(IDC_CMB_DEMO_SIMPLE)->EnableWindow(bEnable);
 }
 
+void CPropertyPageCommonControl::EnableProgress(BOOL bEnable)
+{
+	GetDlgItem(IDC_SCROLLBAR_DEMO_HORZ)->EnableWindow(bEnable);
+	GetDlgItem(IDC_SCROLLBAR_DEMO_VERT)->EnableWindow(bEnable);
+	GetDlgItem(IDC_PROGRESS_DEMO_HORZ)->EnableWindow(bEnable);
+	GetDlgItem(IDC_PROGRESS_DEMO_VERT)->EnableWindow(bEnable);
+	GetDlgItem(IDC_SLIDER_DEMO_HORZ)->EnableWindow(bEnable);
+	GetDlgItem(IDC_SLIDER_DEMO_VERT)->EnableWindow(bEnable);
+	GetDlgItem(IDC_SPIN_DEMO_HORZ)->EnableWindow(bEnable);
+	GetDlgItem(IDC_SPIN_DEMO_VERT)->EnableWindow(bEnable);
+}
+
 void CPropertyPageCommonControl::EnableAllStatusUpdate()
 {
-	if (m_bEnableComboBox)
+	if (m_bEnableComboBox && m_bEnableProgress)
 	{
 		m_bEnableAll = 1;
+	}
+	else if (m_bEnableComboBox || m_bEnableProgress)
+	{
+		m_bEnableAll = 2;
 	}
 	else
 	{
 		m_bEnableAll = 0;
 	}
+}
+
+void CPropertyPageCommonControl::ProgressPosUpdate()
+{
+	m_sbDemoHorz.SetScrollPos(m_nResultProgress);
+	m_sbDemoVert.SetScrollPos(m_nResultProgress);
+	m_prgDemoHorz.SetPos(m_nResultProgress);
+	m_prgDemoVert.SetPos(m_nResultProgress);
+	m_nSliderDemoHorz = m_nResultProgress;
+	m_nSliderDemoVert = m_nResultProgress;
 }
 
 void CPropertyPageCommonControl::OnBnClickedChkEnableAll()
@@ -95,6 +149,12 @@ void CPropertyPageCommonControl::OnBnClickedChkEnableAll()
 	{
 		m_bEnableComboBox = m_bEnableAll;
 		EnableComboBox(m_bEnableComboBox);
+	}
+
+	if (m_bEnableProgress != m_bEnableAll)
+	{
+		m_bEnableProgress = m_bEnableAll;
+		EnableProgress(m_bEnableProgress);
 	}
 
 	UpdateData(FALSE);
@@ -175,4 +235,151 @@ void CPropertyPageCommonControl::OnCbnEditchangeCmbDemoSimple()
 	m_strResultComboBox = _T("Customized Text: ") + m_strResultComboBox;
 
 	UpdateData(FALSE);
+}
+
+void CPropertyPageCommonControl::OnBnClickedChkEnableProgress()
+{
+	UpdateData();
+
+	EnableProgress(m_bEnableProgress);
+
+	EnableAllStatusUpdate();
+
+	UpdateData(FALSE);
+}
+
+void CPropertyPageCommonControl::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	SCROLLINFO ScrollInfo;
+	if (pScrollBar)
+	{
+		if (pScrollBar->m_hWnd == m_sbDemoHorz.m_hWnd)
+		{
+			switch(nSBCode)
+			{
+			case SB_LEFT:
+				m_nResultProgress = 0;
+				break;
+			case SB_LINELEFT:
+				if (m_nResultProgress > 0)
+					m_nResultProgress--;
+				break;
+			case SB_LINERIGHT:
+				if (m_nResultProgress < 100)
+					m_nResultProgress++;
+				break;
+			case SB_PAGELEFT:
+				pScrollBar->GetScrollInfo(&ScrollInfo, SIF_PAGE);
+				m_nResultProgress -= ScrollInfo.nPage;
+				if (m_nResultProgress < 0)
+					m_nResultProgress = 0;
+				break;
+			case SB_PAGERIGHT:
+				pScrollBar->GetScrollInfo(&ScrollInfo, SIF_PAGE);
+				m_nResultProgress += ScrollInfo.nPage;
+				if (m_nResultProgress > 100)
+					m_nResultProgress = 100;
+				break;
+			case SB_RIGHT:
+				m_nResultProgress = 100;
+				break;
+			case SB_THUMBTRACK:
+				m_nResultProgress = nPos;
+				if (m_nResultProgress > 100)
+					m_nResultProgress = 100;
+				else if (m_nResultProgress < 0)
+					m_nResultProgress = 0;
+				break;
+			default:
+				CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+				break;
+			}
+
+			ProgressPosUpdate();
+			UpdateData(FALSE);
+		}
+		else if (pScrollBar->m_hWnd == GetDlgItem(IDC_SLIDER_DEMO_HORZ)->m_hWnd)
+		{
+			UpdateData();
+			m_nResultProgress = m_nSliderDemoHorz;
+			ProgressPosUpdate();
+			UpdateData(FALSE);
+		}
+		else
+		{
+			CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+		}
+	}
+	else
+	{
+		CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+	}
+}
+
+void CPropertyPageCommonControl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar)
+{
+	SCROLLINFO ScrollInfo;
+	if (pScrollBar)
+	{
+		if (pScrollBar->m_hWnd == m_sbDemoVert.m_hWnd)
+		{
+			switch(nSBCode)
+			{
+			case SB_TOP:
+				m_nResultProgress = 0;
+				break;
+			case SB_LINEUP:
+				if (m_nResultProgress > 0)
+					m_nResultProgress--;
+				break;
+			case SB_LINEDOWN:
+				if (m_nResultProgress < 100)
+					m_nResultProgress++;
+				break;
+			case SB_PAGEUP:
+				pScrollBar->GetScrollInfo(&ScrollInfo, SIF_PAGE);
+				m_nResultProgress -= ScrollInfo.nPage;
+				if (m_nResultProgress < 0)
+					m_nResultProgress = 0;
+				break;
+			case SB_PAGEDOWN:
+				pScrollBar->GetScrollInfo(&ScrollInfo, SIF_PAGE);
+				m_nResultProgress += ScrollInfo.nPage;
+				if (m_nResultProgress > 100)
+					m_nResultProgress = 100;
+				break;
+			case SB_BOTTOM:
+				m_nResultProgress = 100;
+				break;
+			case SB_THUMBTRACK:
+				m_nResultProgress = nPos;
+				if (m_nResultProgress > 100)
+					m_nResultProgress = 100;
+				else if (m_nResultProgress < 0)
+					m_nResultProgress = 0;
+				break;
+			default:
+				CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+				break;
+			}
+
+			ProgressPosUpdate();
+			UpdateData(FALSE);
+		}
+		else if (pScrollBar->m_hWnd == GetDlgItem(IDC_SLIDER_DEMO_VERT)->m_hWnd)
+		{
+			UpdateData();
+			m_nResultProgress = m_nSliderDemoVert;
+			ProgressPosUpdate();
+			UpdateData(FALSE);
+		}
+		else
+		{
+			CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+		}
+	}
+	else
+	{
+		CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+	}
 }

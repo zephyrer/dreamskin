@@ -41,7 +41,6 @@
 #define IDC_EDIT1                       1023
 #define IDC_EDIT_RESULT_MESSAGEBOX      1023
 #define IDC_EDIT_RESULT_LISTBOX         1023
-#define IDC_EDIT_                       1023
 #define IDC_EDIT_RESULT_COMBOBOX        1023
 #define IDC_EDIT_RESULT_LISTCTRL        1024
 #define IDC_STATIC_BUTTONS              1025
@@ -67,6 +66,7 @@
 #define IDC_CHECK1                      1040
 #define IDC_CHK_LISTBOX_MULTICOLUMN     1040
 #define IDC_CHK_LISTCTRL_ENABLE         1040
+#define IDC_CHK_ENABLE_PROGRESS         1040
 #define IDC_LISTBOX_DEMO_MULTICOL       1041
 #define IDC_LISTCTRL_DEMO               1042
 #define IDC_CMB_LISTCTRL_VIEW           1043
@@ -76,6 +76,17 @@
 #define IDC_CMD_DEMO_DROPLIST           1047
 #define IDC_CHK_ENABLE_ALL              1049
 #define IDC_CHK_ENABLE_COMBOBOX         1050
+#define IDC_SCROLLBAR_DEMO_HORZ         1052
+#define IDC_SCROLLBAR_DEMO_VERT         1055
+#define IDC_SLIDER_DEMO_VERT            1056
+#define IDC_PROGRESS_DEMO_HORZ          1057
+#define IDC_EDIT_RESULT_PROGRESS        1058
+#define IDC_SLIDER_DEMO_HORZ            1059
+#define IDC_PROGRESS_DEMO_VERT          1060
+#define IDC_SPIN_DEMO_VERT              1061
+#define IDC_SPIN_DEMO_HORZ              1063
+#define IDC_BUTTON2                     1065
+#define IDC_BTN_SET_PROGRESS            1065
 
 // Next default values for new objects
 // 
@@ -83,7 +94,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1051
+#define _APS_NEXT_CONTROL_VALUE         1066
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
