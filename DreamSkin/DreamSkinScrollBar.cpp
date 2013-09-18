@@ -23,12 +23,13 @@ int WINAPI CDreamSkinScrollBar::SetScrollInfo(HWND hWnd, int fnBar, LPCSCROLLINF
 	if (theSkinMain.m_HookSetScrollInfo.OrgAddr)
 	{
 		//send this message only when we hooked this window
-		if (theSkinMain.GetHookedWindow(hWnd))
+		CDreamSkinWindow *pSkinWindow = theSkinMain.GetHookedWindow(hWnd);
+		if (pSkinWindow)
 		{
 			nResult = ((SETSCROLLINFO)theSkinMain.m_HookSetScrollInfo.OrgAddr)(hWnd, fnBar, lpsi, FALSE);
 			if (fRedraw)
 			{
-				if (fnBar == SB_CTL)
+				if (pSkinWindow->GetType() == DREAMSKIN_SCROLLBAR)
 				{
 					RECT rcClient;
 					::GetClientRect(hWnd, &rcClient);
@@ -55,12 +56,13 @@ int WINAPI CDreamSkinScrollBar::SetScrollPos(HWND hWnd, int nBar, int nPos, BOOL
 	if (theSkinMain.m_HookSetScrollPos.OrgAddr)
 	{
 		//send this message only when we hooked this window
-		if (theSkinMain.GetHookedWindow(hWnd))
+		CDreamSkinWindow *pSkinWindow = theSkinMain.GetHookedWindow(hWnd);
+		if (pSkinWindow)
 		{
 			nResult = ((SETSCROLLPOS)theSkinMain.m_HookSetScrollPos.OrgAddr)(hWnd, nBar, nPos, FALSE);
 			if (bRedraw)
 			{
-				if (nBar == SB_CTL)
+				if (pSkinWindow->GetType() == DREAMSKIN_SCROLLBAR)
 				{
 					RECT rcClient;
 					::GetClientRect(hWnd, &rcClient);
@@ -200,6 +202,9 @@ BOOL CDreamSkinScrollBar::GetDefaultSkin(SKINSCROLLBAR *pSkinScrollBar)
 {
 	if (pSkinScrollBar)
 	{
+		GetDefaultBackground(&pSkinScrollBar->skinBkNormal, RGB(236, 233, 216));
+		GetDefaultBackground(&pSkinScrollBar->skinBkDisable, RGB(236, 233, 216));
+
 		GetDefaultBackground(&pSkinScrollBar->skinHBkNormal, RGB(255, 255, 255));
 		GetDefaultBackground(&pSkinScrollBar->skinHBkDisable, RGB(236, 233, 216));
 
@@ -431,11 +436,21 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, S
 	POINT point;
 
 	psbti->bIsTracking = TRUE;
+	psbti->nTrackPos = ScrollInfo.nPos;
 	::SetCapture(hWnd);
 
 	if (nSBHitTest == SBHT_REGION_DOWN || nSBHitTest == SBHT_REGION_UP || nSBHitTest == SBHT_ARROW_TOP || nSBHitTest == SBHT_ARROW_BOTTOM)
 	{
-		::SendMessage(hWnd, nScrollMsg, nMsgCode, 0);
+		RECT rcClient;
+		::GetClientRect(hWnd, &rcClient);
+
+		if (rnBar == SB_CTL)
+		{
+			::SendMessage(hWnd, nScrollMsg, nMsgCode, (LPARAM)hWnd);
+			::InvalidateRect(hWnd, &rcClient, FALSE);
+		}
+		else
+			::SendMessage(hWnd, nScrollMsg, nMsgCode, 0);
 
 		int nTimer1 = ::SetTimer(0, 0, 500, NULL);
 		int nTimer2 = 0;
@@ -454,8 +469,16 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, S
 				psbti->bIsTracking = FALSE;
 				if (psbti->nSBLButtonDown)
 					psbti->nSBLButtonDown = 0;
-				::SendMessage(hWnd, nScrollMsg, SB_ENDSCROLL, 0);
-				::SendMessage(hWnd, WM_NCPAINT, 1, 0);
+				if (rnBar == SB_CTL)
+				{
+					::SendMessage(hWnd, nScrollMsg, SB_ENDSCROLL, (LPARAM)hWnd);
+					::InvalidateRect(hWnd, &rcClient, FALSE);
+				}
+				else
+				{
+					::SendMessage(hWnd, nScrollMsg, SB_ENDSCROLL, 0);
+					::SendMessage(hWnd, WM_NCPAINT, 1, 0);
+				}
 				break;
 			case WM_TIMER:
 				if (Msg.wParam == nTimer1)
@@ -465,7 +488,13 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, S
 					::GetCursorPos(&point);
 					nNewSBHitTest = ScrollBarHitTest(hWnd, rnBar, point);
 					if (nNewSBHitTest == nSBHitTest)
-						::SendMessage(hWnd, nScrollMsg, nMsgCode, 0);
+						if (rnBar == SB_CTL)
+						{
+							::SendMessage(hWnd, nScrollMsg, nMsgCode, (LPARAM)hWnd);
+							::InvalidateRect(hWnd, &rcClient, FALSE);
+						}
+						else
+							::SendMessage(hWnd, nScrollMsg, nMsgCode, 0);
 					nTimer2 = ::SetTimer(0, 0, 100, NULL);
 				}
 				else if (Msg.wParam == nTimer2)
@@ -473,7 +502,13 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, S
 					::GetCursorPos(&point);
 					nNewSBHitTest = ScrollBarHitTest(hWnd, rnBar, point);
 					if (nNewSBHitTest == nSBHitTest)
-						::SendMessage(hWnd, nScrollMsg, nMsgCode, 0);
+						if (rnBar == SB_CTL)
+						{
+							::SendMessage(hWnd, nScrollMsg, nMsgCode, (LPARAM)hWnd);
+							::InvalidateRect(hWnd, &rcClient, FALSE);
+						}
+						else
+							::SendMessage(hWnd, nScrollMsg, nMsgCode, 0);
 				}
 				else
 				{
@@ -493,8 +528,15 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, S
 		RECT rcClient;
 		::GetClientRect(hWnd, &rcClient);
 
+		CDreamSkinWindow *pSkinWindow = NULL;
+
 		if (rnBar == SB_CTL)
+		{
+			pSkinWindow = theSkinMain.GetHookedWindow(hWnd);
+			if (pSkinWindow && pSkinWindow->GetType() != DREAMSKIN_SCROLLBAR)
+				pSkinWindow = NULL;
 			::InvalidateRect(hWnd, &rcClient, FALSE);
+		}
 		else
 			::SendMessage(hWnd, WM_NCPAINT, 1, 0);
 
@@ -536,20 +578,38 @@ void CDreamSkinScrollBar::TrackScrollBar(HWND hWnd, int fnBar, int nSBHitTest, S
 				psbti->nTrackPos = ScrollBarDragPos(fnBar, &ScrollInfo, &ScrollBarInfo, point, nOffSet, &psbti->nSBLButtonDown);
 				if (psbti->nSBLButtonDown)
 					psbti->nSBLButtonDown = 0;
-				::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBPOSITION, (unsigned short)psbti->nTrackPos), 0);
+				
 				if (rnBar == SB_CTL)
+				{
+					if (pSkinWindow)
+						pSkinWindow->DefWindowProc(nScrollMsg, MAKEWPARAM(SB_THUMBPOSITION, (unsigned short)psbti->nTrackPos), (LPARAM)hWnd);
+					else
+						::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBPOSITION, (unsigned short)psbti->nTrackPos), (LPARAM)hWnd);
 					::InvalidateRect(hWnd, &rcClient, FALSE);
+				}
 				else
+				{
+					::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBPOSITION, (unsigned short)psbti->nTrackPos), 0);
 					::SendMessage(hWnd, WM_NCPAINT, 1, 0);
+				}
 				break;
 			case WM_MOUSEMOVE:
 				::GetCursorPos(&point);
 				psbti->nTrackPos = ScrollBarDragPos(fnBar, &ScrollInfo, &ScrollBarInfo, point, nOffSet, &psbti->nSBLButtonDown);
-				::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBTRACK, (unsigned short)psbti->nTrackPos), 0);
+				
 				if (rnBar == SB_CTL)
+				{
+					if (pSkinWindow)
+						pSkinWindow->DefWindowProc(nScrollMsg, MAKEWPARAM(SB_THUMBTRACK, (unsigned short)psbti->nTrackPos), (LPARAM)hWnd);
+					else
+						::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBTRACK, (unsigned short)psbti->nTrackPos), (LPARAM)hWnd);
 					::InvalidateRect(hWnd, &rcClient, FALSE);
+				}
 				else
+				{
+					::SendMessage(hWnd, nScrollMsg, MAKEWPARAM(SB_THUMBTRACK, (unsigned short)psbti->nTrackPos), 0);
 					::SendMessage(hWnd, WM_NCPAINT, 1, 0);
+				}
 				break;
 			default:
 				DispatchMessage(&Msg);
@@ -713,6 +773,7 @@ void CDreamSkinScrollBar::DrawButton(HDC hDC, RECT rcDraw, int fnBar, int nType,
 		hDrawBrush = ::CreateSolidBrush(pSysButton->clrTxt);
 		hDrawPen = ::CreatePen(PS_SOLID, 1, pSysButton->clrTxt);
 		hOldPen = (HPEN)::SelectObject(hDC, hDrawPen);
+		int nTemp;
 
 		if (fnBar == SB_HORZ)
 		{
@@ -720,35 +781,22 @@ void CDreamSkinScrollBar::DrawButton(HDC hDC, RECT rcDraw, int fnBar, int nType,
 			{
 				pt[0].x = rcDraw.left + nWidth * 3 / 8;
 				pt[0].y = rcDraw.top + nHeight / 2;
-				pt[1].x = pt[0].x + 1;
-				pt[1].y = pt[0].y - 1;
-				pt[2].x = pt[0].x + 1;
-				pt[2].y = pt[0].y + 1;
+				nTemp = min(nHeight / 4, nWidth / 4);
+				pt[1].x = pt[0].x + nTemp;
+				pt[1].y = pt[0].y - nTemp;
+				pt[2].x = pt[0].x + nTemp;
+				pt[2].y = pt[0].y + nTemp;
 
-				while ((pt[1].y > rcDraw.top + nHeight / 4) && (pt[2].y < rcDraw.bottom - nHeight / 4))
-				{
-					pt[1].x = pt[1].x + 1;
-					pt[1].y = pt[1].y - 1;
-					pt[2].x = pt[2].x + 1;
-					pt[2].y = pt[2].y + 1;
-				}
 			}//draw left button
 			else //draw right button
 			{
 				pt[0].x = rcDraw.right - nWidth * 3 / 8;
 				pt[0].y = rcDraw.top + nHeight / 2;
-				pt[1].x = pt[0].x - 1;
-				pt[1].y = pt[0].y - 1;
-				pt[2].x = pt[0].x - 1;
-				pt[2].y = pt[0].y + 1;
-
-				while ((pt[1].y > rcDraw.top + nHeight / 4) && (pt[2].y < rcDraw.bottom - nHeight / 4))
-				{
-					pt[1].x = pt[1].x - 1;
-					pt[1].y = pt[1].y - 1;
-					pt[2].x = pt[2].x - 1;
-					pt[2].y = pt[2].y + 1;
-				}
+				nTemp = min(nHeight / 4, nWidth / 4);
+				pt[1].x = pt[0].x - nTemp;
+				pt[1].y = pt[0].y - nTemp;
+				pt[2].x = pt[0].x - nTemp;
+				pt[2].y = pt[0].y + nTemp;
 			}//draw right button
 		}
 		else
@@ -757,35 +805,21 @@ void CDreamSkinScrollBar::DrawButton(HDC hDC, RECT rcDraw, int fnBar, int nType,
 			{
 				pt[0].x = rcDraw.left + nWidth / 2;
 				pt[0].y = rcDraw.top + nHeight * 3 / 8;
-				pt[1].x = pt[0].x - 1;
-				pt[1].y = pt[0].y + 1;
-				pt[2].x = pt[0].x + 1;
-				pt[2].y = pt[0].y + 1;
-
-				while ((pt[1].x > rcDraw.left + nWidth / 4) && (pt[2].x < rcDraw.right - nWidth / 4))
-				{
-					pt[1].x = pt[1].x - 1;
-					pt[1].y = pt[1].y + 1;
-					pt[2].x = pt[2].x + 1;
-					pt[2].y = pt[2].y + 1;
-				}
+				nTemp = min(nHeight / 4, nWidth / 4);
+				pt[1].x = pt[0].x - nTemp;
+				pt[1].y = pt[0].y + nTemp;
+				pt[2].x = pt[0].x + nTemp;
+				pt[2].y = pt[0].y + nTemp;
 			}//draw top button
 			else //draw bottom button
 			{
 				pt[0].x = rcDraw.left + nWidth / 2;
 				pt[0].y = rcDraw.bottom - nHeight * 3 / 8;
-				pt[1].x = pt[0].x - 1;
-				pt[1].y = pt[0].y - 1;
-				pt[2].x = pt[0].x + 1;
-				pt[2].y = pt[0].y - 1;
-
-				while ((pt[1].x > rcDraw.left + nWidth / 4) && (pt[2].x < rcDraw.right - nWidth / 4))
-				{
-					pt[1].x = pt[1].x - 1;
-					pt[1].y = pt[1].y - 1;
-					pt[2].x = pt[2].x + 1;
-					pt[2].y = pt[2].y - 1;
-				}
+				nTemp = min(nHeight / 4, nWidth / 4);
+				pt[1].x = pt[0].x - nTemp;
+				pt[1].y = pt[0].y - nTemp;
+				pt[2].x = pt[0].x + nTemp;
+				pt[2].y = pt[0].y - nTemp;
 			}//draw bottom button
 		}
 
@@ -885,113 +919,122 @@ void CDreamSkinScrollBar::DrawVertScrollBar(HWND hWnd, HDC hDC, UINT nSBLButtonD
 
 		DWORD dwStyle = ::GetWindowLong(hWnd, GWL_STYLE);
 
-		rcTop.left = ScrollBarInfo.rcScrollBar.left;
-		rcTop.top = ScrollBarInfo.rcScrollBar.top;
-		rcTop.bottom = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.dxyLineButton;
-		rcTop.right = ScrollBarInfo.rcScrollBar.right;
-
-		if (!s_SkinScrollBar.nBtnTopIncludeBorder)
-		{
-			rcTop.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
-			rcTop.top += s_SkinScrollBar.skinVTBorderNormal.nWidth;
-			rcTop.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
-		}
-
-		rcBottom.left = ScrollBarInfo.rcScrollBar.left;
-		rcBottom.top = ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.dxyLineButton;
-		rcBottom.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		rcBottom.right = ScrollBarInfo.rcScrollBar.right;
-
-		if (!s_SkinScrollBar.nBtnBottomIncludeBorder)
-		{
-			rcBottom.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
-			rcBottom.bottom -= s_SkinScrollBar.skinVBBorderNormal.nWidth;
-			rcBottom.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
-		}
-
-		rcClient.left = ScrollBarInfo.rcScrollBar.left;
-		rcClient.top  = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.dxyLineButton;
-		rcClient.bottom = ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.dxyLineButton;
-		rcClient.right = ScrollBarInfo.rcScrollBar.right;
-
-		rcItem.left = ScrollBarInfo.rcScrollBar.left;
-		rcItem.right = ScrollBarInfo.rcScrollBar.right;
-		rcItem.top = ScrollBarInfo.xyThumbTop + ScrollBarInfo.rcScrollBar.top;
-		rcItem.bottom = ScrollBarInfo.xyThumbBottom + ScrollBarInfo.rcScrollBar.top;
-		if (!s_SkinScrollBar.nVThumbIncludeBorder)
-		{
-			rcItem.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
-			rcItem.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
-		}
-		
-
-		//draw top button
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((nSBHover >> 16) == SB_VERT) && ((nSBHover & 0x0000FFFF) == SBHT_ARROW_TOP))
-			if(((nSBLButtonDown >> 16) == SB_VERT) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_TOP))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		DrawButton(hDC, rcTop, SB_VERT, SBHT_ARROW_TOP, nStatus);
-
-		//draw bottom button
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((nSBHover >> 16) == SB_VERT) && ((nSBHover & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
-			if(((nSBLButtonDown >> 16) == SB_VERT) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		DrawButton(hDC, rcBottom, SB_VERT, SBHT_ARROW_BOTTOM, nStatus);
-
-		//draw client area
 		SKINBACKGROUND *pBackground;
 		if(dwStyle & WS_DISABLED)
-			pBackground = &s_SkinScrollBar.skinVBkDisable;   //Disabled
+			pBackground = &s_SkinScrollBar.skinBkDisable;   //Disabled
 		else
-			pBackground = &s_SkinScrollBar.skinVBkNormal;    //Normal
-		DrawBackground(hDC, pBackground, rcClient);
+			pBackground = &s_SkinScrollBar.skinBkNormal;    //Normal
+		DrawBackground(hDC, pBackground, ScrollBarInfo.rcScrollBar);
 
-		//draw thumb
-		if ((rcClient.bottom - rcClient.top) > 5)
+		if (ScrollInfo.nMax != ScrollInfo.nMin)
 		{
+			rcTop.left = ScrollBarInfo.rcScrollBar.left;
+			rcTop.top = ScrollBarInfo.rcScrollBar.top;
+			rcTop.bottom = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.dxyLineButton;
+			rcTop.right = ScrollBarInfo.rcScrollBar.right;
+
+			if (!s_SkinScrollBar.nBtnTopIncludeBorder)
+			{
+				rcTop.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
+				rcTop.top += s_SkinScrollBar.skinVTBorderNormal.nWidth;
+				rcTop.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
+			}
+
+			rcBottom.left = ScrollBarInfo.rcScrollBar.left;
+			rcBottom.top = ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.dxyLineButton;
+			rcBottom.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			rcBottom.right = ScrollBarInfo.rcScrollBar.right;
+
+			if (!s_SkinScrollBar.nBtnBottomIncludeBorder)
+			{
+				rcBottom.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
+				rcBottom.bottom -= s_SkinScrollBar.skinVBBorderNormal.nWidth;
+				rcBottom.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
+			}
+
+			rcClient.left = ScrollBarInfo.rcScrollBar.left;
+			rcClient.top  = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.dxyLineButton;
+			rcClient.bottom = ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.dxyLineButton;
+			rcClient.right = ScrollBarInfo.rcScrollBar.right;
+
+			rcItem.left = ScrollBarInfo.rcScrollBar.left;
+			rcItem.right = ScrollBarInfo.rcScrollBar.right;
+			rcItem.top = ScrollBarInfo.xyThumbTop + ScrollBarInfo.rcScrollBar.top;
+			rcItem.bottom = ScrollBarInfo.xyThumbBottom + ScrollBarInfo.rcScrollBar.top;
+			if (!s_SkinScrollBar.nVThumbIncludeBorder)
+			{
+				rcItem.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
+				rcItem.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
+			}
+			
+
+			//draw top button
 			if(dwStyle & WS_DISABLED)
 				nStatus = DRAWSTATUS_DISABLE;       //Disabled
-			else if(((nSBHover >> 16) == SB_VERT) && ((nSBHover & 0x0000FFFF) == SBHT_THUMB))
-				if(((nSBLButtonDown >> 16) == SB_VERT) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+			else if(((nSBHover >> 16) == SB_VERT) && ((nSBHover & 0x0000FFFF) == SBHT_ARROW_TOP))
+				if(((nSBLButtonDown >> 16) == SB_VERT) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_TOP))
 					nStatus = DRAWSTATUS_PRESS;     //Pressed
 				else
 					nStatus = DRAWSTATUS_HOVER;     //Hover
 			else
-				if(((nSBLButtonDown >> 16) == SB_VERT) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
-					nStatus = DRAWSTATUS_PRESS;     //Drag
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			DrawButton(hDC, rcTop, SB_VERT, SBHT_ARROW_TOP, nStatus);
+
+			//draw bottom button
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;       //Disabled
+			else if(((nSBHover >> 16) == SB_VERT) && ((nSBHover & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
+				if(((nSBLButtonDown >> 16) == SB_VERT) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
+					nStatus = DRAWSTATUS_PRESS;     //Pressed
 				else
-					nStatus = DRAWSTATUS_NORMAL;     //normal
-			DrawThumb(hDC, rcItem, SB_VERT, nStatus);
-		}
+					nStatus = DRAWSTATUS_HOVER;     //Hover
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			DrawButton(hDC, rcBottom, SB_VERT, SBHT_ARROW_BOTTOM, nStatus);
 
-		//draw border
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;   //Disabled
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
+			//draw client area
+			if(dwStyle & WS_DISABLED)
+				pBackground = &s_SkinScrollBar.skinVBkDisable;   //Disabled
+			else
+				pBackground = &s_SkinScrollBar.skinVBkNormal;    //Normal
+			DrawBackground(hDC, pBackground, rcClient);
 
-		rcWindow = ScrollBarInfo.rcScrollBar;
-		if (s_SkinScrollBar.nBtnTopIncludeBorder)
-		{
-			rcWindow.top = rcTop.bottom;
-		}
+			//draw thumb
+			if ((rcClient.bottom - rcClient.top) > 5)
+			{
+				if(dwStyle & WS_DISABLED)
+					nStatus = DRAWSTATUS_DISABLE;       //Disabled
+				else if(((nSBHover >> 16) == SB_VERT) && ((nSBHover & 0x0000FFFF) == SBHT_THUMB))
+					if(((nSBLButtonDown >> 16) == SB_VERT) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+						nStatus = DRAWSTATUS_PRESS;     //Pressed
+					else
+						nStatus = DRAWSTATUS_HOVER;     //Hover
+				else
+					if(((nSBLButtonDown >> 16) == SB_VERT) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+						nStatus = DRAWSTATUS_PRESS;     //Drag
+					else
+						nStatus = DRAWSTATUS_NORMAL;     //normal
+				DrawThumb(hDC, rcItem, SB_VERT, nStatus);
+			}
 
-		if (s_SkinScrollBar.nBtnBottomIncludeBorder)
-		{
-			rcWindow.bottom = rcBottom.top;
+			//draw border
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;   //Disabled
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+
+			rcWindow = ScrollBarInfo.rcScrollBar;
+			if (s_SkinScrollBar.nBtnTopIncludeBorder)
+			{
+				rcWindow.top = rcTop.bottom;
+			}
+
+			if (s_SkinScrollBar.nBtnBottomIncludeBorder)
+			{
+				rcWindow.bottom = rcBottom.top;
+			}
+			DrawBorder(hDC, rcWindow, SB_VERT, nStatus);
 		}
-		DrawBorder(hDC, rcWindow, SB_VERT, nStatus);
 	}
 }
 
@@ -1016,111 +1059,120 @@ void CDreamSkinScrollBar::DrawHorzScrollBar(HWND hWnd, HDC hDC, UINT nSBLButtonD
 
 		DWORD dwStyle = ::GetWindowLong(hWnd, GWL_STYLE);
 
-		rcTop.left = ScrollBarInfo.rcScrollBar.left;
-		rcTop.top = ScrollBarInfo.rcScrollBar.top;
-		rcTop.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		rcTop.right = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.dxyLineButton;
-
-		if (!s_SkinScrollBar.nBtnLeftIncludeBorder)
-		{
-			rcTop.left += s_SkinScrollBar.skinHLBorderNormal.nWidth;
-			rcTop.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
-			rcTop.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
-		}
-
-		rcBottom.left = ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.dxyLineButton;
-		rcBottom.top = ScrollBarInfo.rcScrollBar.top;
-		rcBottom.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		rcBottom.right = ScrollBarInfo.rcScrollBar.right;
-
-		if (!s_SkinScrollBar.nBtnRightIncludeBorder)
-		{
-			rcBottom.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
-			rcBottom.right -= s_SkinScrollBar.skinHRBorderNormal.nWidth;
-			rcBottom.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
-		}
-
-		rcClient.left = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.dxyLineButton;
-		rcClient.top  = ScrollBarInfo.rcScrollBar.top;
-		rcClient.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		rcClient.right = ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.dxyLineButton;
-
-		rcItem.left = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.xyThumbTop;
-		rcItem.right = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.xyThumbBottom;
-		rcItem.top = ScrollBarInfo.rcScrollBar.top;
-		rcItem.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		if (!s_SkinScrollBar.nHThumbIncludeBorder)
-		{
-			rcItem.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
-			rcItem.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
-		}
-
-		//draw top button
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((nSBHover >> 16) == SB_HORZ) && ((nSBHover & 0x0000FFFF) == SBHT_ARROW_TOP))
-			if(((nSBLButtonDown >> 16) == SB_HORZ) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_TOP))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		DrawButton(hDC, rcTop, SB_HORZ, SBHT_ARROW_TOP, nStatus);
-
-		//draw bottom button
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((nSBHover >> 16) == SB_HORZ) && ((nSBHover & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
-			if(((nSBLButtonDown >> 16) == SB_HORZ) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		DrawButton(hDC, rcBottom, SB_HORZ, SBHT_ARROW_BOTTOM, nStatus);
-
-		//draw client area
 		SKINBACKGROUND *pBackground;
 		if(dwStyle & WS_DISABLED)
-			pBackground = &s_SkinScrollBar.skinHBkDisable;   //Disabled
+			pBackground = &s_SkinScrollBar.skinBkDisable;   //Disabled
 		else
-			pBackground = &s_SkinScrollBar.skinHBkNormal;    //Normal
-		DrawBackground(hDC, pBackground, rcClient);
+			pBackground = &s_SkinScrollBar.skinBkNormal;    //Normal
+		DrawBackground(hDC, pBackground, ScrollBarInfo.rcScrollBar);
 
-		//draw thumb
-		if ((rcClient.right - rcClient.left) > 5)
+		if (ScrollInfo.nMax != ScrollInfo.nMin)
 		{
+			rcTop.left = ScrollBarInfo.rcScrollBar.left;
+			rcTop.top = ScrollBarInfo.rcScrollBar.top;
+			rcTop.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			rcTop.right = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.dxyLineButton;
+
+			if (!s_SkinScrollBar.nBtnLeftIncludeBorder)
+			{
+				rcTop.left += s_SkinScrollBar.skinHLBorderNormal.nWidth;
+				rcTop.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
+				rcTop.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
+			}
+
+			rcBottom.left = ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.dxyLineButton;
+			rcBottom.top = ScrollBarInfo.rcScrollBar.top;
+			rcBottom.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			rcBottom.right = ScrollBarInfo.rcScrollBar.right;
+
+			if (!s_SkinScrollBar.nBtnRightIncludeBorder)
+			{
+				rcBottom.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
+				rcBottom.right -= s_SkinScrollBar.skinHRBorderNormal.nWidth;
+				rcBottom.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
+			}
+
+			rcClient.left = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.dxyLineButton;
+			rcClient.top  = ScrollBarInfo.rcScrollBar.top;
+			rcClient.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			rcClient.right = ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.dxyLineButton;
+
+			rcItem.left = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.xyThumbTop;
+			rcItem.right = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.xyThumbBottom;
+			rcItem.top = ScrollBarInfo.rcScrollBar.top;
+			rcItem.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			if (!s_SkinScrollBar.nHThumbIncludeBorder)
+			{
+				rcItem.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
+				rcItem.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
+			}
+
+			//draw top button
 			if(dwStyle & WS_DISABLED)
 				nStatus = DRAWSTATUS_DISABLE;       //Disabled
-			else if(((nSBHover >> 16) == SB_HORZ) && ((nSBHover & 0x0000FFFF) == SBHT_THUMB))
-				if(((nSBLButtonDown >> 16) == SB_HORZ) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+			else if(((nSBHover >> 16) == SB_HORZ) && ((nSBHover & 0x0000FFFF) == SBHT_ARROW_TOP))
+				if(((nSBLButtonDown >> 16) == SB_HORZ) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_TOP))
 					nStatus = DRAWSTATUS_PRESS;     //Pressed
 				else
 					nStatus = DRAWSTATUS_HOVER;     //Hover
 			else
-				if(((nSBLButtonDown >> 16) == SB_HORZ) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
-					nStatus = DRAWSTATUS_PRESS;     //Drag
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			DrawButton(hDC, rcTop, SB_HORZ, SBHT_ARROW_TOP, nStatus);
+
+			//draw bottom button
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;       //Disabled
+			else if(((nSBHover >> 16) == SB_HORZ) && ((nSBHover & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
+				if(((nSBLButtonDown >> 16) == SB_HORZ) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
+					nStatus = DRAWSTATUS_PRESS;     //Pressed
 				else
-					nStatus = DRAWSTATUS_NORMAL;     //normal
-			DrawThumb(hDC, rcItem, SB_HORZ, nStatus);
-		}
+					nStatus = DRAWSTATUS_HOVER;     //Hover
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			DrawButton(hDC, rcBottom, SB_HORZ, SBHT_ARROW_BOTTOM, nStatus);
 
-		//draw border
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;   //Disabled
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		rcWindow = ScrollBarInfo.rcScrollBar;
-		if (s_SkinScrollBar.nBtnLeftIncludeBorder)
-		{
-			rcWindow.left = rcTop.right;
-		}
+			//draw client area
+			if(dwStyle & WS_DISABLED)
+				pBackground = &s_SkinScrollBar.skinHBkDisable;   //Disabled
+			else
+				pBackground = &s_SkinScrollBar.skinHBkNormal;    //Normal
+			DrawBackground(hDC, pBackground, rcClient);
 
-		if (s_SkinScrollBar.nBtnRightIncludeBorder)
-		{
-			rcWindow.right = rcBottom.left;
+			//draw thumb
+			if ((rcClient.right - rcClient.left) > 5)
+			{
+				if(dwStyle & WS_DISABLED)
+					nStatus = DRAWSTATUS_DISABLE;       //Disabled
+				else if(((nSBHover >> 16) == SB_HORZ) && ((nSBHover & 0x0000FFFF) == SBHT_THUMB))
+					if(((nSBLButtonDown >> 16) == SB_HORZ) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+						nStatus = DRAWSTATUS_PRESS;     //Pressed
+					else
+						nStatus = DRAWSTATUS_HOVER;     //Hover
+				else
+					if(((nSBLButtonDown >> 16) == SB_HORZ) && ((nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+						nStatus = DRAWSTATUS_PRESS;     //Drag
+					else
+						nStatus = DRAWSTATUS_NORMAL;     //normal
+				DrawThumb(hDC, rcItem, SB_HORZ, nStatus);
+			}
+
+			//draw border
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;   //Disabled
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			rcWindow = ScrollBarInfo.rcScrollBar;
+			if (s_SkinScrollBar.nBtnLeftIncludeBorder)
+			{
+				rcWindow.left = rcTop.right;
+			}
+
+			if (s_SkinScrollBar.nBtnRightIncludeBorder)
+			{
+				rcWindow.right = rcBottom.left;
+			}
+			DrawBorder(hDC, rcWindow, SB_HORZ, nStatus);
 		}
-		DrawBorder(hDC, rcWindow, SB_HORZ, nStatus);
 	}
 }
 
@@ -1190,58 +1242,11 @@ LRESULT CDreamSkinScrollBar::DefWindowProc(UINT message, WPARAM wParam, LPARAM l
 
 	switch(message)
 	{
-	/*case LVM_SETVIEW:
-		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-		if (nResult > 0)
-			m_nViewType = wParam;
-		break;
-	case WM_CTLCOLOREDIT:
-		nResult = ::SendMessage((HWND)lParam, WM_CTLCOLOREDIT, wParam, (LPARAM)m_hWnd);
-		break;
-	case WM_CREATE:
-		nResult = OnCreate((LPCREATESTRUCT)lParam);
-		break;
-	//case WM_DRAWITEM:
-	//	nResult = OnDrawItem((UINT)wParam, (LPDRAWITEMSTRUCT)lParam, ::GetWindowLong(m_hWnd, GWL_STYLE) & LVS_TYPEMASK);
-	//	break;
-	case WM_ENABLE:
-		nResult = CDreamSkinWindow::DefWindowProc(message, wParam, lParam);
-		UpdateWindow();
-		break;
-	case WM_ERASEBKGND:
-		nResult = OnEraseBkgnd((HDC)wParam);
-		break;
-	case WM_LBUTTONDOWN:
-		nResult = OnLButtonDown(wParam, MAKEPOINTS(lParam));
-		break;
-	
-	
-	case WM_NCHITTEST:
-		nResult = OnNcHitTest(MAKEPOINTS(lParam));
-		break;
-	case WM_NCLBUTTONDBLCLK:
-		nResult = OnNcLButtonDbClick(wParam, MAKEPOINTS(lParam));
-		break;
-	case WM_NCLBUTTONDOWN:
-		nResult = OnNcLButtonDown(wParam,  MAKEPOINTS(lParam));
-		break;
-	case WM_NCMOUSELEAVE:
-		nResult = OnNcMouseLeave();
-		break;
-	case WM_NCMOUSEMOVE:
-		nResult = OnNcMouseMove((UINT)wParam, MAKEPOINTS(lParam));
-		break;
-	case WM_NCPAINT:
-		nResult = OnNcPaint((HRGN)wParam);
-		break;
-	case WM_NOTIFY:
-		nResult = OnNotify(wParam, (LPNMHDR)lParam);
+	case SBM_GETSCROLLBARINFO :
+		nResult = OnGetScrollBarInfo((LPSCROLLBARINFO)lParam);
 		break;
 	case SBM_GETSCROLLINFO:
 		nResult = OnGetScrollInfo(wParam, (LPSCROLLINFO)lParam);
-		break;*/
-	case SBM_GETSCROLLBARINFO :
-		nResult = OnGetScrollBarInfo((LPSCROLLBARINFO)lParam);
 		break;
 	case WM_HSCROLL:
 		nResult = OnHScroll(wParam, (HWND)lParam);
@@ -1291,10 +1296,29 @@ LRESULT CDreamSkinScrollBar::OnGetScrollBarInfo(LPSCROLLBARINFO psbi)
 	return GetScrollBarInfo(rcWindow, (dwStyle & 0x01) == SBS_HORZ ? SB_HORZ : SB_VERT, &ScrollInfo, psbi);
 }
 
+LRESULT CDreamSkinScrollBar::OnGetScrollInfo(int fnBar, LPSCROLLINFO lpsi)
+{
+	BOOL bResult = FALSE;
+
+	if (lpsi->fMask == SIF_TRACKPOS)
+	{
+		if (m_ScrollBarTrackInfo.bIsTracking)
+		{
+			lpsi->nTrackPos = m_ScrollBarTrackInfo.nTrackPos;
+			bResult = TRUE;
+		}
+	}
+	else
+	{
+		bResult = CDreamSkinWindow::DefWindowProc(SBM_GETSCROLLINFO, fnBar, (LPARAM)lpsi);
+	}
+
+	return bResult;
+}
+
 LRESULT CDreamSkinScrollBar::OnHScroll(UINT nSBCode, HWND hWndCtrl)
 {
-	if (hWndCtrl == NULL)
-		hWndCtrl = m_hWnd;
+	LRESULT lResult = 0;
 
 	if (hWndCtrl == m_hWnd)
 	{
@@ -1303,28 +1327,24 @@ LRESULT CDreamSkinScrollBar::OnHScroll(UINT nSBCode, HWND hWndCtrl)
 		ScrollInfo.fMask = SIF_ALL;
 		::GetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo);
 
-		RECT rcClient;
-
-		switch(nSBCode)
+		switch(nSBCode & 0x0000FFFF)
 		{
-		case SB_ENDSCROLL:
-			::GetClientRect(m_hWnd, &rcClient);
-			::InvalidateRect(m_hWnd, &rcClient, FALSE);
-			break;
 		case SB_LINELEFT:
 			if (ScrollInfo.nPos > ScrollInfo.nMin)
 			{
 				ScrollInfo.nPos -= 1;
+				m_ScrollBarTrackInfo.nTrackPos = ScrollInfo.nPos;
 				ScrollInfo.fMask = SIF_POS;
-				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, TRUE);
+				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, FALSE);
 			}
 			break;
 		case SB_LINERIGHT:
 			if (ScrollInfo.nPos < ScrollInfo.nMax)
 			{
 				ScrollInfo.nPos += 1;
+				m_ScrollBarTrackInfo.nTrackPos = ScrollInfo.nPos;
 				ScrollInfo.fMask = SIF_POS;
-				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, TRUE);
+				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, FALSE);
 			}
 			break;
 		case SB_PAGELEFT:
@@ -1333,8 +1353,9 @@ LRESULT CDreamSkinScrollBar::OnHScroll(UINT nSBCode, HWND hWndCtrl)
 				ScrollInfo.nPos -= ScrollInfo.nPage;
 				if (ScrollInfo.nPos < ScrollInfo.nMin)
 					ScrollInfo.nPos = ScrollInfo.nMin;
+				m_ScrollBarTrackInfo.nTrackPos = ScrollInfo.nPos;
 				ScrollInfo.fMask = SIF_POS;
-				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, TRUE);
+				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, FALSE);
 			}
 			break;
 		case SB_PAGERIGHT:
@@ -1343,18 +1364,34 @@ LRESULT CDreamSkinScrollBar::OnHScroll(UINT nSBCode, HWND hWndCtrl)
 				ScrollInfo.nPos += ScrollInfo.nPage;
 				if (ScrollInfo.nPos > ScrollInfo.nMax)
 					ScrollInfo.nPos = ScrollInfo.nMax;
+				m_ScrollBarTrackInfo.nTrackPos = ScrollInfo.nPos;
 				ScrollInfo.fMask = SIF_POS;
-				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, TRUE);
+				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, FALSE);
 			}
 			break;
+		case SB_THUMBPOSITION:
+			if (m_ScrollBarTrackInfo.nTrackPos != ScrollInfo.nPos)
+			{
+				ScrollInfo.nPos = m_ScrollBarTrackInfo.nTrackPos;
+				if (ScrollInfo.nPos > ScrollInfo.nMax)
+					ScrollInfo.nPos = ScrollInfo.nMax;
+				if (ScrollInfo.nPos < ScrollInfo.nMin)
+					ScrollInfo.nPos = ScrollInfo.nMin;
+				ScrollInfo.fMask = SIF_POS;
+				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, FALSE);
+			}
+			nSBCode = SB_ENDSCROLL;
+			break;
 		}
+
+		HWND hWndParent = ::GetParent(hWndCtrl);
+		if (hWndParent)
+			lResult = ::SendMessage(hWndParent, WM_HSCROLL, nSBCode, (LPARAM)hWndCtrl);
+		else
+			lResult = CDreamSkinWindow::DefWindowProc(m_hWnd, WM_HSCROLL, nSBCode, (LPARAM)hWndCtrl);
 	}
 
-	HWND hWndParent = ::GetParent(hWndCtrl);
-	if (hWndParent)
-		return ::SendMessage(hWndParent, WM_HSCROLL, nSBCode, (LPARAM)hWndCtrl);
-	else
-		return CDreamSkinWindow::DefWindowProc(m_hWnd, WM_HSCROLL, nSBCode, (LPARAM)hWndCtrl);
+	return lResult;
 }
 
 LRESULT CDreamSkinScrollBar::OnLButtonDown(UINT nFlags, POINTS point)
@@ -1520,8 +1557,7 @@ LRESULT CDreamSkinScrollBar::OnPaint()
 
 LRESULT CDreamSkinScrollBar::OnVScroll(UINT nSBCode, HWND hWndCtrl)
 {
-	if (hWndCtrl == NULL)
-		hWndCtrl = m_hWnd;
+	LRESULT lResult = 0;
 
 	if (hWndCtrl == m_hWnd)
 	{
@@ -1530,18 +1566,13 @@ LRESULT CDreamSkinScrollBar::OnVScroll(UINT nSBCode, HWND hWndCtrl)
 		ScrollInfo.fMask = SIF_ALL;
 		::GetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo);
 
-		RECT rcClient;
-
-		switch(nSBCode)
+		switch(nSBCode & 0x0000FFFF)
 		{
-		case SB_ENDSCROLL:
-			::GetClientRect(m_hWnd, &rcClient);
-			::InvalidateRect(m_hWnd, &rcClient, FALSE);
-			break;
 		case SB_LINEUP:
 			if (ScrollInfo.nPos > ScrollInfo.nMin)
 			{
 				ScrollInfo.nPos -= 1;
+				m_ScrollBarTrackInfo.nTrackPos = ScrollInfo.nPos;
 				ScrollInfo.fMask = SIF_POS;
 				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, TRUE);
 			}
@@ -1550,6 +1581,7 @@ LRESULT CDreamSkinScrollBar::OnVScroll(UINT nSBCode, HWND hWndCtrl)
 			if (ScrollInfo.nPos < ScrollInfo.nMax)
 			{
 				ScrollInfo.nPos += 1;
+				m_ScrollBarTrackInfo.nTrackPos = ScrollInfo.nPos;
 				ScrollInfo.fMask = SIF_POS;
 				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, TRUE);
 			}
@@ -1560,6 +1592,7 @@ LRESULT CDreamSkinScrollBar::OnVScroll(UINT nSBCode, HWND hWndCtrl)
 				ScrollInfo.nPos -= ScrollInfo.nPage;
 				if (ScrollInfo.nPos < ScrollInfo.nMin)
 					ScrollInfo.nPos = ScrollInfo.nMin;
+				m_ScrollBarTrackInfo.nTrackPos = ScrollInfo.nPos;
 				ScrollInfo.fMask = SIF_POS;
 				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, TRUE);
 			}
@@ -1570,18 +1603,34 @@ LRESULT CDreamSkinScrollBar::OnVScroll(UINT nSBCode, HWND hWndCtrl)
 				ScrollInfo.nPos += ScrollInfo.nPage;
 				if (ScrollInfo.nPos > ScrollInfo.nMax)
 					ScrollInfo.nPos = ScrollInfo.nMax;
+				m_ScrollBarTrackInfo.nTrackPos = ScrollInfo.nPos;
 				ScrollInfo.fMask = SIF_POS;
 				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, TRUE);
 			}
 			break;
+		case SB_THUMBPOSITION:
+			if (m_ScrollBarTrackInfo.nTrackPos != ScrollInfo.nPos)
+			{
+				ScrollInfo.nPos = m_ScrollBarTrackInfo.nTrackPos;
+				if (ScrollInfo.nPos > ScrollInfo.nMax)
+					ScrollInfo.nPos = ScrollInfo.nMax;
+				if (ScrollInfo.nPos < ScrollInfo.nMin)
+					ScrollInfo.nPos = ScrollInfo.nMin;
+				ScrollInfo.fMask = SIF_POS;
+				::SetScrollInfo(m_hWnd, SB_CTL, &ScrollInfo, FALSE);
+			}
+			nSBCode = SB_ENDSCROLL;
+			break;
 		}
+
+		HWND hWndParent = ::GetParent(hWndCtrl);
+		if (hWndParent)
+			lResult = ::SendMessage(hWndParent, WM_VSCROLL, nSBCode, (LPARAM)hWndCtrl);
+		else
+			lResult = CDreamSkinWindow::DefWindowProc(m_hWnd, WM_VSCROLL, nSBCode, (LPARAM)hWndCtrl);
 	}
 
-	HWND hWndParent = ::GetParent(hWndCtrl);
-	if (hWndParent)
-		return ::SendMessage(hWndParent, WM_VSCROLL, nSBCode, (LPARAM)hWndCtrl);
-	else
-		return CDreamSkinWindow::DefWindowProc(m_hWnd, WM_VSCROLL, nSBCode, (LPARAM)hWndCtrl);
+	return lResult;
 }
 
 void CDreamSkinScrollBar::DrawHorzScrollBar(HDC hDC, DWORD dwStyle)
@@ -1601,109 +1650,118 @@ void CDreamSkinScrollBar::DrawHorzScrollBar(HDC hDC, DWORD dwStyle)
 	GetScrollBarInfo(rcWindow, SB_HORZ, &ScrollInfo, &ScrollBarInfo);
 	if (ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.rcScrollBar.top > 0)
 	{
-		rcTop.left = ScrollBarInfo.rcScrollBar.left;
-		rcTop.top = ScrollBarInfo.rcScrollBar.top;
-		rcTop.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		rcTop.right = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.dxyLineButton;
-
-		if (!m_pSkinScrollBar->nBtnLeftIncludeBorder)
-		{
-			rcTop.left += s_SkinScrollBar.skinHLBorderNormal.nWidth;
-			rcTop.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
-			rcTop.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
-		}
-
-		rcBottom.left = ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.dxyLineButton;
-		rcBottom.top = ScrollBarInfo.rcScrollBar.top;
-		rcBottom.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		rcBottom.right = ScrollBarInfo.rcScrollBar.right;
-
-		if (!m_pSkinScrollBar->nBtnRightIncludeBorder)
-		{
-			rcBottom.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
-			rcBottom.right -= s_SkinScrollBar.skinHRBorderNormal.nWidth;
-			rcBottom.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
-		}
-
-		rcClient.left = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.dxyLineButton;
-		rcClient.top  = ScrollBarInfo.rcScrollBar.top;
-		rcClient.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		rcClient.right = ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.dxyLineButton;
-
-		rcItem.left = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.xyThumbTop;
-		rcItem.right = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.xyThumbBottom;
-		rcItem.top = ScrollBarInfo.rcScrollBar.top;
-		rcItem.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		if (!m_pSkinScrollBar->nHThumbIncludeBorder)
-		{
-			rcItem.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
-			rcItem.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
-		}
-
-		//draw top button
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((m_nSBHover >> 16) == SB_HORZ) && ((m_nSBHover & 0x0000FFFF) == SBHT_ARROW_TOP))
-			if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_HORZ) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_TOP))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		DrawButton(hDC, rcTop, SB_HORZ, SBHT_ARROW_TOP, nStatus);
-
-		//draw bottom button
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((m_nSBHover >> 16) == SB_HORZ) && ((m_nSBHover & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
-			if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_HORZ) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		DrawButton(hDC, rcBottom, SB_HORZ, SBHT_ARROW_BOTTOM, nStatus);
-
-		//draw client area
 		SKINBACKGROUND *pBackground;
 		if(dwStyle & WS_DISABLED)
-			pBackground = &m_pSkinScrollBar->skinHBkDisable;   //Disabled
+			pBackground = &m_pSkinScrollBar->skinBkDisable;   //Disabled
 		else
 			pBackground = &m_pSkinScrollBar->skinHBkNormal;    //Normal
-		DrawBackground(hDC, pBackground, rcClient);
+		DrawBackground(hDC, pBackground, rcWindow);
 
-		//draw thumb
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((m_nSBHover >> 16) == SB_HORZ) && ((m_nSBHover & 0x0000FFFF) == SBHT_THUMB))
-			if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_HORZ) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_HORZ) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
-				nStatus = DRAWSTATUS_PRESS;     //Drag
-			else
-				nStatus = DRAWSTATUS_NORMAL;     //normal
-		DrawThumb(hDC, rcItem, SB_HORZ, nStatus);
-
-		//draw border
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;   //Disabled
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		
-		RECT rcWindow = ScrollBarInfo.rcScrollBar;
-		if (m_pSkinScrollBar->nBtnLeftIncludeBorder)
+		if (ScrollInfo.nMax != ScrollInfo.nMin)
 		{
-			rcWindow.left = rcTop.right;
-		}
+			rcTop.left = ScrollBarInfo.rcScrollBar.left;
+			rcTop.top = ScrollBarInfo.rcScrollBar.top;
+			rcTop.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			rcTop.right = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.dxyLineButton;
 
-		if (m_pSkinScrollBar->nBtnRightIncludeBorder)
-		{
-			rcWindow.right = rcBottom.left;
+			if (!m_pSkinScrollBar->nBtnLeftIncludeBorder)
+			{
+				rcTop.left += s_SkinScrollBar.skinHLBorderNormal.nWidth;
+				rcTop.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
+				rcTop.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
+			}
+
+			rcBottom.left = ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.dxyLineButton;
+			rcBottom.top = ScrollBarInfo.rcScrollBar.top;
+			rcBottom.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			rcBottom.right = ScrollBarInfo.rcScrollBar.right;
+
+			if (!m_pSkinScrollBar->nBtnRightIncludeBorder)
+			{
+				rcBottom.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
+				rcBottom.right -= s_SkinScrollBar.skinHRBorderNormal.nWidth;
+				rcBottom.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
+			}
+
+			rcClient.left = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.dxyLineButton;
+			rcClient.top  = ScrollBarInfo.rcScrollBar.top;
+			rcClient.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			rcClient.right = ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.dxyLineButton;
+
+			rcItem.left = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.xyThumbTop;
+			rcItem.right = ScrollBarInfo.rcScrollBar.left + ScrollBarInfo.xyThumbBottom;
+			rcItem.top = ScrollBarInfo.rcScrollBar.top;
+			rcItem.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			if (!m_pSkinScrollBar->nHThumbIncludeBorder)
+			{
+				rcItem.top += s_SkinScrollBar.skinHTBorderNormal.nWidth;
+				rcItem.bottom -= s_SkinScrollBar.skinHBBorderNormal.nWidth;
+			}
+
+			//draw top button
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;       //Disabled
+			else if(((m_nSBHover >> 16) == SB_HORZ) && ((m_nSBHover & 0x0000FFFF) == SBHT_ARROW_TOP))
+				if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_HORZ) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_TOP))
+					nStatus = DRAWSTATUS_PRESS;     //Pressed
+				else
+					nStatus = DRAWSTATUS_HOVER;     //Hover
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			DrawButton(hDC, rcTop, SB_HORZ, SBHT_ARROW_TOP, nStatus);
+
+			//draw bottom button
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;       //Disabled
+			else if(((m_nSBHover >> 16) == SB_HORZ) && ((m_nSBHover & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
+				if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_HORZ) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
+					nStatus = DRAWSTATUS_PRESS;     //Pressed
+				else
+					nStatus = DRAWSTATUS_HOVER;     //Hover
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			DrawButton(hDC, rcBottom, SB_HORZ, SBHT_ARROW_BOTTOM, nStatus);
+
+			//draw client area
+			if(dwStyle & WS_DISABLED)
+				pBackground = &m_pSkinScrollBar->skinHBkDisable;   //Disabled
+			else
+				pBackground = &m_pSkinScrollBar->skinHBkNormal;    //Normal
+			DrawBackground(hDC, pBackground, rcClient);
+
+			//draw thumb
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;       //Disabled
+			else if(((m_nSBHover >> 16) == SB_HORZ) && ((m_nSBHover & 0x0000FFFF) == SBHT_THUMB))
+				if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_HORZ) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+					nStatus = DRAWSTATUS_PRESS;     //Pressed
+				else
+					nStatus = DRAWSTATUS_HOVER;     //Hover
+			else
+				if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_HORZ) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+					nStatus = DRAWSTATUS_PRESS;     //Drag
+				else
+					nStatus = DRAWSTATUS_NORMAL;     //normal
+			DrawThumb(hDC, rcItem, SB_HORZ, nStatus);
+
+			//draw border
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;   //Disabled
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			
+			RECT rcWindow = ScrollBarInfo.rcScrollBar;
+			if (m_pSkinScrollBar->nBtnLeftIncludeBorder)
+			{
+				rcWindow.left = rcTop.right;
+			}
+
+			if (m_pSkinScrollBar->nBtnRightIncludeBorder)
+			{
+				rcWindow.right = rcBottom.left;
+			}
+			DrawBorder(hDC, rcWindow, SB_HORZ, nStatus);
 		}
-		DrawBorder(hDC, rcWindow, SB_HORZ, nStatus);
 	}
 }
 
@@ -1724,109 +1782,118 @@ void CDreamSkinScrollBar::DrawVertScrollBar(HDC hDC, DWORD dwStyle)
 	GetScrollBarInfo(rcWindow, SB_VERT, &ScrollInfo, &ScrollBarInfo);
 	if (ScrollBarInfo.rcScrollBar.right - ScrollBarInfo.rcScrollBar.left > 0)
 	{
-		rcTop.left = ScrollBarInfo.rcScrollBar.left;
-		rcTop.top = ScrollBarInfo.rcScrollBar.top;
-		rcTop.bottom = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.dxyLineButton;;
-		rcTop.right = ScrollBarInfo.rcScrollBar.right;
-
-		if (!m_pSkinScrollBar->nBtnTopIncludeBorder)
-		{
-			rcTop.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
-			rcTop.top += s_SkinScrollBar.skinVTBorderNormal.nWidth;
-			rcTop.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
-		}
-
-		rcBottom.left = ScrollBarInfo.rcScrollBar.left;
-		rcBottom.top = ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.dxyLineButton;
-		rcBottom.bottom = ScrollBarInfo.rcScrollBar.bottom;
-		rcBottom.right = ScrollBarInfo.rcScrollBar.right;
-
-		if (!m_pSkinScrollBar->nBtnBottomIncludeBorder)
-		{
-			rcBottom.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
-			rcBottom.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
-			rcBottom.bottom -= s_SkinScrollBar.skinVBBorderNormal.nWidth;
-		}
-
-		rcClient.left = ScrollBarInfo.rcScrollBar.left;
-		rcClient.top  = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.dxyLineButton;
-		rcClient.bottom = ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.dxyLineButton;
-		rcClient.right = ScrollBarInfo.rcScrollBar.right;
-
-		rcItem.left = ScrollBarInfo.rcScrollBar.left;
-		rcItem.right = ScrollBarInfo.rcScrollBar.right;
-		rcItem.top = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.xyThumbTop;
-		rcItem.bottom = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.xyThumbBottom;
-		if (!m_pSkinScrollBar->nVThumbIncludeBorder)
-		{
-			rcItem.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
-			rcItem.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
-		}
-
-		//draw top button
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((m_nSBHover >> 16) == SB_VERT) && ((m_nSBHover & 0x0000FFFF) == SBHT_ARROW_TOP))
-			if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_VERT) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_TOP))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		DrawButton(hDC, rcTop, SB_VERT, SBHT_ARROW_TOP, nStatus);
-
-		//draw bottom button
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((m_nSBHover >> 16) == SB_VERT) && ((m_nSBHover & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
-			if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_VERT) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		DrawButton(hDC, rcBottom, SB_VERT, SBHT_ARROW_BOTTOM, nStatus);
-
-		//draw client area
 		SKINBACKGROUND *pBackground;
 		if(dwStyle & WS_DISABLED)
-			pBackground = &m_pSkinScrollBar->skinVBkDisable;   //Disabled
+			pBackground = &m_pSkinScrollBar->skinBkDisable;   //Disabled
 		else
-			pBackground = &m_pSkinScrollBar->skinVBkNormal;    //Normal
-		DrawBackground(hDC, pBackground, rcClient);
+			pBackground = &m_pSkinScrollBar->skinHBkNormal;    //Normal
+		DrawBackground(hDC, pBackground, rcWindow);
 
-		//draw thumb
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;       //Disabled
-		else if(((m_nSBHover >> 16) == SB_VERT) && ((m_nSBHover & 0x0000FFFF) == SBHT_THUMB))
-			if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_VERT) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
-				nStatus = DRAWSTATUS_PRESS;     //Pressed
-			else
-				nStatus = DRAWSTATUS_HOVER;     //Hover
-		else
-			if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_VERT) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
-				nStatus = DRAWSTATUS_PRESS;     //Drag
-			else
-				nStatus = DRAWSTATUS_NORMAL;     //normal
-		DrawThumb(hDC, rcItem, SB_VERT, nStatus);
-
-		//draw border
-		if(dwStyle & WS_DISABLED)
-			nStatus = DRAWSTATUS_DISABLE;   //Disabled
-		else
-			nStatus = DRAWSTATUS_NORMAL;    //Normal
-		
-		RECT rcWindow = ScrollBarInfo.rcScrollBar;
-		if (m_pSkinScrollBar->nBtnTopIncludeBorder)
+		if (ScrollInfo.nMax != ScrollInfo.nMin)
 		{
-			rcWindow.top = rcTop.bottom;
-		}
+			rcTop.left = ScrollBarInfo.rcScrollBar.left;
+			rcTop.top = ScrollBarInfo.rcScrollBar.top;
+			rcTop.bottom = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.dxyLineButton;;
+			rcTop.right = ScrollBarInfo.rcScrollBar.right;
 
-		if (m_pSkinScrollBar->nBtnBottomIncludeBorder)
-		{
-			rcWindow.bottom = rcBottom.top;
+			if (!m_pSkinScrollBar->nBtnTopIncludeBorder)
+			{
+				rcTop.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
+				rcTop.top += s_SkinScrollBar.skinVTBorderNormal.nWidth;
+				rcTop.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
+			}
+
+			rcBottom.left = ScrollBarInfo.rcScrollBar.left;
+			rcBottom.top = ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.dxyLineButton;
+			rcBottom.bottom = ScrollBarInfo.rcScrollBar.bottom;
+			rcBottom.right = ScrollBarInfo.rcScrollBar.right;
+
+			if (!m_pSkinScrollBar->nBtnBottomIncludeBorder)
+			{
+				rcBottom.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
+				rcBottom.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
+				rcBottom.bottom -= s_SkinScrollBar.skinVBBorderNormal.nWidth;
+			}
+
+			rcClient.left = ScrollBarInfo.rcScrollBar.left;
+			rcClient.top  = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.dxyLineButton;
+			rcClient.bottom = ScrollBarInfo.rcScrollBar.bottom - ScrollBarInfo.dxyLineButton;
+			rcClient.right = ScrollBarInfo.rcScrollBar.right;
+
+			rcItem.left = ScrollBarInfo.rcScrollBar.left;
+			rcItem.right = ScrollBarInfo.rcScrollBar.right;
+			rcItem.top = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.xyThumbTop;
+			rcItem.bottom = ScrollBarInfo.rcScrollBar.top + ScrollBarInfo.xyThumbBottom;
+			if (!m_pSkinScrollBar->nVThumbIncludeBorder)
+			{
+				rcItem.left += s_SkinScrollBar.skinVLBorderNormal.nWidth;
+				rcItem.right -= s_SkinScrollBar.skinVRBorderNormal.nWidth;
+			}
+
+			//draw top button
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;       //Disabled
+			else if(((m_nSBHover >> 16) == SB_VERT) && ((m_nSBHover & 0x0000FFFF) == SBHT_ARROW_TOP))
+				if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_VERT) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_TOP))
+					nStatus = DRAWSTATUS_PRESS;     //Pressed
+				else
+					nStatus = DRAWSTATUS_HOVER;     //Hover
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			DrawButton(hDC, rcTop, SB_VERT, SBHT_ARROW_TOP, nStatus);
+
+			//draw bottom button
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;       //Disabled
+			else if(((m_nSBHover >> 16) == SB_VERT) && ((m_nSBHover & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
+				if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_VERT) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_ARROW_BOTTOM))
+					nStatus = DRAWSTATUS_PRESS;     //Pressed
+				else
+					nStatus = DRAWSTATUS_HOVER;     //Hover
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			DrawButton(hDC, rcBottom, SB_VERT, SBHT_ARROW_BOTTOM, nStatus);
+
+			//draw client area
+			if(dwStyle & WS_DISABLED)
+				pBackground = &m_pSkinScrollBar->skinVBkDisable;   //Disabled
+			else
+				pBackground = &m_pSkinScrollBar->skinVBkNormal;    //Normal
+			DrawBackground(hDC, pBackground, rcClient);
+
+			//draw thumb
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;       //Disabled
+			else if(((m_nSBHover >> 16) == SB_VERT) && ((m_nSBHover & 0x0000FFFF) == SBHT_THUMB))
+				if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_VERT) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+					nStatus = DRAWSTATUS_PRESS;     //Pressed
+				else
+					nStatus = DRAWSTATUS_HOVER;     //Hover
+			else
+				if(((m_ScrollBarTrackInfo.nSBLButtonDown >> 16) == SB_VERT) && ((m_ScrollBarTrackInfo.nSBLButtonDown & 0x0000FFFF) == SBHT_THUMB))
+					nStatus = DRAWSTATUS_PRESS;     //Drag
+				else
+					nStatus = DRAWSTATUS_NORMAL;     //normal
+			DrawThumb(hDC, rcItem, SB_VERT, nStatus);
+
+			//draw border
+			if(dwStyle & WS_DISABLED)
+				nStatus = DRAWSTATUS_DISABLE;   //Disabled
+			else
+				nStatus = DRAWSTATUS_NORMAL;    //Normal
+			
+			RECT rcWindow = ScrollBarInfo.rcScrollBar;
+			if (m_pSkinScrollBar->nBtnTopIncludeBorder)
+			{
+				rcWindow.top = rcTop.bottom;
+			}
+
+			if (m_pSkinScrollBar->nBtnBottomIncludeBorder)
+			{
+				rcWindow.bottom = rcBottom.top;
+			}
+			DrawBorder(hDC, rcWindow, SB_VERT, nStatus);
 		}
-		DrawBorder(hDC, rcWindow, SB_VERT, nStatus);
 	}
 }
 
@@ -1838,71 +1905,80 @@ BOOL CDreamSkinScrollBar::GetScrollBarInfo(RECT rcWindow, int fnBar, LPSCROLLINF
 	
 	RECT rcClient = rcWindow;
 	::OffsetRect(&rcClient, 0 - rcWindow.left, 0 - rcWindow.top);
-	if (fnBar == SB_HORZ)
+	if (lpsi->nMax == lpsi->nMin)
 	{
-		if (m_pSkinScrollBar->skinBtnLeftNormal.nDrawType == DRAWTYPE_STRETCHBITMAP && m_pSkinScrollBar->skinBtnLeftNormal.imgDraw.hImage) 
-			psbi->dxyLineButton = m_pSkinScrollBar->skinBtnLeftNormal.imgDraw.nWidth;
-		else
-			psbi->dxyLineButton = DEFAULT_SCROLLBAR_BUTTON_XY; //Hardcode value
-
-		if ((rcClient.right - rcClient.left) <= (psbi->dxyLineButton * 2))
-			psbi->dxyLineButton = (rcClient.right - rcClient.left) / 2;
-
-		nClient = rcClient.right - rcClient.left - psbi->dxyLineButton * 2;
-
-		nThumb = lpsi->nPage * nClient / (lpsi->nMax - lpsi->nMin);
-		if (m_ScrollBarTrackInfo.bIsTracking && (lpsi->fMask & SIF_TRACKPOS))
-		{
-			if (lpsi->nTrackPos > lpsi->nMin)
-				psbi->xyThumbTop = psbi->dxyLineButton + (lpsi->nTrackPos - lpsi->nMin) * nClient / (lpsi->nMax - lpsi->nMin);
-			else
-				psbi->xyThumbTop = psbi->dxyLineButton;
-		}
-		else
-		{
-			if (lpsi->nPos > lpsi->nMin)
-				psbi->xyThumbTop = psbi->dxyLineButton + (lpsi->nPos - lpsi->nMin) * nClient / (lpsi->nMax - lpsi->nMin);
-			else
-				psbi->xyThumbTop = psbi->dxyLineButton;
-		}
-		if ((psbi->xyThumbTop + nThumb) > (psbi->dxyLineButton + nClient))
-			psbi->xyThumbTop = psbi->dxyLineButton + nClient - nThumb;
-		psbi->xyThumbBottom = psbi->xyThumbTop + nThumb;
-		if (psbi->xyThumbTop < psbi->dxyLineButton)
-			psbi->xyThumbTop = psbi->dxyLineButton;
+		psbi->dxyLineButton = 0;
+		psbi->xyThumbBottom = 0;
+		psbi->xyThumbTop = 0;
 	}
 	else
 	{
-		if (m_pSkinScrollBar->skinBtnTopNormal.nDrawType == DRAWTYPE_STRETCHBITMAP && m_pSkinScrollBar->skinBtnTopNormal.imgDraw.hImage)
-			psbi->dxyLineButton = m_pSkinScrollBar->skinBtnTopNormal.imgDraw.nHeight;
-		else
-			psbi->dxyLineButton = DEFAULT_SCROLLBAR_BUTTON_XY; //Hardcode value
-
-		if ((rcClient.bottom - rcClient.top) <= (psbi->dxyLineButton * 2))
-			psbi->dxyLineButton = (rcClient.bottom - rcClient.top) / 2;
-
-		nClient = rcClient.bottom - rcClient.top - psbi->dxyLineButton * 2;
-
-		nThumb = lpsi->nPage * nClient / (lpsi->nMax - lpsi->nMin);
-		if (m_ScrollBarTrackInfo.bIsTracking && (lpsi->fMask & SIF_TRACKPOS))
+		if (fnBar == SB_HORZ)
 		{
-			if (lpsi->nTrackPos > lpsi->nMin)
-				psbi->xyThumbTop = psbi->dxyLineButton + (lpsi->nTrackPos - lpsi->nMin) * nClient / (lpsi->nMax - lpsi->nMin);
+			if (m_pSkinScrollBar->skinBtnLeftNormal.nDrawType == DRAWTYPE_STRETCHBITMAP && m_pSkinScrollBar->skinBtnLeftNormal.imgDraw.hImage) 
+				psbi->dxyLineButton = m_pSkinScrollBar->skinBtnLeftNormal.imgDraw.nWidth;
 			else
+				psbi->dxyLineButton = DEFAULT_SCROLLBAR_BUTTON_XY; //Hardcode value
+
+			if ((rcClient.right - rcClient.left) <= (psbi->dxyLineButton * 2))
+				psbi->dxyLineButton = (rcClient.right - rcClient.left) / 2;
+
+			nClient = rcClient.right - rcClient.left - psbi->dxyLineButton * 2;
+
+			nThumb = lpsi->nPage * nClient / (lpsi->nMax - lpsi->nMin);
+			if (m_ScrollBarTrackInfo.bIsTracking && (lpsi->fMask & SIF_TRACKPOS))
+			{
+				if (m_ScrollBarTrackInfo.nTrackPos > lpsi->nMin)
+					psbi->xyThumbTop = psbi->dxyLineButton + (m_ScrollBarTrackInfo.nTrackPos - lpsi->nMin) * nClient / (lpsi->nMax - lpsi->nMin);
+				else
+					psbi->xyThumbTop = psbi->dxyLineButton;
+			}
+			else
+			{
+				if (lpsi->nPos > lpsi->nMin)
+					psbi->xyThumbTop = psbi->dxyLineButton + (lpsi->nPos - lpsi->nMin) * nClient / (lpsi->nMax - lpsi->nMin);
+				else
+					psbi->xyThumbTop = psbi->dxyLineButton;
+			}
+			if ((psbi->xyThumbTop + nThumb) > (psbi->dxyLineButton + nClient))
+				psbi->xyThumbTop = psbi->dxyLineButton + nClient - nThumb;
+			psbi->xyThumbBottom = psbi->xyThumbTop + nThumb;
+			if (psbi->xyThumbTop < psbi->dxyLineButton)
 				psbi->xyThumbTop = psbi->dxyLineButton;
 		}
 		else
 		{
-			if (lpsi->nPos > lpsi->nMin)
-				psbi->xyThumbTop = psbi->dxyLineButton + (lpsi->nPos - lpsi->nMin) * nClient / (lpsi->nMax - lpsi->nMin);
+			if (m_pSkinScrollBar->skinBtnTopNormal.nDrawType == DRAWTYPE_STRETCHBITMAP && m_pSkinScrollBar->skinBtnTopNormal.imgDraw.hImage)
+				psbi->dxyLineButton = m_pSkinScrollBar->skinBtnTopNormal.imgDraw.nHeight;
 			else
+				psbi->dxyLineButton = DEFAULT_SCROLLBAR_BUTTON_XY; //Hardcode value
+
+			if ((rcClient.bottom - rcClient.top) <= (psbi->dxyLineButton * 2))
+				psbi->dxyLineButton = (rcClient.bottom - rcClient.top) / 2;
+
+			nClient = rcClient.bottom - rcClient.top - psbi->dxyLineButton * 2;
+
+			nThumb = lpsi->nPage * nClient / (lpsi->nMax - lpsi->nMin);
+			if (m_ScrollBarTrackInfo.bIsTracking && (lpsi->fMask & SIF_TRACKPOS))
+			{
+				if (m_ScrollBarTrackInfo.nTrackPos > lpsi->nMin)
+					psbi->xyThumbTop = psbi->dxyLineButton + (m_ScrollBarTrackInfo.nTrackPos - lpsi->nMin) * nClient / (lpsi->nMax - lpsi->nMin);
+				else
+					psbi->xyThumbTop = psbi->dxyLineButton;
+			}
+			else
+			{
+				if (lpsi->nPos > lpsi->nMin)
+					psbi->xyThumbTop = psbi->dxyLineButton + (lpsi->nPos - lpsi->nMin) * nClient / (lpsi->nMax - lpsi->nMin);
+				else
+					psbi->xyThumbTop = psbi->dxyLineButton;
+			}
+			if ((psbi->xyThumbTop + nThumb) > (psbi->dxyLineButton + nClient))
+				psbi->xyThumbTop = psbi->dxyLineButton + nClient - nThumb;
+			psbi->xyThumbBottom = psbi->xyThumbTop + nThumb;
+			if (psbi->xyThumbTop < psbi->dxyLineButton)
 				psbi->xyThumbTop = psbi->dxyLineButton;
 		}
-		if ((psbi->xyThumbTop + nThumb) > (psbi->dxyLineButton + nClient))
-			psbi->xyThumbTop = psbi->dxyLineButton + nClient - nThumb;
-		psbi->xyThumbBottom = psbi->xyThumbTop + nThumb;
-		if (psbi->xyThumbTop < psbi->dxyLineButton)
-			psbi->xyThumbTop = psbi->dxyLineButton;
 	}
 	
 	for (int i = 0; i <= CCHILDREN_SCROLLBAR; i++)

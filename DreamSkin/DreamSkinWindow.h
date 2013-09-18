@@ -12,6 +12,7 @@
 #define DREAMSKIN_WINDOW                      0
 #define DREAMSKIN_BUTTON                      1
 #define DREAMSKIN_COMBOBOX                    2
+#define DREAMSKIN_SCROLLBAR                   3
 
 class CDreamSkinWindow
 {

@@ -29,6 +29,8 @@ public:
 
 	virtual void    Reload();
 
+	virtual int     GetType() { return DREAMSKIN_SCROLLBAR; };
+
 public:
 	//Used to replace system SetScrollInfo API
 	static int WINAPI SetScrollInfo(HWND hWnd, int fnBar, LPCSCROLLINFO lpsi, BOOL fRedraw);
@@ -67,6 +69,8 @@ public:
 	virtual LRESULT DefWindowProc(UINT message, WPARAM wParam, LPARAM lParam);
 	//process the SBM_GETSCROLLBARINFO
 	virtual LRESULT OnGetScrollBarInfo(PSCROLLBARINFO psbi);
+	//process the SBM_GETSCROLLINFO message
+	virtual LRESULT OnGetScrollInfo(int fnBar, LPSCROLLINFO lpsi);
 	//process the WM_HSCROLL message
 	virtual LRESULT OnHScroll(UINT nSBCode, HWND hWndCtrl);
 	//process the WM_LBUTTONDOWN message
