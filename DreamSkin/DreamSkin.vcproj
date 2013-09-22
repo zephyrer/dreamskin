@@ -221,6 +221,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DreamSkinProgressCtrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DreamSkinScrollBar.cpp"
 				>
 			</File>
@@ -312,6 +316,10 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinMain.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DreamSkinProgressCtrl.h"
 				>
 			</File>
 			<File

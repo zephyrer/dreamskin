@@ -485,6 +485,9 @@ typedef struct _tag_SKINCOMBOBOX
 
 typedef struct _tag_SKINSCROLLBAR
 {
+	SKINBACKGROUND   skinBkNormal;                     //Background in normal status
+	SKINBACKGROUND   skinBkDisable;                   //Background in disable status
+
 	SKINBACKGROUND   skinHBkNormal;                   //Background in normal status for horizontal scroll bar
 	SKINBACKGROUND   skinHBkDisable;                  //Background in disable status for horizontal scroll bar
 
@@ -557,6 +560,31 @@ typedef struct _tag_SKINHEADERCTRL
 	SKINITEM         skinItemPress;                   //Item in press status
 }SKINHEADERCTRL;
 
+typedef struct _tag_SKINPROGRESSCTRL
+{
+	SKINBACKGROUND   skinHBkNormal;                    //Background in normal status
+	SKINBACKGROUND   skinHFrNormal;                    //Foreground in normal status
+
+	SKINBACKGROUND   skinVBkNormal;                    //Background in normal status
+	SKINBACKGROUND   skinVFrNormal;                    //Foreground in normal status
+
+	SKINBORDER       skinHLBorderNormal;               //Left border in normal status
+	SKINBORDER       skinHRBorderNormal;               //Right border in normal status
+	SKINBORDER       skinHTBorderNormal;               //Top border in normal status
+	SKINBORDER       skinHBBorderNormal;               //Bottom border in normal status
+
+	SKINBORDER       skinVLBorderNormal;               //Left border in normal status
+	SKINBORDER       skinVRBorderNormal;               //Right border in normal status
+	SKINBORDER       skinVTBorderNormal;               //Top border in normal status
+	SKINBORDER       skinVBBorderNormal;               //Bottom border in normal status
+
+	int              nHBlockWidth;                     //Width of foreground block
+	int              nHBlockSpacing;                   //Space width between foreground blocks
+
+	int              nVBlockWidth;                     //Width of foreground block
+	int              nVBlockSpacing;                   //Space width between foreground blocks
+}SKINPROGRESSCTRL;
+
 class CDreamSkinLoader
 {
 public:
@@ -573,12 +601,14 @@ protected:
 	static WCHAR wstrSkinFileNodeNameHeaderCtrl[];
 	static WCHAR wstrSkinFileNodeNameListBox[];
 	static WCHAR wstrSkinFileNodeNameListCtrl[];
+	static WCHAR wstrSkinFileNodeNameProgressCtrl[];
 	static WCHAR wstrSkinFileNodeNameRadio[];
 	static WCHAR wstrSkinFileNodeNameScrollBar[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameTab[];
 
 	static WCHAR wstrSkinFileNodeNameBackground[];
+	static WCHAR wstrSkinFileNodeNameForeground[];
 	static WCHAR wstrSkinFileNodeNameBorder[];
 	static WCHAR wstrSkinFileNodeNameColor[];
 	static WCHAR wstrSkinFileNodeNameFont[];
@@ -644,6 +674,7 @@ public:
 	void GetSkinHeaderCtrl(SKINHEADERCTRL *pSkinHeaderCtrl) const;
 	void GetSkinListBox(SKINLISTBOX *pSkinListBox) const;
 	void GetSkinListCtrl(SKINLISTCTRL *pSkinListCtrl) const;
+	void GetSkinProgressCtrl(SKINPROGRESSCTRL *pSkinProgressCtrl) const;
 	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
 	void GetSkinScrollBar(SKINSCROLLBAR *pSkinScrollBar) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
@@ -659,6 +690,7 @@ protected:
 	BOOL LoadSkinHeaderCtrl(void *parser);
 	BOOL LoadSkinListBox(void *parser);
 	BOOL LoadSkinListCtrl(void *parser);
+	BOOL LoadSkinProgressCtrl(void *parser);
 	BOOL LoadSkinRadio(void *parser);
 	BOOL LoadSkinScrollBar(void *parser);
 	BOOL LoadSkinStatic(void *parser);
@@ -684,21 +716,22 @@ protected:
 	BOOL LoadTitleBar(void *titlebar, SKINTITLEBAR *pSkinTitleBar);
 
 protected:
-	SKINDIALOG      m_SkinDialog;
-	SKINBUTTON      m_SkinButton;
-	SKINCHECKBOX    m_SkinCheckBox;
-	SKINCOMBOBOX    m_SkinComboBox;
-	SKINEDIT        m_SkinEdit;
-	SKINGROUPBOX    m_SkinGroupBox;
-	SKINHEADERCTRL  m_SkinHeaderCtrl;
-	SKINLISTBOX     m_SkinListBox;
-	SKINLISTCTRL    m_SkinListCtrl;
-	SKINRADIO       m_SkinRadio;
-	SKINSCROLLBAR   m_SkinScrollBar;
-	SKINSTATIC      m_SkinStatic;
-	SKINTAB         m_SkinTab;
-	WCHAR           m_wstrSkinFilePath[MAX_PATH];
-	WCHAR           m_wstrSkinFileDir[MAX_PATH];
+	SKINDIALOG       m_SkinDialog;
+	SKINBUTTON       m_SkinButton;
+	SKINCHECKBOX     m_SkinCheckBox;
+	SKINCOMBOBOX     m_SkinComboBox;
+	SKINEDIT         m_SkinEdit;
+	SKINGROUPBOX     m_SkinGroupBox;
+	SKINHEADERCTRL   m_SkinHeaderCtrl;
+	SKINLISTBOX      m_SkinListBox;
+	SKINLISTCTRL     m_SkinListCtrl;
+	SKINPROGRESSCTRL m_SkinProgressCtrl;
+	SKINRADIO        m_SkinRadio;
+	SKINSCROLLBAR    m_SkinScrollBar;
+	SKINSTATIC       m_SkinStatic;
+	SKINTAB          m_SkinTab;
+	WCHAR            m_wstrSkinFilePath[MAX_PATH];
+	WCHAR            m_wstrSkinFileDir[MAX_PATH];
 	
 	CImageHandleList *m_pImageHandleList;
 };

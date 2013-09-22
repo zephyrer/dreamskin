@@ -26,6 +26,7 @@ using namespace xercesc;
 #include "DreamSkinListBox.h"
 #include "DreamSkinListCtrl.h"
 #include "DreamSkinComboBox.h"
+#include "DreamSkinProgressCtrl.h"
 #include "WinFileEx.h"
 
 #include "HexBin.h"
@@ -73,12 +74,14 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameGroupBox[] = L"groupbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameHeaderCtrl[] = L"headerctrl";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameListBox[] = L"listbox";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameListCtrl[] = L"listctrl";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameProgressCtrl[] = L"progressctrl";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRadio[] = L"radio";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameScrollBar[] = L"scrollbar";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameStatic[] = L"static";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameTab[] = L"tab";
 
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBackground[] = L"background";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameForeground[] = L"foreground";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameBorder[] = L"border";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameColor[] = L"color";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameFont[] = L"font";
@@ -229,6 +232,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinComboBox::GetDefaultSkin(&m_SkinComboBox);
 		LoadSkinComboBox(parser);
 
+		//Load Skin ProgressCtrl
+		CDreamSkinProgressCtrl::GetDefaultSkin(&m_SkinProgressCtrl);
+		LoadSkinProgressCtrl(parser);
+
 		parser->setErrorHandler(NULL);
 	}
 	catch (const XMLException& ) 
@@ -335,6 +342,14 @@ void CDreamSkinLoader::GetSkinListCtrl(SKINLISTCTRL *pSkinListCtrl) const
 	if (pSkinListCtrl)
 	{
 		memcpy(pSkinListCtrl, &m_SkinListCtrl, sizeof(SKINLISTCTRL));
+	}
+}
+
+void CDreamSkinLoader::GetSkinProgressCtrl(SKINPROGRESSCTRL *pSkinProgressCtrl) const
+{
+	if (pSkinProgressCtrl)
+	{
+		memcpy(pSkinProgressCtrl, &m_SkinProgressCtrl, sizeof(SKINPROGRESSCTRL));
 	}
 }
 
@@ -1535,6 +1550,221 @@ BOOL CDreamSkinLoader::LoadSkinListCtrl(void *parser)
 	return bResult;
 }
 
+BOOL CDreamSkinLoader::LoadSkinProgressCtrl(void *parser)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pTypeNode, *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pProgressCtrlNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameProgressCtrl);
+	const WCHAR *wstrNodeName;
+	SKINBORDER *pSkinBorderList[DRAWSTATUS_DISABLE + 1];
+
+	if (pProgressCtrlNode)
+	{
+		//loop to load all settings
+		pTypeNode = pProgressCtrlNode->getFirstChild();
+		while (pTypeNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pTypeNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameHorizontal) == 0)
+			{//horizontal
+				pParentNode = pTypeNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinProgressCtrl.skinHBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinProgressCtrl.skinHBkNormal));
+							}//normal
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameForeground) == 0)
+					{//foreground
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinProgressCtrl.skinHFrNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinProgressCtrl.skinHFrNormal));
+							}//normal
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//foreground
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBorder) == 0)
+					{//border
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+							{//left
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinProgressCtrl.skinHLBorderNormal;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_NORMAL + 1);
+							}//left
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+							{//right
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinProgressCtrl.skinHRBorderNormal;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_NORMAL + 1);
+							}//right
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+							{//top
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinProgressCtrl.skinHTBorderNormal;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_NORMAL + 1);
+							}//top
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+							{//bottom
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinProgressCtrl.skinHBBorderNormal;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_NORMAL + 1);
+							}//bottom
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//border
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//horizontal
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameVertical) == 0)
+			{//vertical
+				pParentNode = pTypeNode->getFirstChild();
+				while (pParentNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+					if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+					{//background
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinProgressCtrl.skinVBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinProgressCtrl.skinVBkNormal));
+							}//normal
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//background
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameForeground) == 0)
+					{//foreground
+						pAttr = pParentNode->getAttributes();
+						if (pAttr)
+						{
+							//background draw type
+							pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+							if (pTempNode)
+							{
+								m_SkinProgressCtrl.skinVFrNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+							}
+						}
+
+						//loop to load all sub items
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+							{//normal
+								LoadBackground(pChildNode, &(m_SkinProgressCtrl.skinVFrNormal));
+							}//normal
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//foreground
+					else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBorder) == 0)
+					{//border
+						pChildNode = pParentNode->getFirstChild();
+						while(pChildNode != NULL)
+						{
+							wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+							if(wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+							{//left
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinProgressCtrl.skinVLBorderNormal;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_NORMAL + 1);
+							}//left
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+							{//right
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinProgressCtrl.skinVRBorderNormal;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_NORMAL + 1);
+							}//right
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+							{//top
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinProgressCtrl.skinVTBorderNormal;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_NORMAL + 1);
+							}//top
+							else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+							{//bottom
+								pSkinBorderList[DRAWSTATUS_NORMAL] = &m_SkinProgressCtrl.skinVBBorderNormal;
+								LoadBorder(pChildNode, pSkinBorderList, DRAWSTATUS_NORMAL + 1);
+							}//bottom
+
+							pChildNode = pChildNode->getNextSibling();
+						}
+					}//border
+
+					pParentNode = pParentNode->getNextSibling();
+				}
+			}//vertical
+
+			pTypeNode = pTypeNode->getNextSibling();
+		}
+	} //end load progress control
+
+	return bResult;
+}
+
 BOOL CDreamSkinLoader::LoadSkinRadio(void *parser)
 {
 	BOOL bResult = TRUE;
@@ -1738,7 +1968,42 @@ BOOL CDreamSkinLoader::LoadSkinScrollBar(void *parser)
 		while (pTypeNode != NULL)
 		{
 			wstrNodeName = XStringtoWString(pTypeNode->getNodeName());
-			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameHorizontal) == 0)
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBackground) == 0)
+			{//background
+				pAttr = pTypeNode->getAttributes();
+				if (pAttr)
+				{
+					//background draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinScrollBar.skinBkNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						m_SkinScrollBar.skinBkDisable.nDrawType = m_SkinScrollBar.skinBkNormal.nDrawType;
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pTypeNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadBackground(pChildNode, &(m_SkinScrollBar.skinBkNormal));
+					}//normal
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+					{//disable
+						LoadBackground(pChildNode, &(m_SkinScrollBar.skinBkDisable));
+					}//disable
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+
+				if (m_SkinScrollBar.skinBkDisable.nDefault)
+					m_SkinScrollBar.skinBkDisable = m_SkinScrollBar.skinBkNormal;
+			}//background
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameHorizontal) == 0)
 			{//horizontal
 				pParentNode = pTypeNode->getFirstChild();
 				while (pParentNode != NULL)

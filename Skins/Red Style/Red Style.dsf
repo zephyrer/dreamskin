@@ -771,6 +771,11 @@
 		</item>
 	</headerctrl>
 	<scrollbar>
+		<background type="0">
+			<normal>
+				<color start="0x00F6E9E9"/>
+			</normal>
+		</background>
 		<horizontal>
 			<background type="0">
 				<normal>
@@ -948,6 +953,76 @@
 			</thumb>
 		</vertical>
 	</scrollbar>
+	<progressctrl>
+		<horizontal>
+			<background type="0">
+				<normal>
+					<color start="0x00FFFFFF"/>
+				</normal>
+			</background>
+			<foreground>
+				<normal>
+					<color start="0x00BF4D4D"/>
+				</normal>
+			</foreground>
+			<border type="0">
+				<left width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</left>
+				<right width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</right>
+				<top width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</top>
+				<bottom width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</bottom>
+			</border>
+		</horizontal>
+		<vertical>
+			<background type="0">
+				<normal>
+					<color start="0x00FFFFFF"/>
+				</normal>
+			</background>
+			<foreground>
+				<normal>
+					<color start="0x00BF4D4D"/>
+				</normal>
+			</foreground>
+			<border type="0">
+				<left width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</left>
+				<right width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</right>
+				<top width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</top>
+				<bottom width="1">
+					<normal>
+						<color start="0x00E5C5C5"/>
+					</normal>
+				</bottom>
+			</border>
+		</vertical>
+	</progressctrl>
 	<combobox>
 		<background type="0">
 			<normal>

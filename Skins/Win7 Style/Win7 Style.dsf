@@ -817,6 +817,11 @@
 		</item>
 	</headerctrl>
 	<scrollbar>
+		<background type="0">
+			<normal>
+				<color start="0x00F7F3F7"/>
+			</normal>
+		</background>
 		<horizontal>
 			<background type="1">
 				<normal>
@@ -1114,6 +1119,76 @@
 			</thumb>
 		</vertical>
 	</scrollbar>
+	<progressctrl>
+		<horizontal>
+			<background type="1">
+				<normal>
+					<image source="Images/progressctrl.bmp" x="44" y="25" width="75" height="19" />
+				</normal>
+			</background>
+			<foreground type="1">
+				<normal>
+					<image source="Images/progressctrl.bmp" x="65" y="2" width="35" height="19" />
+				</normal>
+			</foreground>
+			<border type="1">
+				<left type="1" width="1">
+					<normal>
+						<image source="Images/progressctrl.bmp" x="42" y="2" width="1" height="19" />
+					</normal>
+				</left>
+				<right type="1" width="1">
+					<normal>
+						<image source="Images/progressctrl.bmp" x="120" y="2" width="1" height="19" />
+					</normal>
+				</right>
+				<top type="1" width="1" start="2" end="2">
+					<normal>
+						<image source="Images/progressctrl.bmp" x="42" y="0" width="79" height="1" />
+					</normal>
+				</top>
+				<bottom type="1" width="1" start="2" end="2">
+					<normal>
+						<image source="Images/progressctrl.bmp" x="42" y="22" width="79" height="1" />
+					</normal>
+				</bottom>
+			</border>
+		</horizontal>
+		<vertical>
+			<background type="1">
+				<normal>
+					<image source="Images/progressctrl.bmp" x="2" y="2" width="17" height="42" />
+				</normal>
+			</background>
+			<foreground type="1">
+				<normal>
+					<image source="Images/progressctrl.bmp" x="23" y="8" width="17" height="22" />
+				</normal>
+			</foreground>
+			<border type="1">
+				<left type="1" width="1">
+					<normal>
+						<image source="Images/progressctrl.bmp" x="0" y="2" width="1" height="42" />
+					</normal>
+				</left>
+				<right type="1" width="1">
+					<normal>
+						<image source="Images/progressctrl.bmp" x="20" y="2" width="1" height="42" />
+					</normal>
+				</right>
+				<top type="1" width="1" start="2" end="2">
+					<normal>
+						<image source="Images/progressctrl.bmp" x="0" y="0" width="21" height="1" />
+					</normal>
+				</top>
+				<bottom type="1" width="1" start="2" end="2">
+					<normal>
+						<image source="Images/progressctrl.bmp" x="0" y="45" width="21" height="1" />
+					</normal>
+				</bottom>
+			</border>
+		</vertical>
+	</progressctrl>
 	<combobox>
 		<background type="0">
 			<normal>

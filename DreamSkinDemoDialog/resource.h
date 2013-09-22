@@ -85,8 +85,10 @@
 #define IDC_PROGRESS_DEMO_VERT          1060
 #define IDC_SPIN_DEMO_VERT              1061
 #define IDC_SPIN_DEMO_HORZ              1063
-#define IDC_BUTTON2                     1065
 #define IDC_BTN_SET_PROGRESS            1065
+#define IDC_BTN_PROGRESS_START          1066
+#define IDC_BUTTON3                     1067
+#define IDC_BTN_PROGRESS_PAUSE          1067
 
 // Next default values for new objects
 // 
@@ -94,7 +96,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1066
+#define _APS_NEXT_CONTROL_VALUE         1068
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

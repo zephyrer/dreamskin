@@ -37,6 +37,8 @@ public:
 	int m_nSliderDemoVert;
 	CProgressCtrl m_prgDemoHorz;
 	CProgressCtrl m_prgDemoVert;
+	UINT_PTR   m_nProgressTimerID;
+	BOOL       m_bPauseProgress;
 
 	virtual BOOL OnInitDialog();
 
@@ -58,4 +60,7 @@ public:
 	afx_msg void OnBnClickedChkEnableProgress();
 	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
 	afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnBnClickedBtnProgressStart();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnBnClickedBtnProgressPause();
 };

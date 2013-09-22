@@ -21,10 +21,13 @@ CPropertyPageCommonControl::CPropertyPageCommonControl()
 	, m_nResultProgress(0)
 {
 	m_psp.dwFlags &= ~PSP_HASHELP;
+	m_nProgressTimerID = 0;
+	m_bPauseProgress = FALSE;
 }
 
 CPropertyPageCommonControl::~CPropertyPageCommonControl()
 {
+
 }
 
 void CPropertyPageCommonControl::DoDataExchange(CDataExchange* pDX)
@@ -62,6 +65,9 @@ BEGIN_MESSAGE_MAP(CPropertyPageCommonControl, CPropertyPage)
 	ON_BN_CLICKED(IDC_CHK_ENABLE_PROGRESS, &CPropertyPageCommonControl::OnBnClickedChkEnableProgress)
 	ON_WM_HSCROLL()
 	ON_WM_VSCROLL()
+	ON_BN_CLICKED(IDC_BTN_PROGRESS_START, &CPropertyPageCommonControl::OnBnClickedBtnProgressStart)
+	ON_WM_TIMER()
+	ON_BN_CLICKED(IDC_BTN_PROGRESS_PAUSE, &CPropertyPageCommonControl::OnBnClickedBtnProgressPause)
 END_MESSAGE_MAP()
 
 
@@ -381,5 +387,48 @@ void CPropertyPageCommonControl::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* 
 	else
 	{
 		CPropertyPage::OnHScroll(nSBCode, nPos, pScrollBar);
+	}
+}
+void CPropertyPageCommonControl::OnBnClickedBtnProgressStart()
+{
+	GetDlgItem(IDC_BTN_PROGRESS_START)->EnableWindow(FALSE);
+
+	if (!m_nProgressTimerID)
+		m_nProgressTimerID = SetTimer(1, 100, NULL);
+	
+	GetDlgItem(IDC_BTN_PROGRESS_PAUSE)->EnableWindow(TRUE);
+}
+
+void CPropertyPageCommonControl::OnTimer(UINT_PTR nIDEvent)
+{
+	if (nIDEvent == 1)
+	{
+		if (!m_bPauseProgress)
+		{
+			m_nResultProgress++;
+			if (m_nResultProgress >= 100)
+				m_nResultProgress = 0;
+
+			ProgressPosUpdate();
+			UpdateData(FALSE);
+		}
+	}
+	else
+	{
+		CPropertyPage::OnTimer(nIDEvent);
+	}
+}
+
+void CPropertyPageCommonControl::OnBnClickedBtnProgressPause()
+{
+	if (m_bPauseProgress)
+	{
+		m_bPauseProgress = FALSE;
+		GetDlgItem(IDC_BTN_PROGRESS_PAUSE)->SetWindowText(_T("Pause"));
+	}
+	else
+	{
+		m_bPauseProgress = TRUE;
+		GetDlgItem(IDC_BTN_PROGRESS_PAUSE)->SetWindowText(_T("Resume"));
 	}
 }
