@@ -68,6 +68,8 @@ BEGIN_MESSAGE_MAP(CPropertyPageCommonControl, CPropertyPage)
 	ON_BN_CLICKED(IDC_BTN_PROGRESS_START, &CPropertyPageCommonControl::OnBnClickedBtnProgressStart)
 	ON_WM_TIMER()
 	ON_BN_CLICKED(IDC_BTN_PROGRESS_PAUSE, &CPropertyPageCommonControl::OnBnClickedBtnProgressPause)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_DEMO_HORZ, &CPropertyPageCommonControl::OnDeltaposSpinDemoHorz)
+	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_DEMO_VERT, &CPropertyPageCommonControl::OnDeltaposSpinDemoVert)
 END_MESSAGE_MAP()
 
 
@@ -431,4 +433,60 @@ void CPropertyPageCommonControl::OnBnClickedBtnProgressPause()
 		m_bPauseProgress = TRUE;
 		GetDlgItem(IDC_BTN_PROGRESS_PAUSE)->SetWindowText(_T("Resume"));
 	}
+}
+
+void CPropertyPageCommonControl::OnDeltaposSpinDemoHorz(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta > 0)
+	{
+		if (m_nResultProgress >= 100)
+			*pResult = 1;
+		else
+			*pResult = 0;
+	}
+	else
+	{
+		if (m_nResultProgress <= 0)
+			*pResult = 1;
+		else
+			*pResult = 0;
+	}
+
+	m_nResultProgress += pNMUpDown->iDelta;
+	if (m_nResultProgress > 100)
+		m_nResultProgress = 100;
+	else if (m_nResultProgress < 0)
+		m_nResultProgress = 0;
+	
+	ProgressPosUpdate();
+	UpdateData(FALSE);
+}
+
+void CPropertyPageCommonControl::OnDeltaposSpinDemoVert(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	LPNMUPDOWN pNMUpDown = reinterpret_cast<LPNMUPDOWN>(pNMHDR);
+	if (pNMUpDown->iDelta > 0)
+	{
+		if (m_nResultProgress >= 100)
+			*pResult = 1;
+		else
+			*pResult = 0;
+	}
+	else
+	{
+		if (m_nResultProgress <= 0)
+			*pResult = 1;
+		else
+			*pResult = 0;
+	}
+
+	m_nResultProgress += pNMUpDown->iDelta;
+	if (m_nResultProgress > 100)
+		m_nResultProgress = 100;
+	else if (m_nResultProgress < 0)
+		m_nResultProgress = 0;
+	
+	ProgressPosUpdate();
+	UpdateData(FALSE);
 }

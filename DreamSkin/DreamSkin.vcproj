@@ -229,6 +229,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\DreamSkinSliderCtrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DreamSkinStatic.cpp"
 				>
 			</File>
@@ -324,6 +328,10 @@
 			</File>
 			<File
 				RelativePath=".\DreamSkinScrollBar.h"
+				>
+			</File>
+			<File
+				RelativePath=".\DreamSkinSliderCtrl.h"
 				>
 			</File>
 			<File

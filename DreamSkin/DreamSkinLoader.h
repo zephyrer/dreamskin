@@ -585,6 +585,37 @@ typedef struct _tag_SKINPROGRESSCTRL
 	int              nVBlockSpacing;                   //Space width between foreground blocks
 }SKINPROGRESSCTRL;
 
+typedef struct _tag_SKINSLIDERCTRL
+{
+	SKINBACKGROUND   skinHBkNormal;                    //Background in normal status
+	SKINBACKGROUND   skinHBkDisable;                   //Background in disable status
+
+	SKINBACKGROUND   skinVBkNormal;                    //Background in normal status
+	SKINBACKGROUND   skinVBkDisable;                   //Foreground in normal status
+
+	SKINITEM         skinHSliderNormal;                //Slider in normal status
+	SKINITEM         skinHSliderDisable;               //Slider in disable status
+
+	SKINITEM         skinVSliderNormal;                //Slider in normal status
+	SKINITEM         skinVSliderDisable;               //Slider in disable status
+
+	SKINITEM         skinHThumbNormal;                 //Thumb in normal status
+	SKINITEM         skinHThumbDisable;                //Thumb in disable status
+	SKINITEM         skinHThumbHover;                  //Thumb in hover status
+	SKINITEM         skinHThumbPress;                  //Thumb in press status
+
+	SKINITEM         skinVThumbNormal;                 //Thumb in normal status
+	SKINITEM         skinVThumbDisable;                //Thumb in disable status
+	SKINITEM         skinVThumbHover;                  //Thumb in hover status
+	SKINITEM         skinVThumbPress;                  //Thumb in press status
+
+	int              nHSliderWidth;                    //Slider width
+	int              nVSliderWidth;                    //Slider width
+
+	int              nHThumbWidth;                     //Thumb width
+	int              nVThumbWidth;                     //Thumb width
+}SKINSLIDERCTRL;
+
 class CDreamSkinLoader
 {
 public:
@@ -604,6 +635,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameProgressCtrl[];
 	static WCHAR wstrSkinFileNodeNameRadio[];
 	static WCHAR wstrSkinFileNodeNameScrollBar[];
+	static WCHAR wstrSkinFileNodeNameSliderCtrl[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameTab[];
 
@@ -639,6 +671,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameExpand[];
 	static WCHAR wstrSkinFileNodeNameHorizontal[];
 	static WCHAR wstrSkinFileNodeNameVertical[];
+	static WCHAR wstrSkinFileNodeNameSlider[];
 
 	static WCHAR wstrSkinFileAttrNameWidth[];
 	static WCHAR wstrSkinFileAttrNameHeight[];
@@ -677,6 +710,7 @@ public:
 	void GetSkinProgressCtrl(SKINPROGRESSCTRL *pSkinProgressCtrl) const;
 	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
 	void GetSkinScrollBar(SKINSCROLLBAR *pSkinScrollBar) const;
+	void GetSkinSliderCtrl(SKINSLIDERCTRL *pSkinSliderCtrl) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
 	void GetSkinTab(SKINTAB *pSkinTab) const;
 
@@ -693,6 +727,7 @@ protected:
 	BOOL LoadSkinProgressCtrl(void *parser);
 	BOOL LoadSkinRadio(void *parser);
 	BOOL LoadSkinScrollBar(void *parser);
+	BOOL LoadSkinSliderCtrl(void *parser);
 	BOOL LoadSkinStatic(void *parser);
 	BOOL LoadSkinTab(void *parser);
 
@@ -728,6 +763,7 @@ protected:
 	SKINPROGRESSCTRL m_SkinProgressCtrl;
 	SKINRADIO        m_SkinRadio;
 	SKINSCROLLBAR    m_SkinScrollBar;
+	SKINSLIDERCTRL   m_SkinSliderCtrl;
 	SKINSTATIC       m_SkinStatic;
 	SKINTAB          m_SkinTab;
 	WCHAR            m_wstrSkinFilePath[MAX_PATH];

@@ -953,6 +953,228 @@
 			</thumb>
 		</vertical>
 	</scrollbar>
+	<sliderctrl>
+		<horizontal>
+			<background type="0">
+				<normal>
+					<color start="0x00F6E9E9"/>
+				</normal>
+			</background>
+			<slider>
+				<background type="0">
+					<normal>
+						<color start="0x00F6E9E9"/>
+					</normal>
+				</background>
+				<border type="0">
+					<left width="1">
+						<normal>
+							<color start="0x00E5C5C5"/>
+						</normal>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</left>
+					<right width="1">
+						<normal>
+							<color start="0x00E5C5C5"/>
+						</normal>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</right>
+					<top width="1">
+						<normal>
+							<color start="0x00E5C5C5"/>
+						</normal>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</top>
+					<bottom width="1">
+						<normal>
+							<color start="0x00E5C5C5"/>
+						</normal>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</bottom>
+				</border>
+			</slider>
+			<thumb>
+				<background type="0">
+					<normal>
+						<color start="0x00F2D6D6"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+					<hover>
+						<color start="0x00993838" />
+					</hover>
+					<press>
+						<color start="0x00993838" />
+					</press>
+				</background>
+				<border type="0">
+					<left width="1">
+						<normal>
+							<color start="0x00D89F9F"/>
+						</normal>
+						<hover>
+							<color start="0x00993838"/>
+						</hover>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</left>
+					<right width="1">
+						<normal>
+							<color start="0x00D89F9F"/>
+						</normal>
+						<hover>
+							<color start="0x00993838"/>
+						</hover>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</right>
+					<top width="1">
+						<normal>
+							<color start="0x00D89F9F"/>
+						</normal>
+						<hover>
+							<color start="0x00993838"/>
+						</hover>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</top>
+					<bottom width="1">
+						<normal>
+							<color start="0x00D89F9F"/>
+						</normal>
+						<hover>
+							<color start="0x00993838"/>
+						</hover>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</bottom>
+				</border>
+			</thumb>
+		</horizontal>
+		<vertical>
+			<background type="0">
+				<normal>
+					<color start="0x00F6E9E9"/>
+				</normal>
+			</background>
+			<slider>
+				<background type="0">
+					<normal>
+						<color start="0x00F6E9E9"/>
+					</normal>
+				</background>
+				<border type="0">
+					<left width="1">
+						<normal>
+							<color start="0x00E5C5C5"/>
+						</normal>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</left>
+					<right width="1">
+						<normal>
+							<color start="0x00E5C5C5"/>
+						</normal>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</right>
+					<top width="1">
+						<normal>
+							<color start="0x00E5C5C5"/>
+						</normal>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</top>
+					<bottom width="1">
+						<normal>
+							<color start="0x00E5C5C5"/>
+						</normal>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</bottom>
+				</border>
+			</slider>
+			<thumb>
+				<background type="0">
+					<normal>
+						<color start="0x00F2D6D6"/>
+					</normal>
+					<disable>
+						<color start="0x00ACA899" />
+					</disable>
+					<hover>
+						<color start="0x00993838" />
+					</hover>
+					<press>
+						<color start="0x00993838" />
+					</press>
+				</background>
+				<border type="0">
+					<left width="1">
+						<normal>
+							<color start="0x00D89F9F"/>
+						</normal>
+						<hover>
+							<color start="0x00993838"/>
+						</hover>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</left>
+					<right width="1">
+						<normal>
+							<color start="0x00D89F9F"/>
+						</normal>
+						<hover>
+							<color start="0x00993838"/>
+						</hover>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</right>
+					<top width="1">
+						<normal>
+							<color start="0x00D89F9F"/>
+						</normal>
+						<hover>
+							<color start="0x00993838"/>
+						</hover>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</top>
+					<bottom width="1">
+						<normal>
+							<color start="0x00D89F9F"/>
+						</normal>
+						<hover>
+							<color start="0x00993838"/>
+						</hover>
+						<disable>
+							<color start="0x00ACA899" />
+						</disable>
+					</bottom>
+				</border>
+			</thumb>
+		</vertical>
+	</sliderctrl>
 	<progressctrl>
 		<horizontal>
 			<background type="0">
