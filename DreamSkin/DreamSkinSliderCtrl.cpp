@@ -277,7 +277,6 @@ LRESULT CDreamSkinSliderCtrl::OnLButtonDown(UINT nFlags, POINTS point)
 	pt.x = point.x;
 	pt.y = point.y;
 
-	int nSBHover = 0;
 	DWORD dwStyle = ::GetWindowLong(m_hWnd, GWL_STYLE);
 
 	RECT rcClient;

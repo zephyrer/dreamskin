@@ -485,7 +485,7 @@ typedef struct _tag_SKINCOMBOBOX
 
 typedef struct _tag_SKINSCROLLBAR
 {
-	SKINBACKGROUND   skinBkNormal;                     //Background in normal status
+	SKINBACKGROUND   skinBkNormal;                    //Background in normal status
 	SKINBACKGROUND   skinBkDisable;                   //Background in disable status
 
 	SKINBACKGROUND   skinHBkNormal;                   //Background in normal status for horizontal scroll bar
@@ -551,6 +551,29 @@ typedef struct _tag_SKINSCROLLBAR
 	int              nHThumbIncludeBorder;            //Whether thumb include border
 	int              nVThumbIncludeBorder;            //Whether thumb include border
 }SKINSCROLLBAR;
+
+typedef struct _tag_SKINSPINCTRL
+{
+	SKINSYSBUTTON    skinBtnLeftNormal;               //Left button in normal status
+	SKINSYSBUTTON    skinBtnLeftDisable;              //Left button in disable status
+	SKINSYSBUTTON    skinBtnLeftHover;                //Left button in hover status
+	SKINSYSBUTTON    skinBtnLeftPress;                //Left button in press status
+
+	SKINSYSBUTTON    skinBtnRightNormal;              //Right button in normal status
+	SKINSYSBUTTON    skinBtnRightDisable;             //Right button in disable status
+	SKINSYSBUTTON    skinBtnRightHover;               //Right button in hover status
+	SKINSYSBUTTON    skinBtnRightPress;               //Right button in press status
+
+	SKINSYSBUTTON    skinBtnTopNormal;                //Top button in normal status
+	SKINSYSBUTTON    skinBtnTopDisable;               //Top button in disable status
+	SKINSYSBUTTON    skinBtnTopHover;                 //Top button in hover status
+	SKINSYSBUTTON    skinBtnTopPress;                 //Top button in press status
+
+	SKINSYSBUTTON    skinBtnBottomNormal;             //Bottom button in normal status
+	SKINSYSBUTTON    skinBtnBottomDisable;            //Bottom button in disable status
+	SKINSYSBUTTON    skinBtnBottomHover;              //Bottom button in hover status
+	SKINSYSBUTTON    skinBtnBottomPress;              //Bottom button in press status
+}SKINSPINCTRL;
 
 typedef struct _tag_SKINHEADERCTRL
 {
@@ -636,6 +659,7 @@ protected:
 	static WCHAR wstrSkinFileNodeNameRadio[];
 	static WCHAR wstrSkinFileNodeNameScrollBar[];
 	static WCHAR wstrSkinFileNodeNameSliderCtrl[];
+	static WCHAR wstrSkinFileNodeNameSpinCtrl[];
 	static WCHAR wstrSkinFileNodeNameStatic[];
 	static WCHAR wstrSkinFileNodeNameTab[];
 
@@ -711,6 +735,7 @@ public:
 	void GetSkinRadio(SKINRADIO *pSkinRadio) const;
 	void GetSkinScrollBar(SKINSCROLLBAR *pSkinScrollBar) const;
 	void GetSkinSliderCtrl(SKINSLIDERCTRL *pSkinSliderCtrl) const;
+	void GetSkinSpinCtrl(SKINSPINCTRL *pSkinSpinCtrl) const;
 	void GetSkinStatic(SKINSTATIC *pSkinStatic) const;
 	void GetSkinTab(SKINTAB *pSkinTab) const;
 
@@ -728,6 +753,7 @@ protected:
 	BOOL LoadSkinRadio(void *parser);
 	BOOL LoadSkinScrollBar(void *parser);
 	BOOL LoadSkinSliderCtrl(void *parser);
+	BOOL LoadSkinSpinCtrl(void *parser);
 	BOOL LoadSkinStatic(void *parser);
 	BOOL LoadSkinTab(void *parser);
 
@@ -764,6 +790,7 @@ protected:
 	SKINRADIO        m_SkinRadio;
 	SKINSCROLLBAR    m_SkinScrollBar;
 	SKINSLIDERCTRL   m_SkinSliderCtrl;
+	SKINSPINCTRL     m_SkinSpinCtrl;
 	SKINSTATIC       m_SkinStatic;
 	SKINTAB          m_SkinTab;
 	WCHAR            m_wstrSkinFilePath[MAX_PATH];

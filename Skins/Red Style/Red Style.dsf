@@ -953,6 +953,64 @@
 			</thumb>
 		</vertical>
 	</scrollbar>
+	<spinctrl>
+		<left type="99">
+			<normal>
+				<color start="0x00F8E6E6" text="0x00C14848" border="0x00E5C5C5"/>
+			</normal>
+			<hover>
+				<color start="0x00993838" text="0x00FFFFFF" border="0x00E5C5C5" />
+			</hover>
+			<press>
+				<color start="0x00993838" text="0x00C14848" border="0x00E5C5C5" />
+			</press>
+			<disable>
+				<color start="0x00F6E9E9" text="0x00ACA899" border="0x00ACA899"/>
+			</disable>
+		</left>
+		<right type="99">
+			<normal>
+				<color start="0x00F8E6E6" text="0x00C14848" border="0x00E5C5C5"/>
+			</normal>
+			<hover>
+				<color start="0x00993838" text="0x00FFFFFF" border="0x00E5C5C5" />
+			</hover>
+			<press>
+				<color start="0x00993838" text="0x00C14848" border="0x00E5C5C5" />
+			</press>
+			<disable>
+				<color start="0x00F6E9E9" text="0x00ACA899" border="0x00ACA899"/>
+			</disable>
+		</right>
+		<top type="99">
+			<normal>
+				<color start="0x00F8E6E6" text="0x00C14848" border="0x00E5C5C5"/>
+			</normal>
+			<hover>
+				<color start="0x00993838" text="0x00FFFFFF" border="0x00E5C5C5" />
+			</hover>
+			<press>
+				<color start="0x00993838" text="0x00C14848" border="0x00E5C5C5" />
+			</press>
+			<disable>
+				<color start="0x00F6E9E9" text="0x00ACA899" border="0x00ACA899"/>
+			</disable>
+		</top>
+		<bottom type="99">
+			<normal>
+				<color start="0x00F8E6E6" text="0x00C14848" border="0x00E5C5C5"/>
+			</normal>
+			<hover>
+				<color start="0x00993838" text="0x00FFFFFF" border="0x00E5C5C5" />
+			</hover>
+			<press>
+				<color start="0x00993838" text="0x00C14848" border="0x00E5C5C5" />
+			</press>
+			<disable>
+				<color start="0x00F6E9E9" text="0x00ACA899" border="0x00ACA899"/>
+			</disable>
+		</bottom>
+	</spinctrl>
 	<sliderctrl>
 		<horizontal>
 			<background type="0">

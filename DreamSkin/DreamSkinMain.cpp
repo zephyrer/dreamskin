@@ -22,6 +22,7 @@
 #include "DreamSkinComboLBox.h"
 #include "DreamSkinProgressCtrl.h"
 #include "DreamSkinSliderCtrl.h"
+#include "DreamSkinSpinCtrl.h"
 #include "WinGdiEx.h"
 
 CDreamSkinMain theSkinMain;
@@ -382,6 +383,16 @@ BOOL CDreamSkinMain::InitDefaultHookWindowClassList()
 		m_pDefaultHookWindowClasses->Add(DEFAULT_SLIDERCTRL_CLASSNAME_W, CDreamSkinSliderCtrl::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinSliderCtrl::CreateInstance);
 	}
 
+	bReturn = CDreamSkinSpinCtrl::InitialClass();
+	if(!bReturn)
+	{   //Init for dialog failed
+		//TODO: Add error handle code
+	}
+	else
+	{
+		m_pDefaultHookWindowClasses->Add(DEFAULT_SPINCTRL_CLASSNAME_W, CDreamSkinSpinCtrl::DefWindowProc, (NEWINSTANCEPROC)CDreamSkinSpinCtrl::CreateInstance);
+	}
+
 	return TRUE;
 }
 
@@ -459,6 +470,7 @@ BOOL CDreamSkinMain::LoadSkin(const WCHAR *wstrSkinFilePath)
 		CDreamSkinHeaderCtrl::ApplySkin(&theLoader);
 		CDreamSkinProgressCtrl::ApplySkin(&theLoader);
 		CDreamSkinSliderCtrl::ApplySkin(&theLoader);
+		CDreamSkinSpinCtrl::ApplySkin(&theLoader);
 
 		if (m_pImageHandleList)
 		{

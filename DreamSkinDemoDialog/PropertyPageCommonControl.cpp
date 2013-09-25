@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(CPropertyPageCommonControl, CPropertyPage)
 	ON_BN_CLICKED(IDC_BTN_PROGRESS_PAUSE, &CPropertyPageCommonControl::OnBnClickedBtnProgressPause)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_DEMO_HORZ, &CPropertyPageCommonControl::OnDeltaposSpinDemoHorz)
 	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_DEMO_VERT, &CPropertyPageCommonControl::OnDeltaposSpinDemoVert)
+	ON_BN_CLICKED(IDC_BTN_SET_PROGRESS, &CPropertyPageCommonControl::OnBnClickedBtnSetProgress)
 END_MESSAGE_MAP()
 
 
@@ -488,5 +489,24 @@ void CPropertyPageCommonControl::OnDeltaposSpinDemoVert(NMHDR *pNMHDR, LRESULT *
 		m_nResultProgress = 0;
 	
 	ProgressPosUpdate();
+	UpdateData(FALSE);
+}
+
+void CPropertyPageCommonControl::OnBnClickedBtnSetProgress()
+{
+	int nOldValue = m_nResultProgress;
+
+	UpdateData(TRUE);
+	if (m_nResultProgress >= 0 && m_nResultProgress <= 100)
+	{
+		ProgressPosUpdate();
+		UpdateData(FALSE);
+	}
+	else
+	{
+		m_nResultProgress = nOldValue;
+	}
+
+	
 	UpdateData(FALSE);
 }

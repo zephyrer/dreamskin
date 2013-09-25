@@ -65,4 +65,5 @@ public:
 	afx_msg void OnBnClickedBtnProgressPause();
 	afx_msg void OnDeltaposSpinDemoHorz(NMHDR *pNMHDR, LRESULT *pResult);
 	afx_msg void OnDeltaposSpinDemoVert(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnBnClickedBtnSetProgress();
 };

@@ -28,6 +28,7 @@ using namespace xercesc;
 #include "DreamSkinComboBox.h"
 #include "DreamSkinProgressCtrl.h"
 #include "DreamSkinSliderCtrl.h"
+#include "DreamSkinSpinCtrl.h"
 #include "WinFileEx.h"
 
 #include "HexBin.h"
@@ -79,6 +80,7 @@ WCHAR CDreamSkinLoader::wstrSkinFileNodeNameProgressCtrl[] = L"progressctrl";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameRadio[] = L"radio";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameScrollBar[] = L"scrollbar";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameSliderCtrl[] = L"sliderctrl";
+WCHAR CDreamSkinLoader::wstrSkinFileNodeNameSpinCtrl[] = L"spinctrl";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameStatic[] = L"static";
 WCHAR CDreamSkinLoader::wstrSkinFileNodeNameTab[] = L"tab";
 
@@ -243,6 +245,10 @@ BOOL CDreamSkinLoader::Load(const WCHAR *wstrSkinFilePath)
 		CDreamSkinSliderCtrl::GetDefaultSkin(&m_SkinSliderCtrl);
 		LoadSkinSliderCtrl(parser);
 
+		//Load Skin SpinCtrl
+		CDreamSkinSpinCtrl::GetDefaultSkin(&m_SkinSpinCtrl);
+		LoadSkinSpinCtrl(parser);
+
 		parser->setErrorHandler(NULL);
 	}
 	catch (const XMLException& ) 
@@ -381,6 +387,14 @@ void CDreamSkinLoader::GetSkinSliderCtrl(SKINSLIDERCTRL *pSkinSliderCtrl) const
 	if (pSkinSliderCtrl)
 	{
 		memcpy(pSkinSliderCtrl, &m_SkinSliderCtrl, sizeof(SKINSLIDERCTRL));
+	}
+}
+
+void CDreamSkinLoader::GetSkinSpinCtrl(SKINSPINCTRL *pSkinSpinCtrl) const
+{
+	if (pSkinSpinCtrl)
+	{
+		memcpy(pSkinSpinCtrl, &m_SkinSpinCtrl, sizeof(SKINSPINCTRL));
 	}
 }
 
@@ -2631,6 +2645,234 @@ BOOL CDreamSkinLoader::LoadSkinSliderCtrl(void *parser)
 			pTypeNode = pTypeNode->getNextSibling();
 		}
 	} //end load slider control
+
+	return bResult;
+}
+
+BOOL CDreamSkinLoader::LoadSkinSpinCtrl(void *parser)
+{
+	BOOL bResult = TRUE;
+	DOMNode *pParentNode, *pChildNode, *pTempNode;
+	DOMNamedNodeMap *pAttr;
+	DOMNode *docRootNode = ((XercesDOMParser*)parser)->getDocument()->getDocumentElement();
+	DOMNode *pSpinCtrlNode = GetNamedChild(docRootNode, wstrSkinFileNodeNameSpinCtrl);
+	const WCHAR *wstrNodeName;
+
+	if (pSpinCtrlNode)
+	{
+		//loop to load all settings
+		pParentNode = pSpinCtrlNode->getFirstChild();
+		while (pParentNode != NULL)
+		{
+			wstrNodeName = XStringtoWString(pParentNode->getNodeName());
+			if (wcscmp(wstrNodeName, wstrSkinFileNodeNameLeft) == 0)
+			{//left button
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//left button draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinSpinCtrl.skinBtnLeftNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						m_SkinSpinCtrl.skinBtnLeftDisable.nDrawType = m_SkinSpinCtrl.skinBtnLeftNormal.nDrawType;
+						m_SkinSpinCtrl.skinBtnLeftHover.nDrawType = m_SkinSpinCtrl.skinBtnLeftNormal.nDrawType;
+						m_SkinSpinCtrl.skinBtnLeftPress.nDrawType = m_SkinSpinCtrl.skinBtnLeftNormal.nDrawType;
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnLeftNormal));
+					}//normal
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+					{//hover
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnLeftHover));
+					}//hover
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+					{//press
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnLeftPress));
+					}//press
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+					{//disable
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnLeftDisable));
+					}//disable
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+
+				if (m_SkinSpinCtrl.skinBtnLeftHover.nDefault)
+					m_SkinSpinCtrl.skinBtnLeftHover = m_SkinSpinCtrl.skinBtnLeftNormal;
+
+				if (m_SkinSpinCtrl.skinBtnLeftDisable.nDefault)
+					m_SkinSpinCtrl.skinBtnLeftDisable = m_SkinSpinCtrl.skinBtnLeftNormal;
+
+				if (m_SkinSpinCtrl.skinBtnLeftPress.nDefault)
+					m_SkinSpinCtrl.skinBtnLeftPress = m_SkinSpinCtrl.skinBtnLeftHover;
+			}//left button
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameRight) == 0)
+			{//right button
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//left button draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinSpinCtrl.skinBtnRightNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						m_SkinSpinCtrl.skinBtnRightDisable.nDrawType = m_SkinSpinCtrl.skinBtnRightNormal.nDrawType;
+						m_SkinSpinCtrl.skinBtnRightHover.nDrawType = m_SkinSpinCtrl.skinBtnRightNormal.nDrawType;
+						m_SkinSpinCtrl.skinBtnRightPress.nDrawType = m_SkinSpinCtrl.skinBtnRightNormal.nDrawType;
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnRightNormal));
+					}//normal
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+					{//hover
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnRightHover));
+					}//hover
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+					{//press
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnRightPress));
+					}//press
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+					{//disable
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnRightDisable));
+					}//disable
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+
+				if (m_SkinSpinCtrl.skinBtnRightHover.nDefault)
+					m_SkinSpinCtrl.skinBtnRightHover = m_SkinSpinCtrl.skinBtnRightNormal;
+
+				if (m_SkinSpinCtrl.skinBtnRightDisable.nDefault)
+					m_SkinSpinCtrl.skinBtnRightDisable = m_SkinSpinCtrl.skinBtnRightNormal;
+
+				if (m_SkinSpinCtrl.skinBtnRightPress.nDefault)
+					m_SkinSpinCtrl.skinBtnRightPress = m_SkinSpinCtrl.skinBtnRightHover;
+			}//right button
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameTop) == 0)
+			{//top button
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//left button draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinSpinCtrl.skinBtnTopNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						m_SkinSpinCtrl.skinBtnTopDisable.nDrawType = m_SkinSpinCtrl.skinBtnTopNormal.nDrawType;
+						m_SkinSpinCtrl.skinBtnTopHover.nDrawType = m_SkinSpinCtrl.skinBtnTopNormal.nDrawType;
+						m_SkinSpinCtrl.skinBtnTopPress.nDrawType = m_SkinSpinCtrl.skinBtnTopNormal.nDrawType;
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnTopNormal));
+					}//normal
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+					{//hover
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnTopHover));
+					}//hover
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+					{//press
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnTopPress));
+					}//press
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+					{//disable
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnTopDisable));
+					}//disable
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+
+				if (m_SkinSpinCtrl.skinBtnTopHover.nDefault)
+					m_SkinSpinCtrl.skinBtnTopHover = m_SkinSpinCtrl.skinBtnTopNormal;
+
+				if (m_SkinSpinCtrl.skinBtnTopDisable.nDefault)
+					m_SkinSpinCtrl.skinBtnTopDisable = m_SkinSpinCtrl.skinBtnTopNormal;
+
+				if (m_SkinSpinCtrl.skinBtnTopPress.nDefault)
+					m_SkinSpinCtrl.skinBtnTopPress = m_SkinSpinCtrl.skinBtnTopHover;
+			}//top button
+			else if (wcscmp(wstrNodeName, wstrSkinFileNodeNameBottom) == 0)
+			{//bottom button
+				pAttr = pParentNode->getAttributes();
+				if (pAttr)
+				{
+					//left button draw type
+					pTempNode = pAttr->getNamedItem(WStringtoXString(wstrSkinFileAttrNameType));
+					if (pTempNode)
+					{
+						m_SkinSpinCtrl.skinBtnBottomNormal.nDrawType = _wtoi(XStringtoWString(pTempNode->getNodeValue()));
+						m_SkinSpinCtrl.skinBtnBottomDisable.nDrawType = m_SkinSpinCtrl.skinBtnBottomNormal.nDrawType;
+						m_SkinSpinCtrl.skinBtnBottomHover.nDrawType = m_SkinSpinCtrl.skinBtnBottomNormal.nDrawType;
+						m_SkinSpinCtrl.skinBtnBottomPress.nDrawType = m_SkinSpinCtrl.skinBtnBottomNormal.nDrawType;
+					}
+				}
+
+				//loop to load all sub items
+				pChildNode = pParentNode->getFirstChild();
+				while(pChildNode != NULL)
+				{
+					wstrNodeName = XStringtoWString(pChildNode->getNodeName());
+
+					if(wcscmp(wstrNodeName, wstrSkinFileNodeNameNormal) == 0)
+					{//normal
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnBottomNormal));
+					}//normal
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameHover) == 0)
+					{//hover
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnBottomHover));
+					}//hover
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNamePress) == 0)
+					{//press
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnBottomPress));
+					}//press
+					else if(wcscmp(wstrNodeName, wstrSkinFileNodeNameDisable) == 0)
+					{//disable
+						LoadSysButtonItem(pChildNode, &(m_SkinSpinCtrl.skinBtnBottomDisable));
+					}//disable
+
+					pChildNode = pChildNode->getNextSibling();
+				}
+
+				if (m_SkinSpinCtrl.skinBtnBottomHover.nDefault)
+					m_SkinSpinCtrl.skinBtnBottomHover = m_SkinSpinCtrl.skinBtnBottomNormal;
+
+				if (m_SkinSpinCtrl.skinBtnBottomDisable.nDefault)
+					m_SkinSpinCtrl.skinBtnBottomDisable = m_SkinSpinCtrl.skinBtnBottomNormal;
+
+				if (m_SkinSpinCtrl.skinBtnBottomPress.nDefault)
+					m_SkinSpinCtrl.skinBtnBottomPress = m_SkinSpinCtrl.skinBtnBottomHover;
+			}//bottom button
+
+			pParentNode = pParentNode->getNextSibling();
+		}
+	} //end load scrollbar
 
 	return bResult;
 }
